@@ -54,6 +54,8 @@ export default function IncidenciasPage() {
     const [files, setFiles] = useState<File[]>([]);
     const [uploading, setUploading] = useState(false);
     const [enviarAviso, setEnviarAviso] = useState<boolean | null>(null);
+    const [notifEmail, setNotifEmail] = useState(false);
+    const [notifWhatsapp, setNotifWhatsapp] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState<number | null>(null);
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -365,7 +367,9 @@ export default function IncidenciasPage() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (formData.telefono && !phoneRegex.test(formData.telefono)) errors.telefono = 'El teléfono debe tener exactamente 9 dígitos sin espacios';
         if (formData.email && !emailRegex.test(formData.email)) errors.email = 'El formato del email no es válido';
-        if (!editingId && enviarAviso === true && !formData.telefono && !formData.email) errors.contacto = 'Para enviar aviso debes proporcionar Teléfono o Email';
+        if (!editingId && enviarAviso === true && !notifEmail && !notifWhatsapp) errors.canal = 'Selecciona al menos un canal de notificación (Email o WhatsApp)';
+        if (!editingId && enviarAviso === true && notifEmail && !formData.email) errors.contacto = 'Para notificar por email debes proporcionar un Email';
+        if (!editingId && enviarAviso === true && notifWhatsapp && !formData.telefono) errors.contacto = (errors.contacto ? errors.contacto + ' y ' : '') + 'Para notificar por WhatsApp debes proporcionar un Teléfono';
 
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
@@ -497,6 +501,8 @@ export default function IncidenciasPage() {
                         webhookPayload.append('incidencia_id', incidenciaId.toString());
                     }
                     webhookPayload.append('notificacion', enviarAviso ? 'true' : 'false');
+                    webhookPayload.append('canal_email', notifEmail ? 'true' : 'false');
+                    webhookPayload.append('canal_whatsapp', notifWhatsapp ? 'true' : 'false');
 
                     webhookPayload.append('adjuntos_count', files.length.toString());
                     files.forEach((file, index) => {
@@ -533,6 +539,8 @@ export default function IncidenciasPage() {
             });
             setFiles([]);
             setEnviarAviso(null);
+            setNotifEmail(false);
+            setNotifWhatsapp(false);
             fetchIncidencias();
         } catch (error: any) {
             toast.error('Error: ' + error.message);
@@ -1362,6 +1370,8 @@ export default function IncidenciasPage() {
                             setFormData({ comunidad_id: '', nombre_cliente: '', telefono: '', email: '', motivo_ticket: '', mensaje: '', recibido_por: '', gestor_asignado: '', proveedor: '', source: '', fecha_registro: new Date().toISOString().slice(0, 10) });
                             setIsManualDate(false);
                             setEnviarAviso(null);
+                            setNotifEmail(false);
+                            setNotifWhatsapp(false);
                             setFiles([]);
                             setFormErrors({});
                             setShowForm(!showForm);
@@ -1669,29 +1679,55 @@ export default function IncidenciasPage() {
                                 {/* Section: Notificación */}
                                 <div>
                                     <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Notificación</h3>
-                                    <div className="md:col-span-4 bg-neutral-50/60 border border-neutral-100 rounded-lg p-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                                    <div className="bg-neutral-50/60 border border-neutral-100 rounded-lg p-3 flex flex-col gap-3">
                                         <div>
                                             <label className="text-xs font-bold text-neutral-900 uppercase tracking-widest block">
-                                                Notificar al Propietario <span className="text-red-500">*</span>
+                                                Notificar al Propietario
                                             </label>
-                                            <p className="text-[10px] text-neutral-500 font-medium">¿Se enviará un aviso de registro al cliente?</p>
+                                            <p className="text-[10px] text-neutral-500 font-medium">Selecciona los canales por los que enviar el aviso</p>
                                         </div>
-                                        <div className="flex bg-neutral-100 rounded-lg p-1 w-fit">
-                                            <button
-                                                type="button"
-                                                onClick={() => setEnviarAviso(true)}
-                                                className={`px-6 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${enviarAviso === true ? 'bg-yellow-400 text-neutral-950 shadow-sm border border-yellow-500/20' : 'text-neutral-500 hover:text-neutral-700'}`}
-                                            >
-                                                Sí
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setEnviarAviso(false)}
-                                                className={`px-6 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${enviarAviso === false ? 'bg-yellow-400 text-neutral-950 shadow-sm border border-yellow-500/20' : 'text-neutral-500 hover:text-neutral-700'}`}
-                                            >
-                                                No
-                                            </button>
+                                        <div className="flex flex-wrap gap-3">
+                                            {/* Email */}
+                                            <label className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border cursor-pointer transition-all select-none ${notifEmail ? 'bg-yellow-50 border-yellow-400 text-neutral-900' : 'bg-white border-neutral-200 text-neutral-500 hover:border-neutral-300'}`}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={notifEmail}
+                                                    onChange={e => {
+                                                        setNotifEmail(e.target.checked);
+                                                        setEnviarAviso(e.target.checked || notifWhatsapp);
+                                                        setFormErrors(prev => ({ ...prev, canal: '', contacto: '' }));
+                                                    }}
+                                                    className="sr-only"
+                                                />
+                                                <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${notifEmail ? 'bg-yellow-400 border-yellow-400' : 'border-neutral-300'}`}>
+                                                    {notifEmail && <svg className="w-2.5 h-2.5 text-neutral-900" fill="none" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                                </div>
+                                                <span className="text-xs font-bold uppercase tracking-widest">Email</span>
+                                                {notifEmail && formData.email && <span className="text-[10px] text-neutral-500 font-medium ml-1 truncate max-w-[140px]">{formData.email}</span>}
+                                                {notifEmail && !formData.email && <span className="text-[10px] text-red-500 font-medium ml-1">sin email</span>}
+                                            </label>
+                                            {/* WhatsApp */}
+                                            <label className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border cursor-pointer transition-all select-none ${notifWhatsapp ? 'bg-yellow-50 border-yellow-400 text-neutral-900' : 'bg-white border-neutral-200 text-neutral-500 hover:border-neutral-300'}`}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={notifWhatsapp}
+                                                    onChange={e => {
+                                                        setNotifWhatsapp(e.target.checked);
+                                                        setEnviarAviso(notifEmail || e.target.checked);
+                                                        setFormErrors(prev => ({ ...prev, canal: '', contacto: '' }));
+                                                    }}
+                                                    className="sr-only"
+                                                />
+                                                <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${notifWhatsapp ? 'bg-yellow-400 border-yellow-400' : 'border-neutral-300'}`}>
+                                                    {notifWhatsapp && <svg className="w-2.5 h-2.5 text-neutral-900" fill="none" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                                </div>
+                                                <span className="text-xs font-bold uppercase tracking-widest">WhatsApp</span>
+                                                {notifWhatsapp && formData.telefono && <span className="text-[10px] text-neutral-500 font-medium ml-1">{formData.telefono}</span>}
+                                                {notifWhatsapp && !formData.telefono && <span className="text-[10px] text-red-500 font-medium ml-1">sin teléfono</span>}
+                                            </label>
                                         </div>
+                                        {formErrors.canal && <p className="flex items-center gap-1 text-[11px] font-semibold text-red-500"><span>⚠</span>{formErrors.canal}</p>}
+                                        {formErrors.contacto && <p className="flex items-center gap-1 text-[11px] font-semibold text-red-500"><span>⚠</span>{formErrors.contacto}</p>}
                                     </div>
                                 </div>
 
@@ -1732,11 +1768,11 @@ export default function IncidenciasPage() {
                                 disabled={
                                     isSubmitting ||
                                     uploading ||
-                                    (!editingId && enviarAviso === null) ||
                                     !formData.nombre_cliente ||
                                     !formData.comunidad_id ||
                                     !formData.mensaje ||
-                                    !!(enviarAviso === true && !formData.telefono && !formData.email) ||
+                                    !!(notifEmail && !formData.email) ||
+                                    !!(notifWhatsapp && !formData.telefono) ||
                                     !!(formData.telefono && !/^\d{9}$/.test(formData.telefono)) ||
                                     !!(formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
                                 }

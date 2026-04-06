@@ -51,6 +51,8 @@ export default function MorosidadPage() {
     const [exporting, setExporting] = useState(false);
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [enviarNotificacion, setEnviarNotificacion] = useState<boolean | null>(null);
+    const [notifEmail, setNotifEmail] = useState(false);
+    const [notifWhatsapp, setNotifWhatsapp] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState<number | null>(null);
 
@@ -181,8 +183,9 @@ export default function MorosidadPage() {
         if (!formData.titulo_documento?.trim()) errors.titulo_documento = 'El título del documento es obligatorio';
         if (!formData.fecha_notificacion) errors.fecha_notificacion = 'La fecha de notificación es obligatoria';
         if (!formData.importe) errors.importe = 'El importe es obligatorio';
-        if (enviarNotificacion === null) errors.enviarNotificacion = 'Debes indicar si deseas enviar notificación';
-        if (enviarNotificacion === true && !formData.telefono_deudor && !formData.email_deudor) errors.contacto = 'Para enviar aviso debes proporcionar Teléfono o Email';
+        if (enviarNotificacion === true && !notifEmail && !notifWhatsapp) errors.canal = 'Selecciona al menos un canal de notificación (Email o WhatsApp)';
+        if (enviarNotificacion === true && notifEmail && !formData.email_deudor) errors.contacto = 'Para notificar por email debes proporcionar un Email';
+        if (enviarNotificacion === true && notifWhatsapp && !formData.telefono_deudor) errors.contacto = (errors.contacto ? errors.contacto + ' y ' : '') + 'Para notificar por WhatsApp debes proporcionar un Teléfono';
         if (formData.telefono_deudor && !/^\d{9}$/.test(formData.telefono_deudor)) errors.telefono_deudor = 'El teléfono debe tener 9 dígitos numéricos';
         if (formData.email_deudor && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_deudor)) errors.email_deudor = 'El formato del email no es válido';
         if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
@@ -273,6 +276,8 @@ export default function MorosidadPage() {
                     webhookPayload.append('gestor_nombre', gestorProfile?.nombre || 'Desconocido');
                     webhookPayload.append('documento_url', docUrl || '');
                     webhookPayload.append('notificacion', enviarNotificacion ? 'true' : 'false');
+                    webhookPayload.append('canal_email', notifEmail ? 'true' : 'false');
+                    webhookPayload.append('canal_whatsapp', notifWhatsapp ? 'true' : 'false');
                     webhookPayload.append('adjuntos_count', file ? '1' : '0');
                     if (file) webhookPayload.append('adjunto', file);
                     fetch('/api/webhooks/trigger-debt', { method: 'POST', body: webhookPayload })
@@ -280,7 +285,7 @@ export default function MorosidadPage() {
 
                     setShowForm(false); setFormErrors({});
                     setFormData({ comunidad_id: '', nombre_deudor: '', apellidos: '', telefono_deudor: '', email_deudor: '', titulo_documento: '', fecha_notificacion: '', importe: '', observaciones: '', gestor: '', documento: '', aviso: null, id_email_deuda: '' });
-                    setEnviarNotificacion(null); setFile(null);
+                    setEnviarNotificacion(null); setNotifEmail(false); setNotifWhatsapp(false); setFile(null);
                     fetchMorosidad();
                 } catch (error: any) {
                     toast.error('Error: ' + error.message);
@@ -1014,43 +1019,57 @@ export default function MorosidadPage() {
                                 {/* Sección: Notificación */}
                                 <div>
                                     <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Notificación</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                        <div className="md:col-span-4 bg-white border border-neutral-200 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                            <div>
-                                                <label className="text-xs font-bold text-neutral-900 uppercase tracking-widest block">
-                                                    Notificar al Propietario <span className="text-red-500">*</span>
-                                                </label>
-                                                <p className="text-[10px] text-neutral-500 font-medium">¿Se enviará un aviso de registro al cliente?</p>
-                                            </div>
-                                            <div className="flex bg-neutral-100 rounded-lg p-1 w-fit">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => { setEnviarNotificacion(true); setFormErrors(prev => ({ ...prev, enviarNotificacion: '' })); }}
-                                                    disabled={isSubmitting}
-                                                    className={`px-6 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${enviarNotificacion === true ? 'bg-yellow-400 text-neutral-950 shadow-sm border border-yellow-500/20' : 'text-neutral-500 hover:text-neutral-700'}`}
-                                                >
-                                                    Sí
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => { setEnviarNotificacion(false); setFormErrors(prev => ({ ...prev, enviarNotificacion: '', contacto: '' })); }}
-                                                    disabled={isSubmitting}
-                                                    className={`px-6 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${enviarNotificacion === false ? 'bg-yellow-400 text-neutral-950 shadow-sm border border-yellow-500/20' : 'text-neutral-500 hover:text-neutral-700'}`}
-                                                >
-                                                    No
-                                                </button>
-                                            </div>
+                                    <div className="bg-white border border-neutral-200 rounded-xl p-4 flex flex-col gap-3">
+                                        <div>
+                                            <label className="text-xs font-bold text-neutral-900 uppercase tracking-widest block">
+                                                Notificar al Propietario
+                                            </label>
+                                            <p className="text-[10px] text-neutral-500 font-medium">Selecciona los canales por los que enviar el aviso</p>
                                         </div>
-                                        {formErrors.enviarNotificacion && (
-                                            <div className="md:col-span-4">
-                                                <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.enviarNotificacion}</p>
-                                            </div>
-                                        )}
-                                        {enviarNotificacion === true && !formData.email_deudor && !formData.telefono_deudor && (
-                                            <div className="md:col-span-4 flex justify-end">
-                                                <span className="text-[10px] font-bold text-red-500 uppercase bg-red-50 px-3 py-1 rounded-md">Debe indicar email o teléfono para notificar</span>
-                                            </div>
-                                        )}
+                                        <div className="flex flex-wrap gap-3">
+                                            {/* Email */}
+                                            <label className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border cursor-pointer transition-all select-none ${notifEmail ? 'bg-yellow-50 border-yellow-400 text-neutral-900' : 'bg-neutral-50 border-neutral-200 text-neutral-500 hover:border-neutral-300'}`}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={notifEmail}
+                                                    disabled={isSubmitting}
+                                                    onChange={e => {
+                                                        setNotifEmail(e.target.checked);
+                                                        setEnviarNotificacion(e.target.checked || notifWhatsapp || null);
+                                                        setFormErrors(prev => ({ ...prev, canal: '', contacto: '', enviarNotificacion: '' }));
+                                                    }}
+                                                    className="sr-only"
+                                                />
+                                                <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${notifEmail ? 'bg-yellow-400 border-yellow-400' : 'border-neutral-300'}`}>
+                                                    {notifEmail && <svg className="w-2.5 h-2.5 text-neutral-900" fill="none" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                                </div>
+                                                <span className="text-xs font-bold uppercase tracking-widest">Email</span>
+                                                {notifEmail && formData.email_deudor && <span className="text-[10px] text-neutral-500 font-medium ml-1 truncate max-w-[140px]">{formData.email_deudor}</span>}
+                                                {notifEmail && !formData.email_deudor && <span className="text-[10px] text-red-500 font-medium ml-1">sin email</span>}
+                                            </label>
+                                            {/* WhatsApp */}
+                                            <label className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border cursor-pointer transition-all select-none ${notifWhatsapp ? 'bg-yellow-50 border-yellow-400 text-neutral-900' : 'bg-neutral-50 border-neutral-200 text-neutral-500 hover:border-neutral-300'}`}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={notifWhatsapp}
+                                                    disabled={isSubmitting}
+                                                    onChange={e => {
+                                                        setNotifWhatsapp(e.target.checked);
+                                                        setEnviarNotificacion(notifEmail || e.target.checked || null);
+                                                        setFormErrors(prev => ({ ...prev, canal: '', contacto: '', enviarNotificacion: '' }));
+                                                    }}
+                                                    className="sr-only"
+                                                />
+                                                <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${notifWhatsapp ? 'bg-yellow-400 border-yellow-400' : 'border-neutral-300'}`}>
+                                                    {notifWhatsapp && <svg className="w-2.5 h-2.5 text-neutral-900" fill="none" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                                </div>
+                                                <span className="text-xs font-bold uppercase tracking-widest">WhatsApp</span>
+                                                {notifWhatsapp && formData.telefono_deudor && <span className="text-[10px] text-neutral-500 font-medium ml-1">{formData.telefono_deudor}</span>}
+                                                {notifWhatsapp && !formData.telefono_deudor && <span className="text-[10px] text-red-500 font-medium ml-1">sin teléfono</span>}
+                                            </label>
+                                        </div>
+                                        {formErrors.canal && <p className="flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.canal}</p>}
+                                        {formErrors.contacto && <p className="flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.contacto}</p>}
                                     </div>
                                 </div>
                             </form>
@@ -1069,15 +1088,15 @@ export default function MorosidadPage() {
                                 form="morosidad-form"
                                 type="submit"
                                 disabled={
-                                    isSubmitting || 
-                                    uploading || 
-                                    !formData.comunidad_id || 
-                                    !formData.nombre_deudor || 
+                                    isSubmitting ||
+                                    uploading ||
+                                    !formData.comunidad_id ||
+                                    !formData.nombre_deudor ||
                                     !formData.titulo_documento ||
                                     !formData.fecha_notificacion ||
                                     !formData.importe ||
-                                    enviarNotificacion === null ||
-                                    (enviarNotificacion === true && !formData.telefono_deudor && !formData.email_deudor) ||
+                                    !!(notifEmail && !formData.email_deudor) ||
+                                    !!(notifWhatsapp && !formData.telefono_deudor) ||
                                     (formData.telefono_deudor ? !/^\d{9}$/.test(formData.telefono_deudor) : false) ||
                                     (formData.email_deudor ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_deudor) : false)
                                 }
