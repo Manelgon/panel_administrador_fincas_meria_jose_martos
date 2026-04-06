@@ -183,9 +183,8 @@ export default function MorosidadPage() {
         if (!formData.titulo_documento?.trim()) errors.titulo_documento = 'El título del documento es obligatorio';
         if (!formData.fecha_notificacion) errors.fecha_notificacion = 'La fecha de notificación es obligatoria';
         if (!formData.importe) errors.importe = 'El importe es obligatorio';
-        if (enviarNotificacion === true && !notifEmail && !notifWhatsapp) errors.canal = 'Selecciona al menos un canal de notificación (Email o WhatsApp)';
-        if (enviarNotificacion === true && notifEmail && !formData.email_deudor) errors.contacto = 'Para notificar por email debes proporcionar un Email';
-        if (enviarNotificacion === true && notifWhatsapp && !formData.telefono_deudor) errors.contacto = (errors.contacto ? errors.contacto + ' y ' : '') + 'Para notificar por WhatsApp debes proporcionar un Teléfono';
+        if (notifEmail && !formData.email_deudor) errors.contacto = 'Para notificar por email debes proporcionar un Email';
+        if (notifWhatsapp && !formData.telefono_deudor) errors.contacto = (errors.contacto ? errors.contacto + ' y ' : '') + 'Para notificar por WhatsApp debes proporcionar un Teléfono';
         if (formData.telefono_deudor && !/^\d{9}$/.test(formData.telefono_deudor)) errors.telefono_deudor = 'El teléfono debe tener 9 dígitos numéricos';
         if (formData.email_deudor && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_deudor)) errors.email_deudor = 'El formato del email no es válido';
         if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
@@ -1018,57 +1017,66 @@ export default function MorosidadPage() {
 
                                 {/* Sección: Notificación */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Notificación</h3>
-                                    <div className="bg-white border border-neutral-200 rounded-xl p-4 flex flex-col gap-3">
-                                        <div>
-                                            <label className="text-xs font-bold text-neutral-900 uppercase tracking-widest block">
-                                                Notificar al Propietario
-                                            </label>
-                                            <p className="text-[10px] text-neutral-500 font-medium">Selecciona los canales por los que enviar el aviso</p>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Notificación al Propietario</h3>
+                                    <div className="flex flex-col gap-3">
+                                        {/* Canal */}
+                                        <div className="bg-neutral-50/60 border border-neutral-100 rounded-lg p-3">
+                                            <p className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest mb-2">Canal de Notificación</p>
+                                            <div className="flex flex-wrap gap-4">
+                                                <label className="flex items-center gap-2 cursor-pointer select-none">
+                                                    <div
+                                                        onClick={() => { setNotifEmail(!notifEmail); setEnviarNotificacion(!notifEmail || notifWhatsapp || null); setFormErrors(prev => ({ ...prev, canal: '', contacto: '' })); }}
+                                                        className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-all cursor-pointer ${notifEmail ? 'bg-yellow-400 border-yellow-400' : 'border-neutral-300 bg-white'}`}
+                                                    >
+                                                        {notifEmail && <svg className="w-2.5 h-2.5 text-neutral-900" fill="none" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                                    </div>
+                                                    <span className="text-xs font-medium text-neutral-700" onClick={() => { setNotifEmail(!notifEmail); setEnviarNotificacion(!notifEmail || notifWhatsapp || null); setFormErrors(prev => ({ ...prev, canal: '', contacto: '' })); }}>Notificar por Email</span>
+                                                </label>
+                                                <label className="flex items-center gap-2 cursor-pointer select-none">
+                                                    <div
+                                                        onClick={() => { setNotifWhatsapp(!notifWhatsapp); setEnviarNotificacion(notifEmail || !notifWhatsapp || null); setFormErrors(prev => ({ ...prev, canal: '', contacto: '' })); }}
+                                                        className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-all cursor-pointer ${notifWhatsapp ? 'bg-yellow-400 border-yellow-400' : 'border-neutral-300 bg-white'}`}
+                                                    >
+                                                        {notifWhatsapp && <svg className="w-2.5 h-2.5 text-neutral-900" fill="none" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                                    </div>
+                                                    <span className="text-xs font-medium text-neutral-700" onClick={() => { setNotifWhatsapp(!notifWhatsapp); setEnviarNotificacion(notifEmail || !notifWhatsapp || null); setFormErrors(prev => ({ ...prev, canal: '', contacto: '' })); }}>Notificar por WhatsApp</span>
+                                                </label>
+                                            </div>
+                                            <p className="text-[10px] text-neutral-400 mt-2">Deja ambos sin marcar si no deseas notificar al propietario.</p>
+                                            {formErrors.canal && <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.canal}</p>}
                                         </div>
-                                        <div className="flex flex-wrap gap-3">
-                                            {/* Email */}
-                                            <label className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border cursor-pointer transition-all select-none ${notifEmail ? 'bg-yellow-50 border-yellow-400 text-neutral-900' : 'bg-neutral-50 border-neutral-200 text-neutral-500 hover:border-neutral-300'}`}>
+                                        {/* Email field — solo si notifEmail */}
+                                        {notifEmail && (
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">
+                                                    Email <span className="text-red-500">*</span>
+                                                </label>
                                                 <input
-                                                    type="checkbox"
-                                                    checked={notifEmail}
-                                                    disabled={isSubmitting}
-                                                    onChange={e => {
-                                                        setNotifEmail(e.target.checked);
-                                                        setEnviarNotificacion(e.target.checked || notifWhatsapp || null);
-                                                        setFormErrors(prev => ({ ...prev, canal: '', contacto: '', enviarNotificacion: '' }));
-                                                    }}
-                                                    className="sr-only"
+                                                    type="email"
+                                                    placeholder="ejemplo@correo.com"
+                                                    className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition placeholder:text-neutral-400 ${formErrors.contacto && !formData.email_deudor ? 'border-red-400' : 'border-neutral-200'}`}
+                                                    value={formData.email_deudor}
+                                                    onChange={e => { setFormData({ ...formData, email_deudor: e.target.value }); setFormErrors(prev => ({ ...prev, email_deudor: '', contacto: '' })); }}
                                                 />
-                                                <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${notifEmail ? 'bg-yellow-400 border-yellow-400' : 'border-neutral-300'}`}>
-                                                    {notifEmail && <svg className="w-2.5 h-2.5 text-neutral-900" fill="none" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                                                </div>
-                                                <span className="text-xs font-bold uppercase tracking-widest">Email</span>
-                                                {notifEmail && formData.email_deudor && <span className="text-[10px] text-neutral-500 font-medium ml-1 truncate max-w-[140px]">{formData.email_deudor}</span>}
-                                                {notifEmail && !formData.email_deudor && <span className="text-[10px] text-amber-600 font-medium ml-1">↑ rellena email</span>}
-                                            </label>
-                                            {/* WhatsApp */}
-                                            <label className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border cursor-pointer transition-all select-none ${notifWhatsapp ? 'bg-yellow-50 border-yellow-400 text-neutral-900' : 'bg-neutral-50 border-neutral-200 text-neutral-500 hover:border-neutral-300'}`}>
+                                                {formErrors.email_deudor && <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.email_deudor}</p>}
+                                            </div>
+                                        )}
+                                        {/* Teléfono field — solo si notifWhatsapp */}
+                                        {notifWhatsapp && (
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">
+                                                    Teléfono <span className="text-red-500">*</span>
+                                                </label>
                                                 <input
-                                                    type="checkbox"
-                                                    checked={notifWhatsapp}
-                                                    disabled={isSubmitting}
-                                                    onChange={e => {
-                                                        setNotifWhatsapp(e.target.checked);
-                                                        setEnviarNotificacion(notifEmail || e.target.checked || null);
-                                                        setFormErrors(prev => ({ ...prev, canal: '', contacto: '', enviarNotificacion: '' }));
-                                                    }}
-                                                    className="sr-only"
+                                                    type="tel"
+                                                    placeholder="600000000"
+                                                    className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition placeholder:text-neutral-400 ${formErrors.contacto && !formData.telefono_deudor ? 'border-red-400' : 'border-neutral-200'}`}
+                                                    value={formData.telefono_deudor}
+                                                    onChange={e => { setFormData({ ...formData, telefono_deudor: e.target.value }); setFormErrors(prev => ({ ...prev, telefono_deudor: '', contacto: '' })); }}
                                                 />
-                                                <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${notifWhatsapp ? 'bg-yellow-400 border-yellow-400' : 'border-neutral-300'}`}>
-                                                    {notifWhatsapp && <svg className="w-2.5 h-2.5 text-neutral-900" fill="none" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                                                </div>
-                                                <span className="text-xs font-bold uppercase tracking-widest">WhatsApp</span>
-                                                {notifWhatsapp && formData.telefono_deudor && <span className="text-[10px] text-neutral-500 font-medium ml-1">{formData.telefono_deudor}</span>}
-                                                {notifWhatsapp && !formData.telefono_deudor && <span className="text-[10px] text-amber-600 font-medium ml-1">↑ rellena teléfono</span>}
-                                            </label>
-                                        </div>
-                                        {formErrors.canal && <p className="flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.canal}</p>}
+                                                {formErrors.telefono_deudor && <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.telefono_deudor}</p>}
+                                            </div>
+                                        )}
                                         {formErrors.contacto && <p className="flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.contacto}</p>}
                                     </div>
                                 </div>
@@ -1095,8 +1103,8 @@ export default function MorosidadPage() {
                                     !formData.titulo_documento ||
                                     !formData.fecha_notificacion ||
                                     !formData.importe ||
-                                    !!(notifEmail && !formData.email_deudor) ||
-                                    !!(notifWhatsapp && !formData.telefono_deudor) ||
+                                                    (notifEmail && !formData.email_deudor) ||
+                                    (notifWhatsapp && !formData.telefono_deudor) ||
                                     (formData.telefono_deudor ? !/^\d{9}$/.test(formData.telefono_deudor) : false) ||
                                     (formData.email_deudor ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_deudor) : false)
                                 }
