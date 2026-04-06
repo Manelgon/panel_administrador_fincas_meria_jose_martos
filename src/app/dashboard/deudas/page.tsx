@@ -1045,7 +1045,7 @@ export default function MorosidadPage() {
                                                 </div>
                                                 <span className="text-xs font-bold uppercase tracking-widest">Email</span>
                                                 {notifEmail && formData.email_deudor && <span className="text-[10px] text-neutral-500 font-medium ml-1 truncate max-w-[140px]">{formData.email_deudor}</span>}
-                                                {notifEmail && !formData.email_deudor && <span className="text-[10px] text-red-500 font-medium ml-1">sin email</span>}
+                                                {notifEmail && !formData.email_deudor && <span className="text-[10px] text-amber-600 font-medium ml-1">↑ rellena email</span>}
                                             </label>
                                             {/* WhatsApp */}
                                             <label className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border cursor-pointer transition-all select-none ${notifWhatsapp ? 'bg-yellow-50 border-yellow-400 text-neutral-900' : 'bg-neutral-50 border-neutral-200 text-neutral-500 hover:border-neutral-300'}`}>
@@ -1065,7 +1065,7 @@ export default function MorosidadPage() {
                                                 </div>
                                                 <span className="text-xs font-bold uppercase tracking-widest">WhatsApp</span>
                                                 {notifWhatsapp && formData.telefono_deudor && <span className="text-[10px] text-neutral-500 font-medium ml-1">{formData.telefono_deudor}</span>}
-                                                {notifWhatsapp && !formData.telefono_deudor && <span className="text-[10px] text-red-500 font-medium ml-1">sin teléfono</span>}
+                                                {notifWhatsapp && !formData.telefono_deudor && <span className="text-[10px] text-amber-600 font-medium ml-1">↑ rellena teléfono</span>}
                                             </label>
                                         </div>
                                         {formErrors.canal && <p className="flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.canal}</p>}
