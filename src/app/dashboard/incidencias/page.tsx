@@ -1774,7 +1774,7 @@ export default function IncidenciasPage() {
             {/* Export Notes Modal */}
             {portalReady && showExportModal && createPortal(
                 <div
-                    className="fixed inset-0 bg-black/50 z-[110] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm"
+                    className="fixed inset-0 bg-black/50 z-[99999] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm"
                     onClick={() => {
                         setShowExportModal(false);
                         setPendingExportParams(null);

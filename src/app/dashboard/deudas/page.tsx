@@ -1102,74 +1102,71 @@ export default function MorosidadPage() {
 
 
 
-            {(() => {
-                return (
-                    <>
-                        {/* Export Notes Modal */}
-                        {showExportModal && (
-                            <div
-                                className="fixed inset-0 bg-black/60 z-[110] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-[6px]"
-                                onClick={() => {
-                                    setShowExportModal(false);
-                                    setPendingExportParams(null);
-                                }}
-                            >
-                                <div
-                                    className="bg-white rounded-t-2xl sm:rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.22)] border border-neutral-200/70 w-full max-w-sm overflow-hidden max-h-[92dvh] flex flex-col animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200"
-                                    onClick={e => e.stopPropagation()}
-                                >
-                                    <div className="px-6 py-5 border-b border-neutral-100 bg-gradient-to-r from-neutral-50 to-white">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-xl bg-yellow-400 flex items-center justify-center shadow-sm">
-                                                <Download className="w-4.5 h-4.5 text-neutral-900" />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-base font-bold text-neutral-900">Exportar PDF</h3>
-                                                <p className="text-xs text-neutral-400">Opciones de exportación</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="p-6">
-                                        <p className="text-sm text-neutral-600 mb-6">
-                                            ¿Desea incluir las notas de gestión en el documento PDF?
-                                        </p>
-                                        <div className="flex flex-col gap-2.5">
-                                            <button
-                                                onClick={() => {
-                                                    const params = pendingExportParams;
-                                                    setPendingExportParams(null);
-                                                    setShowExportModal(false);
-                                                    if (params) { handleExport(params.type, params.ids, true); }
-                                                }}
-                                                className="w-full py-2.5 bg-yellow-400 text-neutral-950 rounded-xl font-bold text-sm hover:bg-yellow-500 transition shadow-sm"
-                                            >
-                                                Sí, incluir notas
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    const params = pendingExportParams;
-                                                    setPendingExportParams(null);
-                                                    setShowExportModal(false);
-                                                    if (params) { handleExport(params.type, params.ids, false); }
-                                                }}
-                                                className="w-full py-2.5 bg-neutral-100 text-neutral-700 rounded-xl font-bold text-sm hover:bg-neutral-200 transition"
-                                            >
-                                                No, sin notas
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setPendingExportParams(null);
-                                                    setShowExportModal(false);
-                                                }}
-                                                className="w-full py-2.5 text-neutral-400 hover:text-neutral-600 text-sm font-medium transition"
-                                            >
-                                                Cancelar
-                                            </button>
-                                        </div>
-                                    </div>
+            {portalReady && showExportModal && createPortal(
+                <div
+                    className="fixed inset-0 bg-black/60 z-[99999] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-[6px]"
+                    onClick={() => {
+                        setShowExportModal(false);
+                        setPendingExportParams(null);
+                    }}
+                >
+                    <div
+                        className="bg-white rounded-t-2xl sm:rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.22)] border border-neutral-200/70 w-full max-w-sm overflow-hidden max-h-[92dvh] flex flex-col animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="px-6 py-5 border-b border-neutral-100 bg-gradient-to-r from-neutral-50 to-white">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-yellow-400 flex items-center justify-center shadow-sm">
+                                    <Download className="w-4.5 h-4.5 text-neutral-900" />
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-bold text-neutral-900">Exportar PDF</h3>
+                                    <p className="text-xs text-neutral-400">Opciones de exportación</p>
                                 </div>
                             </div>
-                        )}
+                        </div>
+                        <div className="p-6">
+                            <p className="text-sm text-neutral-600 mb-6">
+                                ¿Desea incluir las notas de gestión en el documento PDF?
+                            </p>
+                            <div className="flex flex-col gap-2.5">
+                                <button
+                                    onClick={() => {
+                                        const params = pendingExportParams;
+                                        setPendingExportParams(null);
+                                        setShowExportModal(false);
+                                        if (params) { handleExport(params.type, params.ids, true); }
+                                    }}
+                                    className="w-full py-2.5 bg-yellow-400 text-neutral-950 rounded-xl font-bold text-sm hover:bg-yellow-500 transition shadow-sm"
+                                >
+                                    Sí, incluir notas
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const params = pendingExportParams;
+                                        setPendingExportParams(null);
+                                        setShowExportModal(false);
+                                        if (params) { handleExport(params.type, params.ids, false); }
+                                    }}
+                                    className="w-full py-2.5 bg-neutral-100 text-neutral-700 rounded-xl font-bold text-sm hover:bg-neutral-200 transition"
+                                >
+                                    No, sin notas
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setPendingExportParams(null);
+                                        setShowExportModal(false);
+                                    }}
+                                    className="w-full py-2.5 text-neutral-400 hover:text-neutral-600 text-sm font-medium transition"
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
 
                         <DataTable
                             data={filteredMorosidad}
@@ -1231,9 +1228,6 @@ export default function MorosidadPage() {
                             selectedKeys={selectedIds}
                             onSelectionChange={(keys) => setSelectedIds(keys)}
                         />
-                    </>
-                );
-            })()}
 
             {/* Delete Confirmation Modal */}
             <DeleteConfirmationModal
