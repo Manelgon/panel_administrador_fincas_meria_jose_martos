@@ -74,7 +74,7 @@ export default function NotificationsRealtime() {
             {!soundEnabled && (
                 <button
                     onClick={enableSound}
-                    className="fixed bottom-6 right-6 z-[9999] rounded-lg bg-black px-4 py-2 text-sm font-semibold text-yellow-400 shadow-lg hover:bg-neutral-900"
+                    className="fixed bottom-6 right-6 z-[9999] rounded-lg bg-black px-4 py-2 text-sm font-semibold text-[#bf4b50] shadow-lg hover:bg-neutral-900"
                 >
                     Activar sonido de avisos
                 </button>

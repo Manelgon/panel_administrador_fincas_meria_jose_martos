@@ -108,7 +108,7 @@ export default function AjustesSuplidosPage() {
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center gap-3 mb-6">
-                <DollarSign className="w-6 h-6 text-yellow-500" />
+                <DollarSign className="w-6 h-6 text-[#a03d42]" />
                 <h1 className="text-xl font-bold text-neutral-900">Ajustes de Precios · Suplidos (Admin)</h1>
             </div>
 
@@ -131,7 +131,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_1}
                                 onChange={e => handleChange('precio_1', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
                             />
                         </label>
 
@@ -143,7 +143,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_2}
                                 onChange={e => handleChange('precio_2', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
                             />
                         </label>
 
@@ -155,7 +155,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_3}
                                 onChange={e => handleChange('precio_3', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
                             />
                         </label>
                     </div>
@@ -171,7 +171,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_4}
                                 onChange={e => handleChange('precio_4', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
                             />
                         </label>
 
@@ -183,7 +183,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_5}
                                 onChange={e => handleChange('precio_5', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
                             />
                         </label>
 
@@ -195,7 +195,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_6}
                                 onChange={e => handleChange('precio_6', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
                             />
                         </label>
                     </div>

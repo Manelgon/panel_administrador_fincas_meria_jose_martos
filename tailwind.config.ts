@@ -8,13 +8,13 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: '#fbbf24',  /* yellow-400 */
+          DEFAULT: '#bf4b50',  /* yellow-400 */
           50:  '#fffbeb',
           100: '#fef3c7',
           200: '#fde68a',
           300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
+          400: '#bf4b50',
+          500: '#a03d42',
           600: '#d97706',
           700: '#b45309',
         },
@@ -47,8 +47,8 @@ const config: Config = {
       boxShadow: {
         'glass':    '0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
         'glass-lg': '0 24px 64px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.10)',
-        'amber-glow':    '0 0 20px rgba(251,191,36,0.20), 0 0 60px rgba(251,191,36,0.08)',
-        'amber-glow-lg': '0 0 40px rgba(251,191,36,0.35), 0 0 80px rgba(251,191,36,0.15)',
+        'amber-glow':    '0 0 20px rgba(191,75,80,0.20), 0 0 60px rgba(191,75,80,0.08)',
+        'amber-glow-lg': '0 0 40px rgba(191,75,80,0.35), 0 0 80px rgba(191,75,80,0.15)',
         'inner-top':     'inset 0 1px 0 rgba(255,255,255,0.12)',
       },
       animation: {
@@ -69,7 +69,7 @@ const config: Config = {
         },
         'pulse-glow': {
           '0%, 100%': { boxShadow: '0 0 20px rgba(251,191,36,0.2)' },
-          '50%':      { boxShadow: '0 0 40px rgba(251,191,36,0.4), 0 0 80px rgba(251,191,36,0.15)' },
+          '50%':      { boxShadow: '0 0 40px rgba(251,191,36,0.4), 0 0 80px rgba(191,75,80,0.15)' },
         },
         'shimmer': {
           '0%':   { backgroundPosition: '-200% center' },

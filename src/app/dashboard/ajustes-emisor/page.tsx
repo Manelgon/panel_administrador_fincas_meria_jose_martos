@@ -156,7 +156,7 @@ export default function AjustesEmisorPage() {
     return (
         <div className="max-w-3xl mx-auto space-y-6">
             <div className="flex items-center gap-3 mb-6">
-                <Building2 className="w-6 h-6 text-yellow-500" />
+                <Building2 className="w-6 h-6 text-[#a03d42]" />
                 <h1 className="text-xl font-bold text-neutral-900">Ajustes del Emisor · Admin</h1>
             </div>
 
@@ -176,7 +176,7 @@ export default function AjustesEmisorPage() {
                             value={settings.emisor_name}
                             onChange={e => setSettings(p => ({ ...p, emisor_name: e.target.value }))}
                             placeholder="SERINCOSOL S.L."
-                            className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                            className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
                         />
                     </label>
 
@@ -187,7 +187,7 @@ export default function AjustesEmisorPage() {
                             value={settings.emisor_address}
                             onChange={e => setSettings(p => ({ ...p, emisor_address: e.target.value }))}
                             placeholder="Pasaje Pezuela 1, 1º A Dcha"
-                            className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                            className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
                         />
                     </label>
 
@@ -199,7 +199,7 @@ export default function AjustesEmisorPage() {
                                 value={settings.emisor_city}
                                 onChange={e => setSettings(p => ({ ...p, emisor_city: e.target.value }))}
                                 placeholder="29010 Málaga"
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
                             />
                         </label>
                         <label className="block">
@@ -209,7 +209,7 @@ export default function AjustesEmisorPage() {
                                 value={settings.emisor_cif}
                                 onChange={e => setSettings(p => ({ ...p, emisor_cif: e.target.value }))}
                                 placeholder="B09915075"
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
                             />
                         </label>
                     </div>
@@ -313,7 +313,7 @@ function ImageUploadCard({ label, hint, url, uploading, isDefault, wide, inputRe
             </div>
             <div className={`border-2 border-dashed border-neutral-200 rounded-xl p-4 flex flex-col items-center gap-3 justify-center relative ${wide ? "min-h-[100px]" : "min-h-[140px]"}`}>
                 {uploading ? (
-                    <Loader2 className="w-8 h-8 animate-spin text-yellow-500" />
+                    <Loader2 className="w-8 h-8 animate-spin text-[#a03d42]" />
                 ) : url ? (
                     <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -118,9 +118,9 @@ export default function LoginPage() {
             {loading && createPortal(
                 <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-neutral-900/80 backdrop-blur-md">
                     <div className="relative w-24 h-24 mb-6">
-                        <div className="absolute inset-0 border-4 border-yellow-400/20 rounded-full" />
-                        <div className="absolute inset-0 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
-                        <LogIn className="absolute inset-0 m-auto w-10 h-10 text-yellow-400 animate-pulse" />
+                        <div className="absolute inset-0 border-4 border-[#bf4b50]/20 rounded-full" />
+                        <div className="absolute inset-0 border-4 border-[#bf4b50] border-t-transparent rounded-full animate-spin" />
+                        <LogIn className="absolute inset-0 m-auto w-10 h-10 text-[#bf4b50] animate-pulse" />
                     </div>
                     <div className="text-center space-y-2">
                         <h3 className="text-xl font-bold text-white tracking-tight">Iniciando sesión</h3>
@@ -195,7 +195,7 @@ export default function LoginPage() {
                                     boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.04)',
                                 }}
                                 onFocus={e => {
-                                    e.currentTarget.style.border = '1px solid #fbbf24';
+                                    e.currentTarget.style.border = '1px solid #bf4b50';
                                     e.currentTarget.style.boxShadow = '0 0 0 3px rgba(251,191,36,0.15), inset 0 1px 2px rgba(0,0,0,0.04)';
                                 }}
                                 onBlur={e => {
@@ -234,7 +234,7 @@ export default function LoginPage() {
                                     boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.04)',
                                 }}
                                 onFocus={e => {
-                                    e.currentTarget.style.border = '1px solid #fbbf24';
+                                    e.currentTarget.style.border = '1px solid #bf4b50';
                                     e.currentTarget.style.boxShadow = '0 0 0 3px rgba(251,191,36,0.15), inset 0 1px 2px rgba(0,0,0,0.04)';
                                 }}
                                 onBlur={e => {
@@ -268,8 +268,8 @@ export default function LoginPage() {
                             onChange={(e) => setRememberMe(e.target.checked)}
                             className="w-4 h-4 rounded cursor-pointer appearance-none transition-all"
                             style={{
-                                background: rememberMe ? '#fbbf24' : '#f8fafc',
-                                border: `1px solid ${rememberMe ? '#fbbf24' : '#d1d5db'}`,
+                                background: rememberMe ? '#bf4b50' : '#f8fafc',
+                                border: `1px solid ${rememberMe ? '#bf4b50' : '#d1d5db'}`,
                                 boxShadow: rememberMe ? '0 0 0 3px rgba(251,191,36,0.20)' : 'none',
                                 backgroundImage: rememberMe
                                     ? `url("data:image/svg+xml,%3Csvg viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l3 3 5-6' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`
@@ -293,18 +293,18 @@ export default function LoginPage() {
                         disabled={loading}
                         className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         style={{
-                            background: loading ? '#f59e0b' : '#fbbf24',
+                            background: loading ? '#a03d42' : '#bf4b50',
                             color: '#1c1917',
                             boxShadow: loading ? 'none' : '0 1px 3px rgba(0,0,0,0.12), 0 4px 16px rgba(251,191,36,0.35)',
                         }}
                         onMouseEnter={e => {
                             if (!loading) {
-                                (e.currentTarget as HTMLElement).style.background = '#f59e0b';
+                                (e.currentTarget as HTMLElement).style.background = '#a03d42';
                                 (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 6px rgba(0,0,0,0.15), 0 6px 24px rgba(251,191,36,0.45)';
                             }
                         }}
                         onMouseLeave={e => {
-                            (e.currentTarget as HTMLElement).style.background = '#fbbf24';
+                            (e.currentTarget as HTMLElement).style.background = '#bf4b50';
                             (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.12), 0 4px 16px rgba(251,191,36,0.35)';
                         }}
                     >
@@ -326,7 +326,7 @@ export default function LoginPage() {
                 <p className="mt-6 text-center text-xs text-gray-400">
                     ¿Sin acceso?{' '}
                     <span
-                        className="cursor-default text-amber-500"
+                        className="cursor-default text-[#a03d42]"
                         title="Contacta con el administrador"
                     >
                         Contacta con soporte

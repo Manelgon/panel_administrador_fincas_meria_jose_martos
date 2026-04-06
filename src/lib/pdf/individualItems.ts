@@ -53,7 +53,7 @@ function wrapText(text: string, maxWidth: number, font: any, size: number): stri
     return lines;
 }
 
-// Helper for yellow blocks (consistent with Suplidos/Facturas)
+// Helper for red blocks (consistent with Suplidos/Facturas)
 const drawYellowBlock = (page: any, x: number, y: number, w: number, h: number, title: string, value: string, font: any, bold: any) => {
     page.drawRectangle({ x, y, width: w, height: h, color: rgb(0.98, 0.8, 0.08) });
     page.drawText(title, { x: x + 5, y: y + h - 12, size: 7, font: bold, color: rgb(0, 0, 0) });

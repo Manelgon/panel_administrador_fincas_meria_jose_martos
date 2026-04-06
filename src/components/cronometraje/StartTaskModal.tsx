@@ -114,7 +114,7 @@ export default function StartTaskModal({ onClose, onStarted }: StartTaskModalPro
                 <div className="p-4 sm:px-5 sm:py-4 overflow-y-auto custom-scrollbar flex-1">
                     <div className="space-y-4">
                         <div>
-                            <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Datos de la Tarea</h3>
+                            <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Datos de la Tarea</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         {/* Asignación */}
                         <div className="space-y-4">
@@ -150,7 +150,7 @@ export default function StartTaskModal({ onClose, onStarted }: StartTaskModalPro
                                 {tipoTarea === 'Otros' && (
                                     <input
                                         type="text"
-                                        className={`mt-2 w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition ${formErrors.otroTexto ? 'border-red-400' : 'border-neutral-200'}`}
+                                        className={`mt-2 w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition ${formErrors.otroTexto ? 'border-red-400' : 'border-neutral-200'}`}
                                         placeholder="Describe el tipo de tarea..."
                                         value={otroTexto}
                                         onChange={(e) => { setOtroTexto(e.target.value); setFormErrors(prev => ({ ...prev, otroTexto: '' })); }}
@@ -167,7 +167,7 @@ export default function StartTaskModal({ onClose, onStarted }: StartTaskModalPro
                                 Nota <span className="text-neutral-400 font-normal normal-case tracking-normal">(opcional)</span>
                             </label>
                             <textarea
-                                className="w-full flex-1 rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition resize-none"
+                                className="w-full flex-1 rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition resize-none"
                                 placeholder="Describe brevemente la tarea..."
                                 value={nota}
                                 onChange={(e) => setNota(e.target.value)}
@@ -189,7 +189,7 @@ export default function StartTaskModal({ onClose, onStarted }: StartTaskModalPro
                     <button
                         onClick={handleStart}
                         disabled={loading || !selectedCommunity}
-                        className="px-6 py-2 text-xs font-bold text-neutral-950 bg-yellow-400 hover:bg-yellow-500 rounded-lg transition shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2 text-xs font-bold text-neutral-950 bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? (
                             <div className="w-3.5 h-3.5 border-2 border-neutral-400/30 border-t-neutral-900 rounded-full animate-spin" />

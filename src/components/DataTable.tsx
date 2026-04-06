@@ -317,7 +317,7 @@ export default function DataTable<T extends Record<string, any>>({
                             placeholder="Buscar..."
                             value={searchTerm}
                             onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                            className="w-full pl-9 pr-3 py-2 border border-neutral-200 rounded-lg bg-white text-neutral-900 text-sm focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none transition-shadow"
+                            className="w-full pl-9 pr-3 py-2 border border-neutral-200 rounded-lg bg-white text-neutral-900 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:border-[#bf4b50] outline-none transition-shadow"
                         />
                     </div>
                     {/* Selectores: en desktop junto al buscador, en móvil se mueven abajo */}
@@ -358,7 +358,7 @@ export default function DataTable<T extends Record<string, any>>({
                                         type="checkbox"
                                         checked={visibleColumns.has(col.key)}
                                         onChange={() => toggleColumn(col.key)}
-                                        className="rounded border-neutral-300 text-yellow-500 focus:ring-yellow-400"
+                                        className="rounded border-neutral-300 text-[#a03d42] focus:ring-[#bf4b50]"
                                     />
                                     <span className="text-xs font-medium text-neutral-700">{col.label}</span>
                                 </label>
@@ -381,7 +381,7 @@ export default function DataTable<T extends Record<string, any>>({
                                             checked={isAllSelected}
                                             ref={input => { if (input) input.indeterminate = isIndeterminate; }}
                                             onChange={handleSelectAll}
-                                            className="rounded border-neutral-300 text-yellow-500 focus:ring-yellow-400"
+                                            className="rounded border-neutral-300 text-[#a03d42] focus:ring-[#bf4b50]"
                                         />
                                     </th>
                                 )}
@@ -400,8 +400,8 @@ export default function DataTable<T extends Record<string, any>>({
                                                 <span className="text-neutral-300">
                                                     {sortColumn === col.key
                                                         ? sortDirection === 'asc'
-                                                            ? <ChevronUp className="w-3.5 h-3.5 text-yellow-500" />
-                                                            : <ChevronDown className="w-3.5 h-3.5 text-yellow-500" />
+                                                            ? <ChevronUp className="w-3.5 h-3.5 text-[#a03d42]" />
+                                                            : <ChevronDown className="w-3.5 h-3.5 text-[#a03d42]" />
                                                         : <ChevronUp className="w-3.5 h-3.5 opacity-30" />
                                                     }
                                                 </span>
@@ -416,7 +416,7 @@ export default function DataTable<T extends Record<string, any>>({
                                 <tr>
                                     <td colSpan={visibleCols.length + (selectable ? 1 : 0)} className="px-4 py-12 text-center">
                                         <div className="flex flex-col items-center gap-3 text-neutral-400">
-                                            <Loader2 className="w-6 h-6 animate-spin text-yellow-400" />
+                                            <Loader2 className="w-6 h-6 animate-spin text-[#bf4b50]" />
                                             <span className="text-sm font-medium">Cargando datos...</span>
                                         </div>
                                     </td>
@@ -449,7 +449,7 @@ export default function DataTable<T extends Record<string, any>>({
                                                         type="checkbox"
                                                         checked={isSelected}
                                                         onChange={() => handleSelectRow(key as any)}
-                                                        className="rounded border-neutral-300 text-yellow-500 focus:ring-yellow-400"
+                                                        className="rounded border-neutral-300 text-[#a03d42] focus:ring-[#bf4b50]"
                                                     />
                                                 </td>
                                             )}
@@ -480,7 +480,7 @@ export default function DataTable<T extends Record<string, any>>({
                         <select
                             value={pageSize}
                             onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-                            className="px-2 py-1.5 border border-neutral-200 rounded-lg bg-white text-neutral-700 text-xs focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none"
+                            className="px-2 py-1.5 border border-neutral-200 rounded-lg bg-white text-neutral-700 text-xs focus:ring-2 focus:ring-[#bf4b50] focus:border-[#bf4b50] outline-none"
                         >
                             <option value={10}>10</option>
                             <option value={20}>20</option>

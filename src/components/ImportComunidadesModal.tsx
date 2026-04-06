@@ -220,7 +220,7 @@ export default function ImportComunidadesModal({ onClose, onImported }: ImportCo
                         {/* Drop Zone */}
                         {!fileName && (
                             <label
-                                className={`block border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${dragOver ? 'border-yellow-400 bg-yellow-50' : 'border-neutral-200 hover:border-yellow-400 hover:bg-neutral-50'}`}
+                                className={`block border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${dragOver ? 'border-[#bf4b50] bg-yellow-50' : 'border-neutral-200 hover:border-[#bf4b50] hover:bg-neutral-50'}`}
                                 onDragOver={e => { e.preventDefault(); setDragOver(true); }}
                                 onDragLeave={() => setDragOver(false)}
                                 onDrop={handleDrop}
@@ -277,7 +277,7 @@ export default function ImportComunidadesModal({ onClose, onImported }: ImportCo
 
                                 {/* Table Preview */}
                                 <div className="-section">
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-2 border-b border-yellow-400">
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-2 border-b border-[#bf4b50]">
                                         Vista previa
                                     </h3>
                                     <div className="overflow-auto max-h-[340px] rounded-lg border border-neutral-200">
@@ -351,7 +351,7 @@ export default function ImportComunidadesModal({ onClose, onImported }: ImportCo
                         <button
                             onClick={handleImport}
                             disabled={importing}
-                            className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-neutral-950 bg-yellow-400 hover:bg-yellow-500 rounded-lg transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-neutral-950 bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                             {importing ? (
                                 <>

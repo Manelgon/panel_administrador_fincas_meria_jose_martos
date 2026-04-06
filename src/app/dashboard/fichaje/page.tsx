@@ -224,19 +224,19 @@ export default function FichajePage() {
             <div className="flex border-b border-gray-200">
                 <button
                     onClick={() => setActiveTab('daily')}
-                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'daily' ? 'border-yellow-400 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'daily' ? 'border-[#bf4b50] text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     Fichaje Diario
                 </button>
                 <button
                     onClick={() => setActiveTab('resume')}
-                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'resume' ? 'border-yellow-400 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'resume' ? 'border-[#bf4b50] text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     Resumen Mensual
                 </button>
                 <button
                     onClick={() => setActiveTab('vacations')}
-                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'vacations' ? 'border-yellow-400 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'vacations' ? 'border-[#bf4b50] text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     Vacaciones
                 </button>
@@ -290,7 +290,7 @@ export default function FichajePage() {
                                 </div>
                                 <button
                                     onClick={handleClockIn}
-                                    className="w-full bg-yellow-400 hover:bg-yellow-500 text-neutral-950 px-4 py-3 rounded-md flex items-center justify-center gap-2 transition font-semibold"
+                                    className="w-full bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-4 py-3 rounded-md flex items-center justify-center gap-2 transition font-semibold"
                                 >
                                     <Play className="w-5 h-5" />
                                     Fichar Entrada

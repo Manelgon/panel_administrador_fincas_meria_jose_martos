@@ -140,7 +140,7 @@ export default function VacationDashboard() {
                 >
                     <span className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full flex-shrink-0 ${
                         todayFlag
-                            ? 'bg-yellow-400 text-neutral-950'
+                            ? 'bg-[#bf4b50] text-neutral-950'
                             : numColor
                     }`}>
                         {i}
@@ -169,7 +169,7 @@ export default function VacationDashboard() {
         {
             label: "Vacaciones Anuales",
             val: status?.balance.vacaciones,
-            barColor: "bg-yellow-400",
+            barColor: "bg-[#bf4b50]",
         },
         {
             label: "Días Retribuidos",
@@ -193,7 +193,7 @@ export default function VacationDashboard() {
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 px-4 py-2 rounded-xl font-bold text-sm transition shadow-sm"
+                    className="flex items-center gap-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-4 py-2 rounded-xl font-bold text-sm transition shadow-sm"
                 >
                     <Plus className="w-4 h-4" />
                     Solicitar días
@@ -228,7 +228,7 @@ export default function VacationDashboard() {
                             <div className="flex items-center gap-3 text-[10px] font-medium">
                                 <span className="text-neutral-400">{used} usados</span>
                                 {pending > 0 && (
-                                    <span className="text-amber-500">{pending} pendiente{pending !== 1 ? 's' : ''}</span>
+                                    <span className="text-[#a03d42]">{pending} pendiente{pending !== 1 ? 's' : ''}</span>
                                 )}
                             </div>
                         </div>
@@ -242,7 +242,7 @@ export default function VacationDashboard() {
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-4">
                         <h3 className="text-sm font-bold text-neutral-700 flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-yellow-500" />
+                            <Calendar className="w-4 h-4 text-[#a03d42]" />
                             Disponibilidad del equipo
                         </h3>
                         <div className="hidden md:flex items-center gap-3 text-[10px] text-neutral-400">
@@ -312,7 +312,7 @@ export default function VacationDashboard() {
                             const statusConfig = {
                                 APROBADA: { icon: CheckCircle2, iconColor: 'text-green-500', bg: 'bg-green-100', badge: 'bg-green-100 text-green-700', label: 'Aprobada' },
                                 RECHAZADA: { icon: XCircle, iconColor: 'text-red-500', bg: 'bg-red-100', badge: 'bg-red-100 text-red-700', label: 'Rechazada' },
-                                PENDIENTE: { icon: AlertCircle, iconColor: 'text-amber-500', bg: 'bg-amber-100', badge: 'bg-amber-100 text-amber-700', label: 'Pendiente' },
+                                PENDIENTE: { icon: AlertCircle, iconColor: 'text-[#a03d42]', bg: 'bg-amber-100', badge: 'bg-amber-100 text-amber-700', label: 'Pendiente' },
                             }[req.status as string] || {
                                 icon: AlertCircle, iconColor: 'text-neutral-400', bg: 'bg-neutral-100', badge: 'bg-neutral-100 text-neutral-600', label: req.status
                             };

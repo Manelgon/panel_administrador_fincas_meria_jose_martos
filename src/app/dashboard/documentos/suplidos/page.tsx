@@ -54,7 +54,7 @@ export default function SuplidosPage() {
                     </Link>
                     <button
                         onClick={() => setShowForm(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-md text-sm font-bold transition shadow-sm hover:shadow-lg"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-md text-sm font-bold transition shadow-sm hover:shadow-lg"
                     >
                         <Plus className="w-4 h-4" />
                         Nuevo Suplido
@@ -74,7 +74,7 @@ export default function SuplidosPage() {
                     </p>
                     <button
                         onClick={() => setShowForm(true)}
-                        className="bg-yellow-400 hover:bg-yellow-500 text-neutral-950 px-6 py-3 rounded-lg font-bold transition shadow-md hover:shadow-xl flex items-center gap-2"
+                        className="bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-6 py-3 rounded-lg font-bold transition shadow-md hover:shadow-xl flex items-center gap-2"
                     >
                         <Plus className="w-5 h-5" />
                         Crear Documento
@@ -94,7 +94,7 @@ export default function SuplidosPage() {
                         {/* Header */}
                         <div className="px-5 py-3 border-b border-neutral-100 flex items-center justify-between bg-gradient-to-r from-neutral-50 to-white flex-shrink-0 rounded-t-2xl">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-yellow-400 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-lg bg-[#bf4b50] flex items-center justify-center">
                                     <FileText className="w-4 h-4 text-neutral-900" />
                                 </div>
                                 <h2 className="text-sm font-bold text-neutral-900 uppercase tracking-wide">Registrar Suplido</h2>

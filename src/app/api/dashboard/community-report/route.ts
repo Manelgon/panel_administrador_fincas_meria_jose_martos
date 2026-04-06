@@ -9,9 +9,9 @@ import { getEmisor } from "@/lib/getEmisor";
 
 // Constants
 const A4 = { w: 595.28, h: 841.89 };
-// App-matched color palette: neutral-900 headers, yellow-400 accents
+// App-matched color palette: neutral-900 headers, [#bf4b50] accents
 const BRAND_DARK = rgb(0.09, 0.09, 0.11);    // neutral-900
-const BRAND_YELLOW = rgb(0.98, 0.84, 0.40);  // yellow-400
+const BRAND_YELLOW = rgb(0.98, 0.84, 0.40);  // [#bf4b50]
 const BRAND_YELLOW_LIGHT = rgb(0.99, 0.95, 0.84); // yellow-50
 const BORDER = rgb(0.90, 0.90, 0.90);         // neutral-200
 const BLACK = rgb(0, 0, 0);

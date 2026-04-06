@@ -6,8 +6,8 @@ interface KPICardProps {
     value: string | number;
     icon: LucideIcon;
     href?: string;
-    color?: string;       // Tailwind border-color class, e.g. 'border-yellow-400'
-    iconColor?: string;   // Tailwind text-color class for icon, e.g. 'text-yellow-500'
+    color?: string;       // Tailwind border-color class, e.g. 'border-[#bf4b50]'
+    iconColor?: string;   // Tailwind text-color class for icon, e.g. 'text-[#a03d42]'
     trend?: string;       // e.g. '+12% vs mes anterior'
     trendUp?: boolean;    // true = green, false = red, undefined = neutral
 }
@@ -17,8 +17,8 @@ export default function KPICard({
     value,
     icon: Icon,
     href,
-    color = 'border-yellow-400',
-    iconColor = 'text-yellow-500',
+    color = 'border-[#bf4b50]',
+    iconColor = 'text-[#a03d42]',
     trend,
     trendUp,
 }: KPICardProps) {
@@ -58,7 +58,7 @@ export default function KPICard({
 
     if (href) {
         return (
-            <Link href={href} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400/60 rounded-xl">
+            <Link href={href} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#bf4b50]/60 rounded-xl">
                 {Content}
             </Link>
         );

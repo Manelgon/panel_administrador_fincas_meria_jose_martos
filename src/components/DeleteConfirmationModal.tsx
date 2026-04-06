@@ -91,7 +91,7 @@ export default function DeleteConfirmationModal({
                             type="email"
                             required
                             disabled={isDeleting}
-                            className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none transition-all text-sm"
+                            className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-[#bf4b50] focus:border-[#bf4b50] outline-none transition-all text-sm"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             placeholder="admin@ejemplo.com"
@@ -106,7 +106,7 @@ export default function DeleteConfirmationModal({
                             type="password"
                             required
                             disabled={isDeleting}
-                            className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none transition-all text-sm"
+                            className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-[#bf4b50] focus:border-[#bf4b50] outline-none transition-all text-sm"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                             placeholder="••••••••"

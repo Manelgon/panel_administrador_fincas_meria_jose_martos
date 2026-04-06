@@ -259,7 +259,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
             <div className="flex-grow overflow-y-auto p-4 sm:px-5 sm:py-4 custom-scrollbar">
                 <div className="space-y-4 max-w-4xl mx-auto">
                     <div className="space-y-4">
-                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Datos del Declarante</h3>
+                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Datos del Declarante</h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                             <div>
@@ -293,7 +293,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
                     </div>
 
                     <div className="space-y-4">
-                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Datos Económicos</h3>
+                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Datos Económicos</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
                             <Field label="DIAS" value={values.DIAS} onChange={(v) => handleChange("DIAS", v)} type="number" />
                             <Field label="%" value={values["%"]} onChange={(v) => handleChange("%", v)} type="number" />
@@ -304,7 +304,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
                     </div>
 
                     <div className="space-y-4">
-                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Claves Fiscales</h3>
+                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Claves Fiscales</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                             <Field label="Clave 1" value={values["Clave 1"]} onChange={(v) => handleChange("Clave 1", v)} />
                             <Field label="Subclave" value={values.Subclave} onChange={(v) => handleChange("Subclave", v)} />
@@ -330,7 +330,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
                     type="button"
                     onClick={generate}
                     disabled={status === "generating"}
-                    className="w-full sm:w-auto h-12 px-8 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
+                    className="w-full sm:w-auto h-12 px-8 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
                 >
                     {status === "generating" ? (
                         <>
@@ -377,7 +377,7 @@ function Field({ label, value, onChange, type = "text", className = "" }: { labe
                 type={type}
                 value={value ?? ""}
                 onChange={(e) => onChange(e.target.value)}
-                className={`w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition ${className}`}
+                className={`w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition ${className}`}
             />
         </div>
     );

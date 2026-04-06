@@ -400,19 +400,19 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                 <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
                     <Link
                         href="/dashboard/documentos/suplidos/historial"
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'suplidos' ? 'bg-yellow-400 text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'suplidos' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
                         Suplidos
                     </Link>
                     <Link
                         href="/dashboard/documentos/certificado-renta/historial"
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'certificado-renta' ? 'bg-yellow-400 text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'certificado-renta' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
                         Certif. Renta
                     </Link>
                     <Link
                         href="/dashboard/documentos/varios/historial"
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'varios' ? 'bg-yellow-400 text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'varios' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
                         Certif. Estar al Día y Factura
                     </Link>
@@ -516,7 +516,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
 
                             {/* Body */}
                             <div className="p-5 overflow-y-auto flex-1">
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">
                                     Datos del Documento
                                 </h3>
                                 <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
@@ -557,7 +557,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                                     </button>
                                     <button
                                         onClick={() => setDetailModalOpen(false)}
-                                        className="px-4 py-2 bg-yellow-400 text-neutral-950 rounded-lg text-sm font-semibold hover:bg-yellow-500 transition"
+                                        className="px-4 py-2 bg-[#bf4b50] text-neutral-950 rounded-lg text-sm font-semibold hover:bg-[#a03d42] transition"
                                     >
                                         Cerrar
                                     </button>
@@ -658,7 +658,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                                     type="email"
                                     required
                                     autoComplete="off"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-yellow-400 outline-none"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-[#bf4b50] outline-none"
                                     value={targetEmail}
                                     onChange={e => setTargetEmail(e.target.value)}
                                 />
@@ -674,7 +674,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                                 <button
                                     type="submit"
                                     disabled={isSending}
-                                    className="px-3 py-2 text-sm bg-yellow-400 text-neutral-950 font-medium rounded-md hover:bg-yellow-500 disabled:opacity-50 flex items-center gap-2"
+                                    className="px-3 py-2 text-sm bg-[#bf4b50] text-neutral-950 font-medium rounded-md hover:bg-[#a03d42] disabled:opacity-50 flex items-center gap-2"
                                 >
                                     {isSending ? "Enviando..." : <><Send className="w-3 h-3" /> Enviar</>}
                                 </button>

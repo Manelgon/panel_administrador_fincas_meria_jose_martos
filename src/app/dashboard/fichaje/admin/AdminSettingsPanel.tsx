@@ -125,7 +125,7 @@ export default function AdminSettingsPanel({ adminId }: AdminSettingsProps) {
                                 min="1"
                                 value={policy.max_approved_per_day ?? ""}
                                 onChange={(e) => setPolicy({ ...policy, max_approved_per_day: e.target.value === "" ? "" : parseInt(e.target.value) })}
-                                className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-yellow-400"
+                                className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#bf4b50]"
                             />
                             <p className="text-[10px] text-neutral-400 mt-1 italic">Número máximo de empleados que pueden estar fuera el mismo día.</p>
                         </div>
@@ -136,7 +136,7 @@ export default function AdminSettingsPanel({ adminId }: AdminSettingsProps) {
                                     type="checkbox"
                                     checked={policy.count_weekends}
                                     onChange={(e) => setPolicy({ ...policy, count_weekends: e.target.checked })}
-                                    className="w-5 h-5 text-yellow-500 rounded border-neutral-300 focus:ring-yellow-500"
+                                    className="w-5 h-5 text-[#a03d42] rounded border-neutral-300 focus:ring-[#a03d42]"
                                 />
                                 <span className="text-sm font-semibold text-neutral-700">Contar Fines de Semana</span>
                             </label>
@@ -145,7 +145,7 @@ export default function AdminSettingsPanel({ adminId }: AdminSettingsProps) {
                                     type="checkbox"
                                     checked={policy.count_holidays}
                                     onChange={(e) => setPolicy({ ...policy, count_holidays: e.target.checked })}
-                                    className="w-5 h-5 text-yellow-500 rounded border-neutral-300 focus:ring-yellow-500"
+                                    className="w-5 h-5 text-[#a03d42] rounded border-neutral-300 focus:ring-[#a03d42]"
                                 />
                                 <span className="text-sm font-semibold text-neutral-700">Contar Festivos Nacionales</span>
                             </label>
@@ -194,7 +194,7 @@ export default function AdminSettingsPanel({ adminId }: AdminSettingsProps) {
                     />
                     <button
                         onClick={handleAddBlockedDate}
-                        className="w-full py-2 bg-yellow-400 text-neutral-900 rounded-lg font-bold text-xs hover:bg-yellow-500 transition flex items-center justify-center gap-1"
+                        className="w-full py-2 bg-[#bf4b50] text-neutral-900 rounded-lg font-bold text-xs hover:bg-[#a03d42] transition flex items-center justify-center gap-1"
                     >
                         <Plus className="w-4 h-4" /> Añadir Restricción
                     </button>

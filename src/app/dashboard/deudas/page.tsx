@@ -579,7 +579,7 @@ export default function MorosidadPage() {
             label: 'Código',
             render: (row) => (
                 <div className="flex items-start gap-3">
-                    <span className={`mt-1 h-3.5 w-1.5 rounded-full ${row.estado === 'Pendiente' ? 'bg-yellow-400' : 'bg-neutral-900'}`} />
+                    <span className={`mt-1 h-3.5 w-1.5 rounded-full ${row.estado === 'Pendiente' ? 'bg-[#bf4b50]' : 'bg-neutral-900'}`} />
                     <span className="font-semibold">{row.comunidades?.codigo || '-'}</span>
                 </div>
             ),
@@ -759,7 +759,7 @@ export default function MorosidadPage() {
                             });
                         }
                     }}
-                    className="bg-yellow-400 hover:bg-yellow-500 text-neutral-950 px-3 py-2 rounded-md flex items-center gap-1.5 transition font-semibold text-sm flex-shrink-0"
+                    className="bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-3 py-2 rounded-md flex items-center gap-1.5 transition font-semibold text-sm flex-shrink-0"
                 >
                     <Plus className={`w-4 h-4 flex-shrink-0 ${showForm ? 'rotate-45' : ''} transition-transform`} />
                     <span className="hidden sm:inline">{showForm ? 'Cancelar' : 'Registrar Deuda'}</span>
@@ -772,7 +772,7 @@ export default function MorosidadPage() {
                 <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
                     <button
                         onClick={() => setFilterEstado('pendiente')}
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'pendiente' ? 'bg-yellow-400 text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'pendiente' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
                         Pendientes
                     </button>
@@ -846,7 +846,7 @@ export default function MorosidadPage() {
 
                                 {/* Sección: Identificación del Deudor */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Identificación del Deudor</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Identificación del Deudor</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                         <div className="md:col-span-4">
                                             <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2 block">
@@ -872,7 +872,7 @@ export default function MorosidadPage() {
                                             <input
                                                 type="text"
                                                 placeholder="Juan"
-                                                className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400/20 focus:border-amber-400 transition-all placeholder:text-neutral-400 ${formErrors.nombre_deudor ? 'border-red-400' : 'border-neutral-200'}`}
+                                                className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50] transition-all placeholder:text-neutral-400 ${formErrors.nombre_deudor ? 'border-red-400' : 'border-neutral-200'}`}
                                                 value={formData.nombre_deudor}
                                                 onChange={e => { setFormData({ ...formData, nombre_deudor: e.target.value }); setFormErrors(prev => ({ ...prev, nombre_deudor: '' })); }}
                                                 disabled={isSubmitting}
@@ -886,7 +886,7 @@ export default function MorosidadPage() {
                                             <input
                                                 type="text"
                                                 placeholder="García Pérez"
-                                                className="w-full bg-white border border-neutral-200 text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400/20 focus:border-amber-400 transition-all placeholder:text-neutral-400"
+                                                className="w-full bg-white border border-neutral-200 text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50] transition-all placeholder:text-neutral-400"
                                                 value={formData.apellidos}
                                                 onChange={e => setFormData({ ...formData, apellidos: e.target.value })}
                                                 disabled={isSubmitting}
@@ -900,7 +900,7 @@ export default function MorosidadPage() {
                                             <input
                                                 type="tel"
                                                 placeholder="600000000"
-                                                className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.telefono_deudor || formErrors.contacto ? 'border-red-400 focus:ring-red-400/20 focus:border-red-400' : enviarNotificacion && !formData.telefono_deudor && !formData.email_deudor ? 'border-red-300 focus:ring-red-400/20 focus:border-red-400' : 'border-neutral-200 focus:ring-amber-400/20 focus:border-amber-400'}`}
+                                                className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.telefono_deudor || formErrors.contacto ? 'border-red-400 focus:ring-red-400/20 focus:border-red-400' : enviarNotificacion && !formData.telefono_deudor && !formData.email_deudor ? 'border-red-300 focus:ring-red-400/20 focus:border-red-400' : 'border-neutral-200 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50]'}`}
                                                 value={formData.telefono_deudor}
                                                 onChange={e => { setFormData({ ...formData, telefono_deudor: e.target.value }); setFormErrors(prev => ({ ...prev, telefono_deudor: '', contacto: '' })); }}
                                                 disabled={isSubmitting}
@@ -915,7 +915,7 @@ export default function MorosidadPage() {
                                             <input
                                                 type="email"
                                                 placeholder="ejemplo@correo.com"
-                                                className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.email_deudor || formErrors.contacto ? 'border-red-400 focus:ring-red-400/20 focus:border-red-400' : enviarNotificacion && !formData.email_deudor && !formData.telefono_deudor ? 'border-red-300 focus:ring-red-400/20 focus:border-red-400' : 'border-neutral-200 focus:ring-amber-400/20 focus:border-amber-400'}`}
+                                                className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.email_deudor || formErrors.contacto ? 'border-red-400 focus:ring-red-400/20 focus:border-red-400' : enviarNotificacion && !formData.email_deudor && !formData.telefono_deudor ? 'border-red-300 focus:ring-red-400/20 focus:border-red-400' : 'border-neutral-200 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50]'}`}
                                                 value={formData.email_deudor}
                                                 onChange={e => { setFormData({ ...formData, email_deudor: e.target.value }); setFormErrors(prev => ({ ...prev, email_deudor: '', contacto: '' })); }}
                                                 disabled={isSubmitting}
@@ -927,7 +927,7 @@ export default function MorosidadPage() {
 
                                 {/* Sección: Datos de la Deuda */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Datos de la Deuda</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Datos de la Deuda</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                         <div className="md:col-span-4">
                                             <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2 block">
@@ -948,7 +948,7 @@ export default function MorosidadPage() {
                                             </label>
                                             <input
                                                 type="date"
-                                                className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400/20 focus:border-amber-400 transition-all ${formErrors.fecha_notificacion ? 'border-red-400' : 'border-neutral-200'}`}
+                                                className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50] transition-all ${formErrors.fecha_notificacion ? 'border-red-400' : 'border-neutral-200'}`}
                                                 value={formData.fecha_notificacion}
                                                 onChange={e => { setFormData({ ...formData, fecha_notificacion: e.target.value }); setFormErrors(prev => ({ ...prev, fecha_notificacion: '' })); }}
                                                 disabled={isSubmitting}
@@ -963,7 +963,7 @@ export default function MorosidadPage() {
                                                 type="text"
                                                 inputMode="decimal"
                                                 placeholder="0,00"
-                                                className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400/20 focus:border-amber-400 transition-all placeholder:text-neutral-400 ${formErrors.importe ? 'border-red-400' : 'border-neutral-200'}`}
+                                                className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50] transition-all placeholder:text-neutral-400 ${formErrors.importe ? 'border-red-400' : 'border-neutral-200'}`}
                                                 value={formData.importe}
                                                 onChange={e => { const val = e.target.value.replace(',', '.'); if (/^\d*\.?\d*$/.test(val) || val === '') { setFormData({ ...formData, importe: e.target.value }); setFormErrors(prev => ({ ...prev, importe: '' })); } }}
                                                 disabled={isSubmitting}
@@ -987,7 +987,7 @@ export default function MorosidadPage() {
 
                                 {/* Sección: Archivos */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Archivos</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Archivos</h3>
                                     <div>
                                         <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2 block">
                                             Adjuntar Documento
@@ -995,18 +995,18 @@ export default function MorosidadPage() {
                                         <div className="relative">
                                             <input
                                                 type="file"
-                                                className="w-full bg-white border border-neutral-200 text-neutral-900 text-sm rounded-xl px-4 py-[9px] focus:outline-none focus:ring-2 focus:ring-amber-400/20 focus:border-amber-400 transition-all file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-neutral-100 file:text-neutral-700 hover:file:bg-neutral-200 cursor-pointer"
+                                                className="w-full bg-white border border-neutral-200 text-neutral-900 text-sm rounded-xl px-4 py-[9px] focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50] transition-all file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-neutral-100 file:text-neutral-700 hover:file:bg-neutral-200 cursor-pointer"
                                                 onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
                                                 disabled={isSubmitting}
                                             />
-                                            {uploading && <span className="absolute right-4 top-3 text-xs font-bold text-amber-500 uppercase tracking-widest animate-pulse">Subiendo...</span>}
+                                            {uploading && <span className="absolute right-4 top-3 text-xs font-bold text-[#a03d42] uppercase tracking-widest animate-pulse">Subiendo...</span>}
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Sección: Notificación */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Notificación al Propietario</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Notificación al Propietario</h3>
                                     <div className="flex flex-col gap-3">
                                         {/* Checkboxes de canal */}
                                         <div className="bg-white border border-neutral-200 rounded-xl p-4">
@@ -1024,7 +1024,7 @@ export default function MorosidadPage() {
                                                             setEnviarNotificacion(e.target.checked || notifWhatsapp ? true : false);
                                                             setFormErrors(prev => ({ ...prev, contacto: '' }));
                                                         }}
-                                                        className="w-4 h-4 rounded accent-yellow-400"
+                                                        className="w-4 h-4 rounded accent-[#bf4b50]"
                                                     />
                                                     <span className="text-xs font-semibold text-neutral-700">Notificar por Email</span>
                                                 </label>
@@ -1038,7 +1038,7 @@ export default function MorosidadPage() {
                                                             setEnviarNotificacion(notifEmail || e.target.checked ? true : false);
                                                             setFormErrors(prev => ({ ...prev, contacto: '' }));
                                                         }}
-                                                        className="w-4 h-4 rounded accent-yellow-400"
+                                                        className="w-4 h-4 rounded accent-[#bf4b50]"
                                                     />
                                                     <span className="text-xs font-semibold text-neutral-700">Notificar por WhatsApp</span>
                                                 </label>
@@ -1062,7 +1062,7 @@ export default function MorosidadPage() {
                                                             type="email"
                                                             placeholder="ejemplo@correo.com"
                                                             disabled={isSubmitting}
-                                                            className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.email_deudor ? 'border-red-400 focus:ring-red-400/20 focus:border-red-400' : 'border-neutral-200 focus:ring-amber-400/20 focus:border-amber-400'}`}
+                                                            className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.email_deudor ? 'border-red-400 focus:ring-red-400/20 focus:border-red-400' : 'border-neutral-200 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50]'}`}
                                                             value={formData.email_deudor}
                                                             onChange={e => { setFormData({ ...formData, email_deudor: e.target.value }); setFormErrors(prev => ({ ...prev, email_deudor: '' })); }}
                                                         />
@@ -1087,7 +1087,7 @@ export default function MorosidadPage() {
                                                             type="tel"
                                                             placeholder="600000000"
                                                             disabled={isSubmitting}
-                                                            className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.telefono_deudor ? 'border-red-400 focus:ring-red-400/20 focus:border-red-400' : 'border-neutral-200 focus:ring-amber-400/20 focus:border-amber-400'}`}
+                                                            className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.telefono_deudor ? 'border-red-400 focus:ring-red-400/20 focus:border-red-400' : 'border-neutral-200 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50]'}`}
                                                             value={formData.telefono_deudor}
                                                             onChange={e => { setFormData({ ...formData, telefono_deudor: e.target.value }); setFormErrors(prev => ({ ...prev, telefono_deudor: '' })); }}
                                                         />
@@ -1129,7 +1129,7 @@ export default function MorosidadPage() {
                                     (formData.telefono_deudor ? !/^\d{9}$/.test(formData.telefono_deudor) : false) ||
                                     (formData.email_deudor ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_deudor) : false)
                                 }
-                                className="h-12 px-8 bg-amber-400 hover:bg-amber-500 text-neutral-950 font-black text-xs uppercase tracking-[0.15em] rounded-xl transition-all shadow-lg shadow-amber-200/50 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                                className="h-12 px-8 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] rounded-xl transition-all shadow-lg shadow-amber-200/50 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
                             >
                                 {isSubmitting || uploading ? (
                                     <>
@@ -1164,7 +1164,7 @@ export default function MorosidadPage() {
                     >
                         <div className="px-6 py-5 border-b border-neutral-100 bg-gradient-to-r from-neutral-50 to-white">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-yellow-400 flex items-center justify-center shadow-sm">
+                                <div className="w-9 h-9 rounded-xl bg-[#bf4b50] flex items-center justify-center shadow-sm">
                                     <Download className="w-4.5 h-4.5 text-neutral-900" />
                                 </div>
                                 <div>
@@ -1185,7 +1185,7 @@ export default function MorosidadPage() {
                                         setShowExportModal(false);
                                         if (params) { handleExport(params.type, params.ids, true); }
                                     }}
-                                    className="w-full py-2.5 bg-yellow-400 text-neutral-950 rounded-xl font-bold text-sm hover:bg-yellow-500 transition shadow-sm"
+                                    className="w-full py-2.5 bg-[#bf4b50] text-neutral-950 rounded-xl font-bold text-sm hover:bg-[#a03d42] transition shadow-sm"
                                 >
                                     Sí, incluir notas
                                 </button>
@@ -1332,7 +1332,7 @@ export default function MorosidadPage() {
 
                             {/* Deudor */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Información del Deudor</h3>
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Información del Deudor</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     <div>
                                         <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Nombre</label>
@@ -1359,7 +1359,7 @@ export default function MorosidadPage() {
 
                             {/* Deuda */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Datos de la Deuda</h3>
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Datos de la Deuda</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     <div className="lg:col-span-2">
                                         <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Concepto</label>
@@ -1419,7 +1419,7 @@ export default function MorosidadPage() {
                             {/* Documentación */}
                             {selectedDetailMorosidad.documento && (
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Documentación</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Documentación</h3>
                                     <a
                                         href={getSecureUrl(selectedDetailMorosidad.documento)}
                                         target="_blank"
@@ -1434,7 +1434,7 @@ export default function MorosidadPage() {
 
                             {/* Chat de Gestores */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Chat de Gestores</h3>
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Chat de Gestores</h3>
                                 <TimelineChat entityType="morosidad" entityId={selectedDetailMorosidad.id} />
                             </div>
 
@@ -1450,7 +1450,7 @@ export default function MorosidadPage() {
                             {selectedDetailMorosidad.estado !== 'Pagado' ? (
                                 <button
                                     onClick={() => { markAsPaid(selectedDetailMorosidad.id); setShowDetailModal(false); }}
-                                    className="px-5 py-2.5 text-sm font-black text-neutral-900 bg-yellow-400 hover:bg-yellow-500 rounded-xl transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
+                                    className="px-5 py-2.5 text-sm font-black text-neutral-900 bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
                                 >
                                     <Check className="w-4 h-4" />
                                     <span className="hidden sm:inline">Marcar como </span>Pagado

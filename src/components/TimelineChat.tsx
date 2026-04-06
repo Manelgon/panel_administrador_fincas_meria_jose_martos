@@ -165,9 +165,9 @@ export default function TimelineChat({ entityType, entityId }: TimelineChatProps
                     </span>
                 </div>
                 {isExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-gray-400 group-hover:text-yellow-500 transition-colors" />
+                    <ChevronUp className="w-5 h-5 text-gray-400 group-hover:text-[#a03d42] transition-colors" />
                 ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-yellow-500 transition-colors" />
+                    <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-[#a03d42] transition-colors" />
                 )}
             </button>
 
@@ -177,7 +177,7 @@ export default function TimelineChat({ entityType, entityId }: TimelineChatProps
                     <div className="p-4 overflow-y-auto h-[380px] custom-scrollbar space-y-4 border-b border-gray-100 bg-gray-50/50">
                         {loading ? (
                             <div className="flex items-center justify-center h-full">
-                                <Loader2 className="w-8 h-8 animate-spin text-yellow-500" />
+                                <Loader2 className="w-8 h-8 animate-spin text-[#a03d42]" />
                             </div>
                         ) : messages.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full text-center space-y-2 py-8">
@@ -229,7 +229,7 @@ export default function TimelineChat({ entityType, entityId }: TimelineChatProps
                             <input
                                 type="text"
                                 placeholder="Escribe una nota interna..."
-                                className="w-full pl-4 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-yellow-400 focus:bg-white focus:outline-none transition group"
+                                className="w-full pl-4 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-[#bf4b50] focus:bg-white focus:outline-none transition group"
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 disabled={sending}
@@ -237,7 +237,7 @@ export default function TimelineChat({ entityType, entityId }: TimelineChatProps
                             <button
                                 type="submit"
                                 disabled={sending || !newMessage.trim()}
-                                className="absolute right-1.5 p-2 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-full transition shadow-sm disabled:opacity-50"
+                                className="absolute right-1.5 p-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-full transition shadow-sm disabled:opacity-50"
                             >
                                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                             </button>

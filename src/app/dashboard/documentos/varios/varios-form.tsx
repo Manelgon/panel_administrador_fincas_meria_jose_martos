@@ -281,7 +281,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                 <div className="space-y-4 max-w-4xl mx-auto">
                     {/* Cliente */}
                     <div className="space-y-4">
-                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Información del Cliente</h3>
+                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Información del Cliente</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                             <div className="sm:col-span-2 lg:col-span-1">
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Comunidad</label>
@@ -301,7 +301,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Nombre de la comunidad"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.cliente || ""}
                                     onChange={e => handleChange("cliente", e.target.value)}
                                 />
@@ -312,7 +312,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: Juan Pérez"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.nombre_apellidos || ""}
                                     onChange={e => handleChange("nombre_apellidos", e.target.value)}
                                 />
@@ -321,7 +321,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Tipo Inmueble</label>
                                 <select
                                     disabled={isDisabled}
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white appearance-none disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white appearance-none disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.tipo_inmueble || ""}
                                     onChange={(e) => handleChange("tipo_inmueble", e.target.value)}
                                 >
@@ -337,7 +337,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: 12345678Z"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.nif || ""}
                                     onChange={e => handleChange("nif", e.target.value)}
                                 />
@@ -348,7 +348,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: C/ Mayor 123"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.domicilio || ""}
                                     onChange={e => handleChange("domicilio", e.target.value)}
                                 />
@@ -359,7 +359,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: 29001"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.cp || ""}
                                     onChange={e => handleChange("cp", e.target.value)}
                                 />
@@ -370,7 +370,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: Málaga"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.ciudad || ""}
                                     onChange={e => handleChange("ciudad", e.target.value)}
                                 />
@@ -381,7 +381,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: Málaga"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.provincia || ""}
                                     onChange={e => handleChange("provincia", e.target.value)}
                                 />
@@ -391,7 +391,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                 <input
                                     disabled={isDisabled}
                                     type="date"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.fecha_emision || ""}
                                     onChange={e => handleChange("fecha_emision", e.target.value)}
                                 />
@@ -401,7 +401,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
 
                     {/* Factura Lines */}
                     <div className="space-y-4">
-                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Conceptos Factura</h3>
+                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Conceptos Factura</h3>
 
                         {[1, 2, 3].map(i => (
                             <div key={i} className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end bg-neutral-50/60 p-4 rounded-lg border border-neutral-100">
@@ -411,7 +411,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                         disabled={isDisabled}
                                         type="number"
                                         placeholder="0"
-                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                         value={values[`und${i}`] || ""}
                                         onChange={e => handleChange(`und${i}`, e.target.value)}
                                     />
@@ -422,7 +422,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                         disabled={isDisabled}
                                         type="text"
                                         placeholder="Concepto..."
-                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                         value={values[`descripcion${i}`] || ""}
                                         onChange={e => handleChange(`descripcion${i}`, e.target.value)}
                                     />
@@ -434,7 +434,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                         type="number"
                                         step="0.01"
                                         placeholder="0.00"
-                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                         value={values[`importe${i}`] || ""}
                                         onChange={e => handleChange(`importe${i}`, e.target.value)}
                                     />
@@ -445,7 +445,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                         disabled={isDisabled}
                                         type="number"
                                         placeholder="21"
-                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                         value={values[`iva${i}`] ?? ""}
                                         onChange={e => handleChange(`iva${i}`, e.target.value)}
                                     />
@@ -497,7 +497,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                     type="button"
                     onClick={generate}
                     disabled={status === "generating" || !canGenerate}
-                    className="w-full sm:w-auto h-12 px-8 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
+                    className="w-full sm:w-auto h-12 px-8 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
                 >
                     {status === "generating" ? (
                         <>

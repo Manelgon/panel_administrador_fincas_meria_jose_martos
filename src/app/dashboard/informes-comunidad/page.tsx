@@ -269,8 +269,8 @@ export default function InformesComunidadPage() {
     const getSortIcon = (key: keyof HistoricalReport) => {
         if (sortConfig.key !== key) return <ChevronUp className="w-3 h-3 text-neutral-300" />;
         return sortConfig.direction === 'asc'
-            ? <ChevronUp className="w-3 h-3 text-yellow-500" />
-            : <ChevronDown className="w-3 h-3 text-yellow-500" />;
+            ? <ChevronUp className="w-3 h-3 text-[#a03d42]" />
+            : <ChevronDown className="w-3 h-3 text-[#a03d42]" />;
     };
 
     const communitiesList = Array.from(new Set(historicalReports.map(r => r.community_name))).sort();
@@ -294,7 +294,7 @@ export default function InformesComunidadPage() {
                 <button
                     onClick={fetchFolders}
                     disabled={loadingFolders || isGenerating}
-                    className="bg-yellow-400 text-neutral-900 px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-yellow-500 transition flex items-center gap-2 disabled:opacity-50"
+                    className="bg-[#bf4b50] text-neutral-900 px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-[#a03d42] transition flex items-center gap-2 disabled:opacity-50"
                 >
                     {loadingFolders ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                     Nuevo Informe Global
@@ -311,7 +311,7 @@ export default function InformesComunidadPage() {
                     <select
                         value={filterCommunity}
                         onChange={(e) => setFilterCommunity(e.target.value)}
-                        className="bg-neutral-50 border border-neutral-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-yellow-400"
+                        className="bg-neutral-50 border border-neutral-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#bf4b50]"
                     >
                         <option value="all">Todas las comunidades</option>
                         {communitiesList.map(c => <option key={c} value={c}>{c}</option>)}
@@ -350,7 +350,7 @@ export default function InformesComunidadPage() {
                                         </td>
                                         <td className="px-6 py-4 text-sm text-neutral-700">
                                             <div className="flex items-center gap-2">
-                                                <Building className="w-4 h-4 text-yellow-500" />
+                                                <Building className="w-4 h-4 text-[#a03d42]" />
                                                 {report.community_name}
                                             </div>
                                         </td>
@@ -405,7 +405,7 @@ export default function InformesComunidadPage() {
                                 <select
                                     value={selectedFolder}
                                     onChange={(e) => { setSelectedFolder(e.target.value); setFormErrors(prev => ({ ...prev, config: '' })); }}
-                                    className={`w-full bg-neutral-50 border rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-yellow-400 ${formErrors.config ? 'border-red-400' : 'border-neutral-200'}`}
+                                    className={`w-full bg-neutral-50 border rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#bf4b50] ${formErrors.config ? 'border-red-400' : 'border-neutral-200'}`}
                                 >
                                     <option value="">Selecciona una comunidad...</option>
                                     {folders.map(f => <option key={f.id} value={f.id}>{f.displayName || f.name}</option>)}
@@ -414,11 +414,11 @@ export default function InformesComunidadPage() {
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-2">
                                     <label className="text-sm font-semibold text-neutral-700">Desde</label>
-                                    <input type="date" value={fechaInicio} onChange={(e) => { setFechaInicio(e.target.value); setFormErrors(prev => ({ ...prev, config: '' })); }} className={`w-full bg-neutral-50 border rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-yellow-400 ${formErrors.config ? 'border-red-400' : 'border-neutral-200'}`} />
+                                    <input type="date" value={fechaInicio} onChange={(e) => { setFechaInicio(e.target.value); setFormErrors(prev => ({ ...prev, config: '' })); }} className={`w-full bg-neutral-50 border rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#bf4b50] ${formErrors.config ? 'border-red-400' : 'border-neutral-200'}`} />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-semibold text-neutral-700">Hasta</label>
-                                    <input type="date" value={fechaFin} onChange={(e) => { setFechaFin(e.target.value); setFormErrors(prev => ({ ...prev, config: '' })); }} className={`w-full bg-neutral-50 border rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-yellow-400 ${formErrors.config ? 'border-red-400' : 'border-neutral-200'}`} />
+                                    <input type="date" value={fechaFin} onChange={(e) => { setFechaFin(e.target.value); setFormErrors(prev => ({ ...prev, config: '' })); }} className={`w-full bg-neutral-50 border rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#bf4b50] ${formErrors.config ? 'border-red-400' : 'border-neutral-200'}`} />
                                 </div>
                             </div>
                             {formErrors.config && <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-500 col-span-full"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.config}</p>}
@@ -429,19 +429,19 @@ export default function InformesComunidadPage() {
                             <p className="text-sm font-semibold text-neutral-700">Contenido del informe</p>
 
                             {/* Tickets */}
-                            <div className={`rounded-xl border-2 transition-all ${includeTickets ? 'border-yellow-400 bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
+                            <div className={`rounded-xl border-2 transition-all ${includeTickets ? 'border-[#bf4b50] bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
                                 <label className="flex items-center gap-3 p-4 cursor-pointer">
-                                    <input type="checkbox" checked={includeTickets} onChange={e => { setIncludeTickets(e.target.checked); setFormErrors(prev => ({ ...prev, sections: '' })); }} className="w-4 h-4 accent-yellow-500" />
+                                    <input type="checkbox" checked={includeTickets} onChange={e => { setIncludeTickets(e.target.checked); setFormErrors(prev => ({ ...prev, sections: '' })); }} className="w-4 h-4 accent-[#a03d42]" />
                                     <TicketCheck className={`w-5 h-5 ${includeTickets ? 'text-yellow-600' : 'text-neutral-400'}`} />
                                     <span className="text-sm font-semibold text-neutral-800">Tickets / Incidencias</span>
                                 </label>
                                 {includeTickets && (
                                     <div className="px-4 pb-4 flex gap-3 flex-wrap">
-                                        <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${ticketFilter === 'all' ? 'border-yellow-400 bg-yellow-100 text-yellow-800' : 'border-neutral-200 text-neutral-500'}`}>
+                                        <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${ticketFilter === 'all' ? 'border-[#bf4b50] bg-yellow-100 text-yellow-800' : 'border-neutral-200 text-neutral-500'}`}>
                                             <input type="radio" name="ticketFilter" value="all" checked={ticketFilter === 'all'} onChange={() => setTicketFilter('all')} className="sr-only" />
                                             Todos los tickets
                                         </label>
-                                        <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${ticketFilter === 'pending' ? 'border-yellow-400 bg-yellow-100 text-yellow-800' : 'border-neutral-200 text-neutral-500'}`}>
+                                        <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${ticketFilter === 'pending' ? 'border-[#bf4b50] bg-yellow-100 text-yellow-800' : 'border-neutral-200 text-neutral-500'}`}>
                                             <input type="radio" name="ticketFilter" value="pending" checked={ticketFilter === 'pending'} onChange={() => setTicketFilter('pending')} className="sr-only" />
                                             Solo pendientes
                                         </label>
@@ -450,19 +450,19 @@ export default function InformesComunidadPage() {
                             </div>
 
                             {/* Deudas */}
-                            <div className={`rounded-xl border-2 transition-all ${includeDebts ? 'border-yellow-400 bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
+                            <div className={`rounded-xl border-2 transition-all ${includeDebts ? 'border-[#bf4b50] bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
                                 <label className="flex items-center gap-3 p-4 cursor-pointer">
-                                    <input type="checkbox" checked={includeDebts} onChange={e => { setIncludeDebts(e.target.checked); setFormErrors(prev => ({ ...prev, sections: '' })); }} className="w-4 h-4 accent-yellow-500" />
+                                    <input type="checkbox" checked={includeDebts} onChange={e => { setIncludeDebts(e.target.checked); setFormErrors(prev => ({ ...prev, sections: '' })); }} className="w-4 h-4 accent-[#a03d42]" />
                                     <CreditCard className={`w-5 h-5 ${includeDebts ? 'text-yellow-600' : 'text-neutral-400'}`} />
                                     <span className="text-sm font-semibold text-neutral-800">Deudas / Morosidad</span>
                                 </label>
                                 {includeDebts && (
                                     <div className="px-4 pb-4 flex gap-3 flex-wrap">
-                                        <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${debtFilter === 'all' ? 'border-yellow-400 bg-yellow-100 text-yellow-800' : 'border-neutral-200 text-neutral-500'}`}>
+                                        <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${debtFilter === 'all' ? 'border-[#bf4b50] bg-yellow-100 text-yellow-800' : 'border-neutral-200 text-neutral-500'}`}>
                                             <input type="radio" name="debtFilter" value="all" checked={debtFilter === 'all'} onChange={() => setDebtFilter('all')} className="sr-only" />
                                             Todas las deudas
                                         </label>
-                                        <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${debtFilter === 'pending' ? 'border-yellow-400 bg-yellow-100 text-yellow-800' : 'border-neutral-200 text-neutral-500'}`}>
+                                        <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${debtFilter === 'pending' ? 'border-[#bf4b50] bg-yellow-100 text-yellow-800' : 'border-neutral-200 text-neutral-500'}`}>
                                             <input type="radio" name="debtFilter" value="pending" checked={debtFilter === 'pending'} onChange={() => setDebtFilter('pending')} className="sr-only" />
                                             Solo pendientes
                                         </label>
@@ -472,13 +472,13 @@ export default function InformesComunidadPage() {
 
                             {/* Emails + Cronometraje en fila */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${includeEmails ? 'border-yellow-400 bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
-                                    <input type="checkbox" checked={includeEmails} onChange={e => { setIncludeEmails(e.target.checked); setFormErrors(prev => ({ ...prev, sections: '' })); }} className="w-4 h-4 accent-yellow-500" />
+                                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${includeEmails ? 'border-[#bf4b50] bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
+                                    <input type="checkbox" checked={includeEmails} onChange={e => { setIncludeEmails(e.target.checked); setFormErrors(prev => ({ ...prev, sections: '' })); }} className="w-4 h-4 accent-[#a03d42]" />
                                     <Mail className={`w-5 h-5 ${includeEmails ? 'text-yellow-600' : 'text-neutral-400'}`} />
                                     <span className="text-sm font-semibold text-neutral-800">Emails</span>
                                 </label>
-                                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${includeCronometraje ? 'border-yellow-400 bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
-                                    <input type="checkbox" checked={includeCronometraje} onChange={e => { setIncludeCronometraje(e.target.checked); setFormErrors(prev => ({ ...prev, sections: '' })); }} className="w-4 h-4 accent-yellow-500" />
+                                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${includeCronometraje ? 'border-[#bf4b50] bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
+                                    <input type="checkbox" checked={includeCronometraje} onChange={e => { setIncludeCronometraje(e.target.checked); setFormErrors(prev => ({ ...prev, sections: '' })); }} className="w-4 h-4 accent-[#a03d42]" />
                                     <Clock className={`w-5 h-5 ${includeCronometraje ? 'text-yellow-600' : 'text-neutral-400'}`} />
                                     <span className="text-sm font-semibold text-neutral-800">Cronometraje</span>
                                 </label>
@@ -490,8 +490,8 @@ export default function InformesComunidadPage() {
                         {/* Opciones adicionales */}
                         <div className="border-t border-neutral-100 pt-5 space-y-3">
                             <p className="text-sm font-semibold text-neutral-700">Opciones adicionales</p>
-                            <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${includeCharts ? 'border-yellow-400 bg-yellow-50' : 'border-neutral-100 bg-neutral-50'}`}>
-                                <input type="checkbox" checked={includeCharts} onChange={e => setIncludeCharts(e.target.checked)} className="w-4 h-4 accent-yellow-500" />
+                            <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${includeCharts ? 'border-[#bf4b50] bg-yellow-50' : 'border-neutral-100 bg-neutral-50'}`}>
+                                <input type="checkbox" checked={includeCharts} onChange={e => setIncludeCharts(e.target.checked)} className="w-4 h-4 accent-[#a03d42]" />
                                 <BarChart2 className={`w-5 h-5 ${includeCharts ? 'text-yellow-600' : 'text-neutral-400'}`} />
                                 <div>
                                     <p className="text-sm font-semibold text-neutral-800">Incluir gráficos visuales</p>
@@ -505,7 +505,7 @@ export default function InformesComunidadPage() {
                             disabled={isGenerating || !selectedFolder}
                             className="w-full bg-neutral-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-neutral-800 transition shadow-lg disabled:opacity-50"
                         >
-                            {isGenerating ? <><Loader2 className="w-5 h-5 animate-spin" /> Generando Informe Global...</> : <><CheckCircle2 className="w-5 h-5 text-yellow-400" /> Generar Informe Combinado</>}
+                            {isGenerating ? <><Loader2 className="w-5 h-5 animate-spin" /> Generando Informe Global...</> : <><CheckCircle2 className="w-5 h-5 text-[#bf4b50]" /> Generar Informe Combinado</>}
                         </button>
                         </div>{/* /body scrollable */}
                     </div>
@@ -566,9 +566,9 @@ export default function InformesComunidadPage() {
             {portalReady && isGenerating && createPortal(
                 <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-neutral-900/80 backdrop-blur-md">
                     <div className="relative w-24 h-24 mb-6">
-                        <div className="absolute inset-0 border-4 border-yellow-400/20 rounded-full" />
-                        <div className="absolute inset-0 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
-                        <Building className="absolute inset-0 m-auto w-10 h-10 text-yellow-400 animate-pulse" />
+                        <div className="absolute inset-0 border-4 border-[#bf4b50]/20 rounded-full" />
+                        <div className="absolute inset-0 border-4 border-[#bf4b50] border-t-transparent rounded-full animate-spin" />
+                        <Building className="absolute inset-0 m-auto w-10 h-10 text-[#bf4b50] animate-pulse" />
                     </div>
                     <div className="text-center space-y-2">
                         <h3 className="text-xl font-bold text-white tracking-tight">Generando Informe de Comunidad</h3>

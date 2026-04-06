@@ -1091,7 +1091,7 @@ export default function IncidenciasPage() {
             label: 'Código',
             render: (row) => (
                 <div className="flex items-start gap-3">
-                    <span className={`mt-1 h-3.5 w-1.5 rounded-full ${(row.estado || (row.resuelto ? 'Resuelto' : 'Pendiente')) === 'Resuelto' ? 'bg-neutral-900' : (row.estado === 'Aplazado' ? 'bg-orange-400' : 'bg-yellow-400')}`} />
+                    <span className={`mt-1 h-3.5 w-1.5 rounded-full ${(row.estado || (row.resuelto ? 'Resuelto' : 'Pendiente')) === 'Resuelto' ? 'bg-neutral-900' : (row.estado === 'Aplazado' ? 'bg-orange-400' : 'bg-[#bf4b50]')}`} />
                     <span className="font-semibold">{row.comunidades?.codigo || '-'}</span>
                 </div>
             ),
@@ -1324,7 +1324,7 @@ export default function IncidenciasPage() {
                             setFormErrors({});
                             setShowForm(!showForm);
                         }}
-                        className="bg-yellow-400 hover:bg-yellow-500 text-neutral-950 px-3 py-2 rounded-md flex items-center gap-1.5 transition font-semibold text-sm"
+                        className="bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-3 py-2 rounded-md flex items-center gap-1.5 transition font-semibold text-sm"
                     >
                         <Plus className="w-4 h-4 flex-shrink-0" />
                         <span className="hidden sm:inline">Nuevo Ticket</span>
@@ -1338,7 +1338,7 @@ export default function IncidenciasPage() {
                 <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-2">
                     <button
                         onClick={() => setFilterEstado('pendiente')}
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'pendiente' ? 'bg-yellow-400 text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'pendiente' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
                         Pendientes
                     </button>
@@ -1421,7 +1421,7 @@ export default function IncidenciasPage() {
                             <form id="incidencia-form" onSubmit={handleSubmit} className="space-y-4">
                                 {/* Section 1: Identificación del Cliente */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Identificación del Cliente</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Identificación del Cliente</h3>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-3">
                                         <div className="md:col-span-2">
@@ -1446,7 +1446,7 @@ export default function IncidenciasPage() {
                                             <input
                                                 type="text"
                                                 placeholder="Nombre completo"
-                                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition placeholder:text-neutral-400 ${formErrors.nombre_cliente ? 'border-red-400' : 'border-neutral-200'}`}
+                                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition placeholder:text-neutral-400 ${formErrors.nombre_cliente ? 'border-red-400' : 'border-neutral-200'}`}
                                                 value={formData.nombre_cliente}
                                                 onChange={e => { setFormData({ ...formData, nombre_cliente: e.target.value }); setFormErrors(prev => ({ ...prev, nombre_cliente: '' })); }}
                                             />
@@ -1459,7 +1459,7 @@ export default function IncidenciasPage() {
                                             <input
                                                 type="tel"
                                                 placeholder="Ej: 600000000"
-                                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition placeholder:text-neutral-400 ${formErrors.telefono ? 'border-red-400' : 'border-neutral-200'}`}
+                                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition placeholder:text-neutral-400 ${formErrors.telefono ? 'border-red-400' : 'border-neutral-200'}`}
                                                 value={formData.telefono}
                                                 onChange={e => { setFormData({ ...formData, telefono: e.target.value }); setFormErrors(prev => ({ ...prev, telefono: '', contacto: '' })); }}
                                             />
@@ -1475,7 +1475,7 @@ export default function IncidenciasPage() {
                                             <input
                                                 type="email"
                                                 placeholder="ejemplo@correo.com"
-                                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition placeholder:text-neutral-400 ${formErrors.email ? 'border-red-400' : 'border-neutral-200'}`}
+                                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition placeholder:text-neutral-400 ${formErrors.email ? 'border-red-400' : 'border-neutral-200'}`}
                                                 value={formData.email}
                                                 onChange={e => { setFormData({ ...formData, email: e.target.value }); setFormErrors(prev => ({ ...prev, email: '', contacto: '' })); }}
                                             />
@@ -1487,7 +1487,7 @@ export default function IncidenciasPage() {
 
                                 {/* Section 2: Datos de la Incidencia */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Datos de la Incidencia</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Datos de la Incidencia</h3>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-3">
                                         <div className="md:col-span-2">
@@ -1525,7 +1525,7 @@ export default function IncidenciasPage() {
                                                                 setFormData(prev => ({ ...prev, fecha_registro: new Date().toISOString().slice(0, 10) }));
                                                             }
                                                         }}
-                                                        className="w-3 h-3 rounded border-neutral-300 text-yellow-500 focus:ring-yellow-400"
+                                                        className="w-3 h-3 rounded border-neutral-300 text-[#a03d42] focus:ring-[#bf4b50]"
                                                     />
                                                     <label htmlFor="manual-date" className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest cursor-pointer hover:text-neutral-600 transition-colors">
                                                         Modificar
@@ -1535,7 +1535,7 @@ export default function IncidenciasPage() {
                                             <input
                                                 type="date"
                                                 disabled={!isManualDate}
-                                                className={`w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 transition ${!isManualDate ? 'bg-neutral-100 cursor-not-allowed opacity-70' : 'bg-neutral-50/60 focus:bg-white'}`}
+                                                className={`w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] transition ${!isManualDate ? 'bg-neutral-100 cursor-not-allowed opacity-70' : 'bg-neutral-50/60 focus:bg-white'}`}
                                                 value={formData.fecha_registro}
                                                 onChange={e => setFormData({ ...formData, fecha_registro: e.target.value })}
                                             />
@@ -1577,7 +1577,7 @@ export default function IncidenciasPage() {
                                             <input
                                                 type="text"
                                                 placeholder="Motivo principal del ticket..."
-                                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition placeholder:text-neutral-400 ${formErrors.motivo_ticket ? 'border-red-400' : 'border-neutral-200'}`}
+                                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition placeholder:text-neutral-400 ${formErrors.motivo_ticket ? 'border-red-400' : 'border-neutral-200'}`}
                                                 value={formData.motivo_ticket}
                                                 onChange={e => { setFormData({ ...formData, motivo_ticket: e.target.value }); setFormErrors(prev => ({ ...prev, motivo_ticket: '' })); }}
                                             />
@@ -1590,7 +1590,7 @@ export default function IncidenciasPage() {
                                             <textarea
                                                 rows={4}
                                                 placeholder="Detalles sobre lo ocurrido..."
-                                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition placeholder:text-neutral-400 resize-y ${formErrors.mensaje ? 'border-red-400' : 'border-neutral-200'}`}
+                                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition placeholder:text-neutral-400 resize-y ${formErrors.mensaje ? 'border-red-400' : 'border-neutral-200'}`}
                                                 value={formData.mensaje}
                                                 onChange={e => { setFormData({ ...formData, mensaje: e.target.value }); setFormErrors(prev => ({ ...prev, mensaje: '' })); }}
                                             />
@@ -1601,7 +1601,7 @@ export default function IncidenciasPage() {
 
                                 {/* Section 3: Archivos */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Archivos</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Archivos</h3>
 
                                     <div>
                                         <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">
@@ -1626,7 +1626,7 @@ export default function IncidenciasPage() {
 
                                 {/* Section: Notificación */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Notificación al Propietario</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Notificación al Propietario</h3>
                                     <div className="flex flex-col gap-3">
                                         {/* Checkboxes de canal */}
                                         <div className="bg-neutral-50/60 border border-neutral-100 rounded-lg p-3">
@@ -1643,7 +1643,7 @@ export default function IncidenciasPage() {
                                                             setEnviarAviso(e.target.checked || notifWhatsapp ? true : false);
                                                             setFormErrors(prev => ({ ...prev, contacto: '' }));
                                                         }}
-                                                        className="w-4 h-4 rounded accent-yellow-400"
+                                                        className="w-4 h-4 rounded accent-[#bf4b50]"
                                                     />
                                                     <span className="text-xs font-semibold text-neutral-700">Notificar por Email</span>
                                                 </label>
@@ -1656,7 +1656,7 @@ export default function IncidenciasPage() {
                                                             setEnviarAviso(notifEmail || e.target.checked ? true : false);
                                                             setFormErrors(prev => ({ ...prev, contacto: '' }));
                                                         }}
-                                                        className="w-4 h-4 rounded accent-yellow-400"
+                                                        className="w-4 h-4 rounded accent-[#bf4b50]"
                                                     />
                                                     <span className="text-xs font-semibold text-neutral-700">Notificar por WhatsApp</span>
                                                 </label>
@@ -1679,7 +1679,7 @@ export default function IncidenciasPage() {
                                                         <input
                                                             type="email"
                                                             placeholder="ejemplo@correo.com"
-                                                            className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.email ? 'border-red-400 focus:ring-red-400/20' : 'border-neutral-200 focus:ring-amber-400/20 focus:border-amber-400'}`}
+                                                            className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.email ? 'border-red-400 focus:ring-red-400/20' : 'border-neutral-200 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50]'}`}
                                                             value={formData.email}
                                                             onChange={e => { setFormData({ ...formData, email: e.target.value }); setFormErrors(prev => ({ ...prev, email: '' })); }}
                                                         />
@@ -1703,7 +1703,7 @@ export default function IncidenciasPage() {
                                                         <input
                                                             type="tel"
                                                             placeholder="600000000"
-                                                            className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.telefono ? 'border-red-400 focus:ring-red-400/20' : 'border-neutral-200 focus:ring-amber-400/20 focus:border-amber-400'}`}
+                                                            className={`w-full bg-white border text-neutral-900 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 transition-all placeholder:text-neutral-400 ${formErrors.telefono ? 'border-red-400 focus:ring-red-400/20' : 'border-neutral-200 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50]'}`}
                                                             value={formData.telefono}
                                                             onChange={e => { setFormData({ ...formData, telefono: e.target.value }); setFormErrors(prev => ({ ...prev, telefono: '' })); }}
                                                         />
@@ -1720,7 +1720,7 @@ export default function IncidenciasPage() {
 
                                 {/* Section: Proveedor */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Proveedor</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Proveedor</h3>
 
                                     <div>
                                         <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">
@@ -1763,7 +1763,7 @@ export default function IncidenciasPage() {
                                     !!(formData.telefono && !/^\d{9}$/.test(formData.telefono)) ||
                                     !!(formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
                                 }
-                                className="px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
                             >
                                 {isSubmitting || uploading ? (
                                     <>
@@ -1823,7 +1823,7 @@ export default function IncidenciasPage() {
                                             handleExport(params.type, params.ids, true);
                                         }
                                     }}
-                                    className="w-full py-3 bg-yellow-400 text-neutral-950 rounded-full font-bold hover:bg-yellow-500 transition shadow-md"
+                                    className="w-full py-3 bg-[#bf4b50] text-neutral-950 rounded-full font-bold hover:bg-[#a03d42] transition shadow-md"
                                 >
                                     SÍ
                                 </button>
@@ -1937,7 +1937,7 @@ export default function IncidenciasPage() {
                                 <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
                                     {/* Estado */}
                                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${selectedDetailIncidencia.resuelto ? 'bg-emerald-100 text-emerald-700' : selectedDetailIncidencia.estado === 'Aplazado' ? 'bg-orange-100 text-orange-700' : 'bg-amber-100 text-amber-700'}`}>
-                                        <span className={`w-1.5 h-1.5 rounded-full ${selectedDetailIncidencia.resuelto ? 'bg-emerald-500' : selectedDetailIncidencia.estado === 'Aplazado' ? 'bg-orange-500' : 'bg-amber-500'}`} />
+                                        <span className={`w-1.5 h-1.5 rounded-full ${selectedDetailIncidencia.resuelto ? 'bg-emerald-500' : selectedDetailIncidencia.estado === 'Aplazado' ? 'bg-orange-500' : 'bg-[#a03d42]'}`} />
                                         {selectedDetailIncidencia.resuelto ? 'Resuelto' : selectedDetailIncidencia.estado === 'Aplazado' ? 'Aplazado' : 'En trámite'}
                                     </span>
                                     {/* Prioridad */}
@@ -1997,7 +1997,7 @@ export default function IncidenciasPage() {
 
                             {/* Sección 1: Identificación del Cliente */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">
                                     Identificación del Cliente
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -2030,7 +2030,7 @@ export default function IncidenciasPage() {
 
                             {/* Sección 2: Datos de la Incidencia */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">
                                     Datos de la Incidencia
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -2059,7 +2059,7 @@ export default function IncidenciasPage() {
                                             {!isReassigning && (
                                                 <button
                                                     onClick={() => { setNewGestorId(selectedDetailIncidencia.gestor_asignado || ''); setIsReassigning(true); }}
-                                                    className="p-1 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded border border-yellow-500 transition-all shrink-0"
+                                                    className="p-1 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded border border-[#a03d42] transition-all shrink-0"
                                                     title="Reasignar gestor"
                                                 >
                                                     <UserCog className="w-3.5 h-3.5" />
@@ -2114,7 +2114,7 @@ export default function IncidenciasPage() {
                             {/* Sección 3: Documentación */}
                             {selectedDetailIncidencia.adjuntos && selectedDetailIncidencia.adjuntos.length > 0 && (
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">
                                         Documentación
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -2151,7 +2151,7 @@ export default function IncidenciasPage() {
 
                             {/* Sección 4: Chat de Gestores */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">
                                     Chat de Gestores
                                 </h3>
                                 <TimelineChat entityType="incidencia" entityId={selectedDetailIncidencia.id} />
@@ -2185,7 +2185,7 @@ export default function IncidenciasPage() {
                                 ) : (
                                     <button
                                         onClick={() => { toggleResuelto(selectedDetailIncidencia.id, selectedDetailIncidencia.resuelto); setShowDetailModal(false); }}
-                                        className="px-5 py-2.5 text-sm font-black text-neutral-900 bg-yellow-400 hover:bg-yellow-500 rounded-xl transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
+                                        className="px-5 py-2.5 text-sm font-black text-neutral-900 bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
                                     >
                                         <Check className="w-4 h-4" />
                                         <span className="hidden sm:inline">Resolver </span>Ticket
@@ -2251,7 +2251,7 @@ export default function IncidenciasPage() {
                             </button>
                             <button
                                 onClick={handleDeleteAttachment}
-                                className="flex-1 py-3 bg-yellow-400 hover:bg-yellow-500 text-neutral-900 rounded-xl font-bold transition-transform active:scale-[0.98] shadow-lg shadow-yellow-100"
+                                className="flex-1 py-3 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-900 rounded-xl font-bold transition-transform active:scale-[0.98] shadow-lg shadow-yellow-100"
                             >
                                 Eliminar
                             </button>
@@ -2287,7 +2287,7 @@ export default function IncidenciasPage() {
 
                             {/* Resumen de conteos */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Resumen</h3>
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Resumen</h3>
                                 <div className="grid grid-cols-3 gap-3">
                                     <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-3 text-center">
                                         <div className="text-xl font-bold text-neutral-900">{importPreviewData.total_parsed}</div>
@@ -2303,13 +2303,13 @@ export default function IncidenciasPage() {
                                         <div className="text-xl font-bold text-amber-700">
                                             {importPreviewData.to_skip - Object.keys(importRecordComunidades).length}
                                         </div>
-                                        <div className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mt-1">Se omiten</div>
+                                        <div className="text-[10px] font-bold text-[#a03d42] uppercase tracking-widest mt-1">Se omiten</div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Opciones de estado */}
-                            <div className="flex items-center justify-between border-b border-yellow-400 pb-2 mb-3">
+                            <div className="flex items-center justify-between border-b border-[#bf4b50] pb-2 mb-3">
                                 <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest leading-none">Acciones Masivas</h3>
                                 <div className="flex items-center gap-2">
                                     <button
@@ -2337,7 +2337,7 @@ export default function IncidenciasPage() {
 
                             {/* Tabla de registros */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">
                                     Detalle de registros
                                 </h3>
                                 <div className="border border-neutral-200 rounded-lg overflow-hidden">
@@ -2388,7 +2388,7 @@ export default function IncidenciasPage() {
                                                                                 return next;
                                                                             });
                                                                         }}
-                                                                        className="w-full text-[10px] border border-amber-300 rounded px-1.5 py-1 bg-white text-neutral-700 focus:border-yellow-400 outline-none"
+                                                                        className="w-full text-[10px] border border-amber-300 rounded px-1.5 py-1 bg-white text-neutral-700 focus:border-[#bf4b50] outline-none"
                                                                     >
                                                                         <option value="">— Asignar comunidad —</option>
                                                                         {comunidades.map(c => (
@@ -2488,7 +2488,7 @@ export default function IncidenciasPage() {
                                 type="button"
                                 onClick={handleConfirmImport}
                                 disabled={importPreviewData.to_insert + Object.keys(importRecordComunidades).length === 0}
-                                className="px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
                             >
                                 <FileText className="w-3.5 h-3.5" />
                                 Importar {importPreviewData.to_insert + Object.keys(importRecordComunidades).length} registros
@@ -2550,9 +2550,9 @@ export default function IncidenciasPage() {
             {portalReady && importingPdf && createPortal(
                 <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-neutral-900/80 backdrop-blur-md">
                     <div className="relative w-24 h-24 mb-6">
-                        <div className="absolute inset-0 border-4 border-yellow-400/20 rounded-full" />
-                        <div className="absolute inset-0 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
-                        <FileText className="absolute inset-0 m-auto w-10 h-10 text-yellow-400 animate-pulse" />
+                        <div className="absolute inset-0 border-4 border-[#bf4b50]/20 rounded-full" />
+                        <div className="absolute inset-0 border-4 border-[#bf4b50] border-t-transparent rounded-full animate-spin" />
+                        <FileText className="absolute inset-0 m-auto w-10 h-10 text-[#bf4b50] animate-pulse" />
                     </div>
                     <div className="text-center space-y-2">
                         <h3 className="text-xl font-bold text-white tracking-tight">Procesando PDF</h3>

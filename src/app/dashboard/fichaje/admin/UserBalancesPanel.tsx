@@ -160,7 +160,7 @@ export default function UserBalancesPanel({ adminId }: UserBalancesPanelProps) {
                                 placeholder="Buscar empleado..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-9 pr-4 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-yellow-400 transition w-full md:w-64"
+                                className="pl-9 pr-4 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#bf4b50] transition w-full md:w-64"
                             />
                         </div>
                     </div>
@@ -247,7 +247,7 @@ export default function UserBalancesPanel({ adminId }: UserBalancesPanelProps) {
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="w-full mt-2 bg-yellow-400 hover:bg-yellow-500 text-neutral-900 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-yellow-100"
+                                className="w-full mt-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-900 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-yellow-100"
                             >
                                 {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                                 Actualizar Saldos

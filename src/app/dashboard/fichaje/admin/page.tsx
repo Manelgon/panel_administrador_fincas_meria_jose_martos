@@ -320,7 +320,7 @@ export default function FichajeAdminPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <Users className="w-6 h-6 text-yellow-500" />
+                    <Users className="w-6 h-6 text-[#a03d42]" />
                     <h1 className="text-xl font-bold text-neutral-900">Fichaje - Administración</h1>
                 </div>
                 <a
@@ -336,19 +336,19 @@ export default function FichajeAdminPage() {
             <div className="flex border-b border-gray-200">
                 <button
                     onClick={() => setActiveTab('control')}
-                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'control' ? 'border-yellow-400 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'control' ? 'border-[#bf4b50] text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     Control General
                 </button>
                 <button
                     onClick={() => setActiveTab('reports')}
-                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'reports' ? 'border-yellow-400 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'reports' ? 'border-[#bf4b50] text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     Informes y Exportación
                 </button>
                 <button
                     onClick={() => setActiveTab('vacations')}
-                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'vacations' ? 'border-yellow-400 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'vacations' ? 'border-[#bf4b50] text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     Gestión de Vacaciones
                 </button>
@@ -367,7 +367,7 @@ export default function FichajeAdminPage() {
                                 <label className="flex items-center cursor-pointer gap-2">
                                     <input
                                         type="checkbox"
-                                        className="w-5 h-5 text-yellow-500 rounded focus:ring-yellow-500"
+                                        className="w-5 h-5 text-[#a03d42] rounded focus:ring-[#a03d42]"
                                         checked={settings.auto_close_enabled}
                                         onChange={(e) => setSettings({ ...settings, auto_close_enabled: e.target.checked })}
                                     />

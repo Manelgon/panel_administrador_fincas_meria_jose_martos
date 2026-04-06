@@ -149,7 +149,7 @@ export default function DashboardPage() {
                                 <button
                                     key={p}
                                     onClick={() => changePeriod(p)}
-                                    className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 text-xs font-medium rounded-md transition ${period === p ? 'bg-yellow-400 text-neutral-950 shadow-sm' : 'text-neutral-600 hover:bg-neutral-50'}`}
+                                    className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 text-xs font-medium rounded-md transition ${period === p ? 'bg-[#bf4b50] text-neutral-950 shadow-sm' : 'text-neutral-600 hover:bg-neutral-50'}`}
                                 >
                                     {p === 'all' ? 'Todo' : `${p} días`}
                                 </button>
@@ -185,14 +185,14 @@ export default function DashboardPage() {
                                 })()
                         }
                         icon={Building}
-                        color="border-yellow-400"
-                        iconColor="text-yellow-500"
+                        color="border-[#bf4b50]"
+                        iconColor="text-[#a03d42]"
                         href="/dashboard/comunidades"
                     />
                     <KPICard title="Incid. Pendientes" value={stats.incidenciasPendientes} icon={AlertCircle} color="border-red-400" iconColor="text-red-500" href="/dashboard/incidencias" />
                     <KPICard title="Aplazadas" value={stats.incidenciasAplazadas} icon={Pause} color="border-orange-400" iconColor="text-orange-500" href="/dashboard/incidencias" />
                     <KPICard title="Resueltas" value={stats.incidenciasResueltas} icon={CheckCircle} color="border-emerald-400" iconColor="text-emerald-500" href="/dashboard/incidencias" />
-                    <KPICard title="Deuda Total" value={`${stats.totalDeuda.toLocaleString()}€`} icon={FileText} color="border-yellow-400" iconColor="text-yellow-600" href="/dashboard/deudas" />
+                    <KPICard title="Deuda Total" value={`${stats.totalDeuda.toLocaleString()}€`} icon={FileText} color="border-[#bf4b50]" iconColor="text-yellow-600" href="/dashboard/deudas" />
                 </div>
 
                 {/* ── Sección Incidencias ─────────────────────────────────────────── */}
@@ -347,7 +347,7 @@ export default function DashboardPage() {
                 </Section>
 
                 {/* ── Sección Cronometraje ────────────────────────────────────────── */}
-                <Section id="cronometraje" title="Cronometraje de Tareas" icon={Timer} iconColor="text-yellow-500">
+                <Section id="cronometraje" title="Cronometraje de Tareas" icon={Timer} iconColor="text-[#a03d42]">
                     <CronometrajeSection cronoStats={cronoStats} chartData={chartData} embedded />
                 </Section>
 
@@ -410,11 +410,11 @@ export default function DashboardPage() {
                         <div className="p-4 sm:px-5 sm:py-4 space-y-5">
                             {/* Comunidad */}
                             <div>
-                                <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400 block">Comunidad</label>
+                                <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50] block">Comunidad</label>
                                 <select
                                     value={pdfCommunity}
                                     onChange={e => setPdfCommunity(e.target.value)}
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
                                 >
                                     <option value="all">Todas las comunidades</option>
                                     {communities.map(c => (
@@ -425,7 +425,7 @@ export default function DashboardPage() {
 
                             {/* Rango de fechas */}
                             <div>
-                                <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400 block">Rango de fechas</label>
+                                <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50] block">Rango de fechas</label>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Desde</p>
@@ -433,7 +433,7 @@ export default function DashboardPage() {
                                             type="date"
                                             value={pdfDateFrom}
                                             onChange={e => setPdfDateFrom(e.target.value)}
-                                            className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition"
+                                            className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
                                         />
                                     </div>
                                     <div>
@@ -442,7 +442,7 @@ export default function DashboardPage() {
                                             type="date"
                                             value={pdfDateTo}
                                             onChange={e => setPdfDateTo(e.target.value)}
-                                            className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition"
+                                            className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
                                         />
                                     </div>
                                 </div>
@@ -450,7 +450,7 @@ export default function DashboardPage() {
 
                             {/* Contenido del PDF */}
                             <div>
-                                <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400 block">Contenido del PDF</label>
+                                <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50] block">Contenido del PDF</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {([
                                         { key: 'both', label: 'Gráficas + Datos', desc: 'Todo el informe' },
@@ -460,7 +460,7 @@ export default function DashboardPage() {
                                         <button
                                             key={key}
                                             onClick={() => setPdfMode(key)}
-                                            className={`py-2.5 px-2 rounded-lg text-xs font-bold border transition text-center ${pdfMode === key ? 'bg-yellow-100 text-yellow-700 border-yellow-400' : 'bg-white text-neutral-400 border-neutral-200 hover:border-neutral-300 hover:text-neutral-600'}`}
+                                            className={`py-2.5 px-2 rounded-lg text-xs font-bold border transition text-center ${pdfMode === key ? 'bg-yellow-100 text-yellow-700 border-[#bf4b50]' : 'bg-white text-neutral-400 border-neutral-200 hover:border-neutral-300 hover:text-neutral-600'}`}
                                         >
                                             <div>{label}</div>
                                             <div className={`text-[10px] font-normal mt-0.5 ${pdfMode === key ? 'text-yellow-600' : 'text-neutral-300'}`}>{desc}</div>
@@ -471,7 +471,7 @@ export default function DashboardPage() {
 
                             {/* Secciones — solo visible si hay datos */}
                             <div className={pdfMode === 'charts' ? 'opacity-40 pointer-events-none' : ''}>
-                                <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400 block">Estadísticas a incluir</label>
+                                <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50] block">Estadísticas a incluir</label>
                                 <div className="grid grid-cols-5 gap-2">
                                     {[
                                         { key: 'incidencias', label: 'Incidencias' },
@@ -511,7 +511,7 @@ export default function DashboardPage() {
                             <button
                                 onClick={handleGeneratePDF}
                                 disabled={pdfSections.length === 0 || isGeneratingPDF}
-                                className="px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
                             >
                                 <FileDown className="w-3.5 h-3.5" />
                                 Generar PDF

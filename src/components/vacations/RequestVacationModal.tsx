@@ -116,7 +116,7 @@ export default function RequestVacationModal({ isOpen, onClose, onSuccess, userI
             <div className="bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-lg overflow-hidden max-h-[92dvh] sm:max-h-[90dvh] flex flex-col animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
                 <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/40">
                     <h3 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
-                        <Calendar className="w-5 h-5 text-yellow-500" />
+                        <Calendar className="w-5 h-5 text-[#a03d42]" />
                         Solicitar Días
                     </h3>
                     <button onClick={() => { onClose(); setFormErrors({}); }} className="p-2 rounded-full text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors">
@@ -131,7 +131,7 @@ export default function RequestVacationModal({ isOpen, onClose, onSuccess, userI
                             <select
                                 value={type}
                                 onChange={(e) => setType(e.target.value)}
-                                className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition"
+                                className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
                             >
                                 <option value="VACACIONES">Vacaciones Anuales</option>
                                 <option value="RETRIBUIDO">Días Retribuidos (Propios)</option>
@@ -153,7 +153,7 @@ export default function RequestVacationModal({ isOpen, onClose, onSuccess, userI
                                 type="date"
                                 value={dateFrom}
                                 onChange={(e) => { setDateFrom(e.target.value); setFormErrors(prev => ({ ...prev, dateRange: '' })); }}
-                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${formErrors.dateRange ? 'border-red-400' : 'border-neutral-200'}`}
+                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${formErrors.dateRange ? 'border-red-400' : 'border-neutral-200'}`}
                                 required
                             />
                         </div>
@@ -163,7 +163,7 @@ export default function RequestVacationModal({ isOpen, onClose, onSuccess, userI
                                 type="date"
                                 value={dateTo}
                                 onChange={(e) => { setDateTo(e.target.value); setFormErrors(prev => ({ ...prev, dateRange: '' })); }}
-                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${formErrors.dateRange ? 'border-red-400' : 'border-neutral-200'}`}
+                                className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${formErrors.dateRange ? 'border-red-400' : 'border-neutral-200'}`}
                                 required
                             />
                         </div>
@@ -193,7 +193,7 @@ export default function RequestVacationModal({ isOpen, onClose, onSuccess, userI
                         <textarea
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
-                            className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition h-24 resize-none"
+                            className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition h-24 resize-none"
                             placeholder="Ej: Necesito estos días para trámites personales..."
                         />
                     </div>
@@ -209,7 +209,7 @@ export default function RequestVacationModal({ isOpen, onClose, onSuccess, userI
                         <button
                             type="submit"
                             disabled={loading || daysCount <= 0 || isOverLimit}
-                            className="flex-[2] py-2 px-4 bg-yellow-400 text-neutral-950 rounded-lg text-xs font-bold hover:bg-yellow-500 transition shadow-sm disabled:opacity-50 disabled:bg-neutral-200 disabled:shadow-none"
+                            className="flex-[2] py-2 px-4 bg-[#bf4b50] text-neutral-950 rounded-lg text-xs font-bold hover:bg-[#a03d42] transition shadow-sm disabled:opacity-50 disabled:bg-neutral-200 disabled:shadow-none"
                         >
                             {loading ? "Enviando..." : "Enviar Solicitud"}
                         </button>

@@ -137,7 +137,7 @@ export default function PropietariosSofiaPage() {
                 const isLinked = comunidades.some(c => c.codigo === row.codigo_comunidad);
                 return (
                     <div className="flex items-start gap-3 text-xs">
-                        <span className={`mt-1 h-3.5 w-1.5 rounded-full ${isLinked ? 'bg-neutral-900' : 'bg-yellow-400'}`} />
+                        <span className={`mt-1 h-3.5 w-1.5 rounded-full ${isLinked ? 'bg-neutral-900' : 'bg-[#bf4b50]'}`} />
                         <span className="font-semibold">{row.codigo_comunidad || '-'}</span>
                     </div>
                 );
@@ -189,7 +189,7 @@ export default function PropietariosSofiaPage() {
                 return (
                     <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${isTrue
                         ? 'bg-emerald-100 text-emerald-700'
-                        : isFalse ? 'bg-red-100 text-red-700' : 'bg-yellow-400 text-neutral-950'
+                        : isFalse ? 'bg-red-100 text-red-700' : 'bg-[#bf4b50] text-neutral-950'
                         }`}
                     >
                         {isTrue ? 'Activada' : (isFalse ? 'Desactivada' : 'Pendiente')}
@@ -291,7 +291,7 @@ export default function PropietariosSofiaPage() {
                         });
                         setShowForm(true);
                     }}
-                    className="bg-yellow-400 hover:bg-yellow-500 text-neutral-950 px-4 py-2 rounded-md flex items-center gap-2 transition font-semibold text-sm"
+                    className="bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-4 py-2 rounded-md flex items-center gap-2 transition font-semibold text-sm"
                 >
                     <Plus className="w-4 h-4" />
                     Nuevo Propietario
@@ -428,7 +428,7 @@ export default function PropietariosSofiaPage() {
                                 form="propietario-form"
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full sm:w-auto h-12 px-8 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
+                                className="w-full sm:w-auto h-12 px-8 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
                             >
                                 {isSubmitting ? (
                                     <>

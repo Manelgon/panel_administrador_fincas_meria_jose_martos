@@ -152,10 +152,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <div className="flex items-center gap-2">
                         <div
                             className="w-2 h-2 rounded-full animate-pulse"
-                            style={{ background: '#fbbf24' }}
+                            style={{ background: '#bf4b50' }}
                             aria-hidden="true"
                         />
-                        <span className="text-xs font-bold tracking-widest uppercase" style={{ color: '#fbbf24' }}>
+                        <span className="text-xs font-bold tracking-widest uppercase" style={{ color: '#bf4b50' }}>
                             {companyName || 'Serincosol'}
                         </span>
                     </div>
@@ -184,7 +184,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 >
                     <div
                         className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-neutral-950 flex-shrink-0"
-                        style={{ background: '#fbbf24' }}
+                        style={{ background: '#bf4b50' }}
                         aria-hidden="true"
                     >
                         {initials}
@@ -197,7 +197,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         onClick={handleLogout}
                         className="p-1.5 rounded-lg transition-all flex-shrink-0"
                         style={{ color: 'rgba(255,255,255,0.35)' }}
-                        onMouseEnter={e => { e.currentTarget.style.color = '#fbbf24'; e.currentTarget.style.background = 'rgba(251,191,36,0.1)'; }}
+                        onMouseEnter={e => { e.currentTarget.style.color = '#bf4b50'; e.currentTarget.style.background = 'rgba(251,191,36,0.1)'; }}
                         onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; e.currentTarget.style.background = 'transparent'; }}
                         title="Cerrar sesión"
                         aria-label="Cerrar sesión"
@@ -228,8 +228,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                         className="group flex items-center gap-3 rounded-lg px-3 py-2 mb-0.5 text-sm font-medium transition-all duration-150"
                                         style={isActive ? {
                                             background: 'rgba(251,191,36,0.12)',
-                                            borderLeft: '3px solid #fbbf24',
-                                            color: '#fbbf24',
+                                            borderLeft: '3px solid #bf4b50',
+                                            color: '#bf4b50',
                                             paddingLeft: '9px',
                                         } : {
                                             borderLeft: '3px solid transparent',

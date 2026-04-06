@@ -189,7 +189,7 @@ export default function VacationManager() {
                 <div className="bg-white p-6 rounded-xl shadow-md border border-neutral-100">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-bold text-neutral-900 flex items-center gap-2">
-                            <ShieldAlert className="w-5 h-5 text-yellow-500" />
+                            <ShieldAlert className="w-5 h-5 text-[#a03d42]" />
                             Bandeja de Solicitudes
                         </h2>
                         <div className="text-xs text-neutral-500">
@@ -241,7 +241,7 @@ export default function VacationManager() {
                             <div>
                                 <label className="text-xs font-bold text-neutral-500 uppercase">Comentario Admin</label>
                                 <textarea
-                                    className="w-full mt-1 p-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm h-24 resize-none outline-none focus:ring-2 focus:ring-yellow-400"
+                                    className="w-full mt-1 p-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm h-24 resize-none outline-none focus:ring-2 focus:ring-[#bf4b50]"
                                     placeholder="Motivo de la decisión..."
                                     value={adminComment}
                                     onChange={(e) => setAdminComment(e.target.value)}

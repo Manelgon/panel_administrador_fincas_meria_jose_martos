@@ -684,7 +684,7 @@ export default function SofiaPage() {
             label: 'Código',
             render: (row) => (
                 <div className="flex items-start gap-3">
-                    <span className={`mt-1 h-3.5 w-1.5 rounded-full ${row.resuelto ? 'bg-neutral-900' : row.estado === 'Aplazado' ? 'bg-orange-400' : 'bg-yellow-400'}`} />
+                    <span className={`mt-1 h-3.5 w-1.5 rounded-full ${row.resuelto ? 'bg-neutral-900' : row.estado === 'Aplazado' ? 'bg-orange-400' : 'bg-[#bf4b50]'}`} />
                     <span className="font-semibold">{row.codigo || '-'}</span>
                 </div>
             ),
@@ -808,7 +808,7 @@ export default function SofiaPage() {
                 return (
                     <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${row.resuelto
                         ? 'bg-neutral-900 text-white'
-                        : 'bg-yellow-400 text-neutral-950'
+                        : 'bg-[#bf4b50] text-neutral-950'
                         }`}
                     >
                         {row.resuelto ? 'Resuelto' : 'Pendiente'}
@@ -832,7 +832,7 @@ export default function SofiaPage() {
                             onClick={() => setFilterEstado(status)}
                             className={`px-3 py-1 rounded-full text-sm font-medium transition ${
                                 filterEstado === status
-                                    ? status === 'aplazado' ? 'bg-orange-400 text-white' : 'bg-yellow-400 text-neutral-950'
+                                    ? status === 'aplazado' ? 'bg-orange-400 text-white' : 'bg-[#bf4b50] text-neutral-950'
                                     : 'bg-neutral-200'
                             }`}
                         >
@@ -914,7 +914,7 @@ export default function SofiaPage() {
                     <div className="bg-white rounded-none sm:rounded-2xl shadow-2xl w-full sm:max-w-4xl h-full sm:h-auto sm:max-h-[92dvh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
                         <div className="px-6 py-5 border-b flex justify-between items-center bg-neutral-50/50">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-amber-400 rounded-xl flex items-center justify-center text-neutral-900">
+                                <div className="w-12 h-12 bg-[#bf4b50] rounded-xl flex items-center justify-center text-neutral-900">
                                     <FileText className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -1094,7 +1094,7 @@ export default function SofiaPage() {
                                     {isUpdatingGestor ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                     <span className="hidden sm:inline">Traspasar a </span>Gestión
                                 </button>
-                                <button onClick={() => toggleResuelto(selectedDetailIncidencia.id, selectedDetailIncidencia.resuelto)} className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase transition-all ${selectedDetailIncidencia.resuelto ? 'bg-white border-2 border-neutral-900' : 'bg-amber-400 hover:bg-amber-500'}`}>
+                                <button onClick={() => toggleResuelto(selectedDetailIncidencia.id, selectedDetailIncidencia.resuelto)} className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase transition-all ${selectedDetailIncidencia.resuelto ? 'bg-white border-2 border-neutral-900' : 'bg-[#bf4b50] hover:bg-[#a03d42]'}`}>
                                     {selectedDetailIncidencia.resuelto ? <><span className="hidden sm:inline">Reabrir </span>Ticket</> : <><span className="hidden sm:inline">Resolver </span>Ticket</>}
                                 </button>
                             </div>

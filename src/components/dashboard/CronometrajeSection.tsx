@@ -38,7 +38,7 @@ export default function CronometrajeSection({ cronoStats, chartData, embedded = 
         <div className="space-y-6">
             {!embedded && (
                 <div className="flex items-center gap-2">
-                    <Timer className="w-5 h-5 text-yellow-500" />
+                    <Timer className="w-5 h-5 text-[#a03d42]" />
                     <h2 className="text-lg md:text-xl font-bold text-neutral-900">Rendimiento de Cronometraje</h2>
                 </div>
             )}
@@ -50,8 +50,8 @@ export default function CronometrajeSection({ cronoStats, chartData, embedded = 
                     value={`${Math.floor(cronoStats.totalSeconds / 3600)}h ${Math.floor((cronoStats.totalSeconds % 3600) / 60)}m`}
                     icon={Clock}
                     trend={`${cronoStats.totalTasks} tareas`}
-                    color="border-yellow-400"
-                    iconColor="text-yellow-500"
+                    color="border-[#bf4b50]"
+                    iconColor="text-[#a03d42]"
                 />
                 <KPICard
                     title="Tareas Realizadas"

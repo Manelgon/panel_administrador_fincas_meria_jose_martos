@@ -350,7 +350,7 @@ export default function PerfilesPage() {
                 </h1>
                 <button
                     onClick={handleOpenCreate}
-                    className="flex items-center gap-1.5 bg-yellow-400 text-neutral-950 px-3 py-2 rounded-lg hover:bg-yellow-500 transition font-medium shadow-sm flex-shrink-0"
+                    className="flex items-center gap-1.5 bg-[#bf4b50] text-neutral-950 px-3 py-2 rounded-lg hover:bg-[#a03d42] transition font-medium shadow-sm flex-shrink-0"
                 >
                     <UserPlus className="w-4 h-4 flex-shrink-0" />
                     <span className="hidden sm:inline">Nuevo Usuario</span>
@@ -400,7 +400,7 @@ export default function PerfilesPage() {
                                     <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Nombre</label>
                                     <input
                                         type="text"
-                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${createErrors.nombre ? 'border-red-400' : 'border-neutral-200'}`}
+                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${createErrors.nombre ? 'border-red-400' : 'border-neutral-200'}`}
                                         value={createFormData.nombre}
                                         onChange={e => { setCreateFormData({ ...createFormData, nombre: e.target.value }); setCreateErrors(prev => ({ ...prev, nombre: '' })); }}
                                         placeholder="Ej. Juan"
@@ -412,7 +412,7 @@ export default function PerfilesPage() {
                                     <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Apellido (Opcional)</label>
                                     <input
                                         type="text"
-                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition"
+                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
                                         value={createFormData.apellido}
                                         onChange={e => setCreateFormData({ ...createFormData, apellido: e.target.value })}
                                         placeholder="Ej. Pérez"
@@ -425,7 +425,7 @@ export default function PerfilesPage() {
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Teléfono (Opcional)</label>
                                 <input
                                     type="tel"
-                                    className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${createErrors.telefono ? 'border-red-400' : 'border-neutral-200'}`}
+                                    className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${createErrors.telefono ? 'border-red-400' : 'border-neutral-200'}`}
                                     value={createFormData.telefono}
                                     onChange={e => { setCreateFormData({ ...createFormData, telefono: e.target.value }); setCreateErrors(prev => ({ ...prev, telefono: '' })); }}
                                     placeholder="600 000 000"
@@ -438,7 +438,7 @@ export default function PerfilesPage() {
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Email</label>
                                 <input
                                     type="email"
-                                    className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${createErrors.email ? 'border-red-400' : 'border-neutral-200'}`}
+                                    className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${createErrors.email ? 'border-red-400' : 'border-neutral-200'}`}
                                     value={createFormData.email}
                                     onChange={e => { setCreateFormData({ ...createFormData, email: e.target.value }); setCreateErrors(prev => ({ ...prev, email: '' })); }}
                                     placeholder="usuario@serincosol.com"
@@ -452,7 +452,7 @@ export default function PerfilesPage() {
                                     <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Contraseña</label>
                                     <input
                                         type="password"
-                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${createErrors.password ? 'border-red-400' : 'border-neutral-200'}`}
+                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${createErrors.password ? 'border-red-400' : 'border-neutral-200'}`}
                                         value={createFormData.password}
                                         onChange={e => { setCreateFormData({ ...createFormData, password: e.target.value }); setCreateErrors(prev => ({ ...prev, password: '' })); }}
                                         placeholder="******"
@@ -464,7 +464,7 @@ export default function PerfilesPage() {
                                     <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Confirmar</label>
                                     <input
                                         type="password"
-                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${createErrors.confirmPassword ? 'border-red-400' : 'border-neutral-200'}`}
+                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${createErrors.confirmPassword ? 'border-red-400' : 'border-neutral-200'}`}
                                         value={createFormData.confirmPassword}
                                         onChange={e => { setCreateFormData({ ...createFormData, confirmPassword: e.target.value }); setCreateErrors(prev => ({ ...prev, confirmPassword: '' })); }}
                                         placeholder="******"
@@ -477,7 +477,7 @@ export default function PerfilesPage() {
                             <div>
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Rol</label>
                                 <select
-                                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition"
+                                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
                                     value={createFormData.rol}
                                     onChange={e => setCreateFormData({ ...createFormData, rol: e.target.value as any })}
                                 >
@@ -501,7 +501,7 @@ export default function PerfilesPage() {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="px-6 py-2 bg-yellow-400 text-neutral-950 rounded-lg hover:bg-yellow-500 transition font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                    className="px-6 py-2 bg-[#bf4b50] text-neutral-950 rounded-lg hover:bg-[#a03d42] transition font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
                                     {processing ? (
                                         <>
@@ -543,7 +543,7 @@ export default function PerfilesPage() {
                                     <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Nombre</label>
                                     <input
                                         type="text"
-                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${editErrors.nombre ? 'border-red-400' : 'border-neutral-200'}`}
+                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${editErrors.nombre ? 'border-red-400' : 'border-neutral-200'}`}
                                         value={editFormData.nombre}
                                         onChange={e => { setEditFormData({ ...editFormData, nombre: e.target.value }); setEditErrors(prev => ({ ...prev, nombre: '' })); }}
                                     />
@@ -553,7 +553,7 @@ export default function PerfilesPage() {
                                     <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Apellido</label>
                                     <input
                                         type="text"
-                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition"
+                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
                                         value={editFormData.apellido}
                                         onChange={e => setEditFormData({ ...editFormData, apellido: e.target.value })}
                                     />
@@ -564,7 +564,7 @@ export default function PerfilesPage() {
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Teléfono</label>
                                 <input
                                     type="tel"
-                                    className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${editErrors.telefono ? 'border-red-400' : 'border-neutral-200'}`}
+                                    className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${editErrors.telefono ? 'border-red-400' : 'border-neutral-200'}`}
                                     value={editFormData.telefono}
                                     onChange={e => { setEditFormData({ ...editFormData, telefono: e.target.value }); setEditErrors(prev => ({ ...prev, telefono: '' })); }}
                                 />
@@ -584,7 +584,7 @@ export default function PerfilesPage() {
                             <div>
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Rol</label>
                                 <select
-                                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition"
+                                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
                                     value={editFormData.rol}
                                     onChange={e => setEditFormData({ ...editFormData, rol: e.target.value as any })}
                                 >
@@ -604,7 +604,7 @@ export default function PerfilesPage() {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="px-6 py-2 bg-yellow-400 text-neutral-950 rounded-lg hover:bg-yellow-500 transition font-bold shadow-sm disabled:opacity-50 flex items-center gap-2"
+                                    className="px-6 py-2 bg-[#bf4b50] text-neutral-950 rounded-lg hover:bg-[#a03d42] transition font-bold shadow-sm disabled:opacity-50 flex items-center gap-2"
                                 >
                                     {processing ? 'Guardando...' : 'Guardar Cambios'}
                                 </button>
@@ -639,7 +639,7 @@ export default function PerfilesPage() {
                                     <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Nueva Contraseña</label>
                                     <input
                                         type="password"
-                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${passwordErrors.password ? 'border-red-400' : 'border-neutral-200'}`}
+                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${passwordErrors.password ? 'border-red-400' : 'border-neutral-200'}`}
                                         value={passwordFormData.password}
                                         onChange={e => { setPasswordFormData({ ...passwordFormData, password: e.target.value }); setPasswordErrors(prev => ({ ...prev, password: '' })); }}
                                         placeholder="Min. 6 caracteres"
@@ -651,7 +651,7 @@ export default function PerfilesPage() {
                                     <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Confirmar</label>
                                     <input
                                         type="password"
-                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white transition${passwordErrors.confirmPassword ? 'border-red-400' : 'border-neutral-200'}`}
+                                        className={`w-full rounded-lg border bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition${passwordErrors.confirmPassword ? 'border-red-400' : 'border-neutral-200'}`}
                                         value={passwordFormData.confirmPassword}
                                         onChange={e => { setPasswordFormData({ ...passwordFormData, confirmPassword: e.target.value }); setPasswordErrors(prev => ({ ...prev, confirmPassword: '' })); }}
                                         placeholder="Repetir contraseña"
@@ -672,7 +672,7 @@ export default function PerfilesPage() {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="px-6 py-2 bg-yellow-400 text-neutral-950 rounded-lg hover:bg-yellow-500 transition font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                    className="px-6 py-2 bg-[#bf4b50] text-neutral-950 rounded-lg hover:bg-[#a03d42] transition font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
                                     {processing ? 'Guardando...' : 'Guardar'}
                                 </button>

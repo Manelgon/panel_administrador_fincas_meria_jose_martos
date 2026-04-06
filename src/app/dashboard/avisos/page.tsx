@@ -150,7 +150,7 @@ export default function AvisosPage() {
             render: (row) => (
                 <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${row.is_read
                     ? 'bg-neutral-100 text-neutral-600'
-                    : 'bg-yellow-400 text-neutral-950'
+                    : 'bg-[#bf4b50] text-neutral-950'
                     }`}>
                     {row.is_read ? 'Leído' : 'Nuevo'}
                 </span>
@@ -247,7 +247,7 @@ export default function AvisosPage() {
             <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
                 <button
                     onClick={() => setFilterState('unread')}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterState === 'unread' ? 'bg-yellow-400 text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterState === 'unread' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                 >
                     No leídos
                 </button>
@@ -308,7 +308,7 @@ export default function AvisosPage() {
 
                             {/* Aviso Info */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Información del Aviso</h3>
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Información del Aviso</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="sm:col-span-2">
                                         <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Asunto</label>
@@ -331,7 +331,7 @@ export default function AvisosPage() {
 
                             {/* Mensaje */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Mensaje</h3>
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Mensaje</h3>
                                 <div className="w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900 whitespace-pre-wrap leading-relaxed min-h-[80px]">
                                     {selectedNotification.body}
                                 </div>
@@ -348,7 +348,7 @@ export default function AvisosPage() {
                             {/* Incidencia relacionada */}
                             {!loadingEntity && entityData && selectedNotification.entity_type === 'incidencia' && (
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Incidencia Relacionada</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Incidencia Relacionada</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="sm:col-span-2">
                                             <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Comunidad</label>
@@ -406,7 +406,7 @@ export default function AvisosPage() {
                             {/* Deuda relacionada */}
                             {!loadingEntity && entityData && selectedNotification.entity_type === 'morosidad' && (
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Deuda Relacionada</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Deuda Relacionada</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="sm:col-span-2">
                                             <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Comunidad</label>
@@ -475,7 +475,7 @@ export default function AvisosPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowDetailModal(false)}
-                                className="px-8 py-3 text-sm font-black text-neutral-900 bg-yellow-400 hover:bg-yellow-500 rounded-xl transition-all shadow-sm flex items-center gap-2 hover:shadow-md hover:-translate-y-0.5"
+                                className="px-8 py-3 text-sm font-black text-neutral-900 bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 hover:shadow-md hover:-translate-y-0.5"
                             >
                                 Cerrar
                             </button>

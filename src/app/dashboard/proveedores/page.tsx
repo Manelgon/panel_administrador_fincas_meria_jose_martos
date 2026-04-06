@@ -215,7 +215,7 @@ export default function ProveedoresPage() {
             label: 'Nombre',
             render: (row) => (
                 <div className="flex items-start gap-3">
-                    <span className="mt-1 h-3.5 w-1.5 rounded-full bg-yellow-400" />
+                    <span className="mt-1 h-3.5 w-1.5 rounded-full bg-[#bf4b50]" />
                     <span className="font-semibold">{row.nombre}</span>
                 </div>
             ),
@@ -253,7 +253,7 @@ export default function ProveedoresPage() {
             label: 'Estado',
             render: (row) => (
                 <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${row.activo
-                    ? 'bg-yellow-400 text-neutral-950'
+                    ? 'bg-[#bf4b50] text-neutral-950'
                     : 'bg-neutral-900 text-white'
                     }`}>
                     {row.activo ? 'Activo' : 'Inactivo'}
@@ -275,7 +275,7 @@ export default function ProveedoresPage() {
                             setFormData({ nombre: '', telefono: '', email: '', cif: '', direccion: '', cp: '', ciudad: '', provincia: '' });
                         }
                     }}
-                    className="bg-yellow-400 hover:bg-yellow-500 text-neutral-950 px-3 py-2 rounded-xl flex items-center gap-1.5 transition font-semibold text-sm shadow-sm flex-shrink-0"
+                    className="bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-3 py-2 rounded-xl flex items-center gap-1.5 transition font-semibold text-sm shadow-sm flex-shrink-0"
                 >
                     <Plus className="w-4 h-4 flex-shrink-0" />
                     <span className="hidden sm:inline">{showForm ? 'Cancelar' : 'Nuevo Proveedor'}</span>
@@ -286,7 +286,7 @@ export default function ProveedoresPage() {
             <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
                 <button
                     onClick={() => setFilterEstado('activo')}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'activo' ? 'bg-yellow-400 text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'activo' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                 >
                     Activos
                 </button>
@@ -334,32 +334,32 @@ export default function ProveedoresPage() {
 
                                 {/* Sección: Identificación */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Identificación</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Identificación</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                         <div className="lg:col-span-2">
                                             <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Nombre / Razón Social <span className="text-red-500">*</span></label>
-                                            <input required type="text" placeholder="Servicios Integrales S.L." className={`w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all ${formErrors.nombre ? 'border-red-400' : 'border-neutral-200'}`} value={formData.nombre} onChange={e => { setFormData({ ...formData, nombre: e.target.value }); setFormErrors(prev => ({ ...prev, nombre: '' })); }} />
+                                            <input required type="text" placeholder="Servicios Integrales S.L." className={`w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30 focus:border-[#bf4b50] transition-all ${formErrors.nombre ? 'border-red-400' : 'border-neutral-200'}`} value={formData.nombre} onChange={e => { setFormData({ ...formData, nombre: e.target.value }); setFormErrors(prev => ({ ...prev, nombre: '' })); }} />
                                             {formErrors.nombre && <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.nombre}</p>}
                                         </div>
                                         <div>
                                             <label className="block text-xs font-semibold text-neutral-700 mb-1.5">CIF</label>
-                                            <input type="text" placeholder="B12345678" pattern="[A-Za-z0-9]{1,9}" maxLength={9} className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all uppercase" value={formData.cif} onChange={e => { const value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase(); setFormData({ ...formData, cif: value }); }} />
+                                            <input type="text" placeholder="B12345678" pattern="[A-Za-z0-9]{1,9}" maxLength={9} className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30 focus:border-[#bf4b50] transition-all uppercase" value={formData.cif} onChange={e => { const value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase(); setFormData({ ...formData, cif: value }); }} />
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Sección: Contacto */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Contacto</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Contacto</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Teléfono</label>
-                                            <input type="tel" placeholder="600 000 000" className={`w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all ${formErrors.telefono ? 'border-red-400' : 'border-neutral-200'}`} value={formData.telefono} onChange={e => { setFormData({ ...formData, telefono: e.target.value }); setFormErrors(prev => ({ ...prev, telefono: '' })); }} />
+                                            <input type="tel" placeholder="600 000 000" className={`w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30 focus:border-[#bf4b50] transition-all ${formErrors.telefono ? 'border-red-400' : 'border-neutral-200'}`} value={formData.telefono} onChange={e => { setFormData({ ...formData, telefono: e.target.value }); setFormErrors(prev => ({ ...prev, telefono: '' })); }} />
                                             {formErrors.telefono && <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.telefono}</p>}
                                         </div>
                                         <div>
                                             <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Email</label>
-                                            <input type="email" placeholder="admin@servicios.com" className={`w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all ${formErrors.email ? 'border-red-400' : 'border-neutral-200'}`} value={formData.email} onChange={e => { setFormData({ ...formData, email: e.target.value }); setFormErrors(prev => ({ ...prev, email: '' })); }} />
+                                            <input type="email" placeholder="admin@servicios.com" className={`w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30 focus:border-[#bf4b50] transition-all ${formErrors.email ? 'border-red-400' : 'border-neutral-200'}`} value={formData.email} onChange={e => { setFormData({ ...formData, email: e.target.value }); setFormErrors(prev => ({ ...prev, email: '' })); }} />
                                             {formErrors.email && <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{formErrors.email}</p>}
                                         </div>
                                     </div>
@@ -367,23 +367,23 @@ export default function ProveedoresPage() {
 
                                 {/* Sección: Ubicación */}
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Ubicación</h3>
+                                    <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Ubicación</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                         <div className="lg:col-span-3">
                                             <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Dirección</label>
-                                            <input type="text" placeholder="Polígono Industrial Nave 4" className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all" value={formData.direccion} onChange={e => setFormData({ ...formData, direccion: e.target.value })} />
+                                            <input type="text" placeholder="Polígono Industrial Nave 4" className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30 focus:border-[#bf4b50] transition-all" value={formData.direccion} onChange={e => setFormData({ ...formData, direccion: e.target.value })} />
                                         </div>
                                         <div>
                                             <label className="block text-xs font-semibold text-neutral-700 mb-1.5">CP</label>
-                                            <input type="text" placeholder="29001" className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all" value={formData.cp} onChange={e => setFormData({ ...formData, cp: e.target.value })} />
+                                            <input type="text" placeholder="29001" className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30 focus:border-[#bf4b50] transition-all" value={formData.cp} onChange={e => setFormData({ ...formData, cp: e.target.value })} />
                                         </div>
                                         <div>
                                             <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Ciudad</label>
-                                            <input type="text" placeholder="Málaga" className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all" value={formData.ciudad} onChange={e => setFormData({ ...formData, ciudad: e.target.value })} />
+                                            <input type="text" placeholder="Málaga" className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30 focus:border-[#bf4b50] transition-all" value={formData.ciudad} onChange={e => setFormData({ ...formData, ciudad: e.target.value })} />
                                         </div>
                                         <div>
                                             <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Provincia</label>
-                                            <input type="text" placeholder="Málaga" className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all" value={formData.provincia} onChange={e => setFormData({ ...formData, provincia: e.target.value })} />
+                                            <input type="text" placeholder="Málaga" className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30 focus:border-[#bf4b50] transition-all" value={formData.provincia} onChange={e => setFormData({ ...formData, provincia: e.target.value })} />
                                         </div>
                                     </div>
                                 </div>
@@ -403,7 +403,7 @@ export default function ProveedoresPage() {
                             <button
                                 form="proveedor-form"
                                 type="submit"
-                                className="px-8 py-3 text-sm font-black text-neutral-900 bg-yellow-400 hover:bg-yellow-500 rounded-xl transition-all shadow-sm flex items-center gap-2 hover:shadow-md hover:-translate-y-0.5"
+                                className="px-8 py-3 text-sm font-black text-neutral-900 bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 hover:shadow-md hover:-translate-y-0.5"
                             >
                                 <Plus className="w-4 h-4" />
                                 {editingId ? 'Guardar Cambios' : 'Crear Proveedor'}
@@ -474,7 +474,7 @@ export default function ProveedoresPage() {
 
                             {/* Identificación */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Identificación</h3>
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Identificación</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     <div className="lg:col-span-2">
                                         <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Nombre / Razón Social</label>
@@ -489,7 +489,7 @@ export default function ProveedoresPage() {
 
                             {/* Contacto */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Contacto</h3>
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Contacto</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Teléfono</label>
@@ -504,7 +504,7 @@ export default function ProveedoresPage() {
 
                             {/* Ubicación */}
                             <div>
-                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-yellow-400">Ubicación</h3>
+                                <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-4 border-b border-[#bf4b50]">Ubicación</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     <div className="lg:col-span-3">
                                         <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Dirección</label>
@@ -535,7 +535,7 @@ export default function ProveedoresPage() {
                             ]} />
                             <button
                                 onClick={() => { toggleActive(selectedDetailProveedor.id, selectedDetailProveedor.activo); setSelectedDetailProveedor({ ...selectedDetailProveedor, activo: !selectedDetailProveedor.activo }); }}
-                                className="px-5 py-2.5 text-sm font-black text-neutral-900 bg-yellow-400 hover:bg-yellow-500 rounded-xl transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
+                                className="px-5 py-2.5 text-sm font-black text-neutral-900 bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
                             >
                                 {selectedDetailProveedor.activo ? <><X className="w-4 h-4" /><span className="hidden sm:inline">Des</span>activar</> : <><Plus className="w-4 h-4" /> Activar</>}
                             </button>

@@ -231,7 +231,7 @@ export default function SearchableSelect({
                 <label id={`${selectId}-label`} className="sr-only" htmlFor={selectId}>{label}</label>
             )}
             <div
-                className={`w-full rounded-lg border border-neutral-200 bg-white flex items-center justify-between focus-within:ring-2 focus-within:ring-yellow-400 focus-within:border-yellow-400 overflow-hidden ${disabled ? "bg-slate-50 cursor-not-allowed pointer-events-none" : "cursor-text"}`}
+                className={`w-full rounded-lg border border-neutral-200 bg-white flex items-center justify-between focus-within:ring-2 focus-within:ring-[#bf4b50] focus-within:border-[#bf4b50] overflow-hidden ${disabled ? "bg-slate-50 cursor-not-allowed pointer-events-none" : "cursor-text"}`}
                 onClick={() => {
                     if (disabled) return;
                     inputRef.current?.focus();

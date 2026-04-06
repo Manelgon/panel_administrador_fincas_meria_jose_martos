@@ -304,7 +304,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
                 <div className="space-y-4">
                     {/* Section: Datos Cliente */}
                     <div>
-                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Datos Cliente</h3>
+                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Datos Cliente</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-3">
                             <div className="flex flex-col">
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Código</label>
@@ -328,7 +328,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
 
                     {/* Section: Datos Suplido */}
                     <div>
-                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Datos Suplido</h3>
+                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Datos Suplido</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-neutral-50/60 rounded-lg border border-neutral-100 mb-3">
                             <Field label="Nº Cartas" value={values["Número de Cartas"]} onChange={(v) => onChange("Número de Cartas", v, "number")} disabled={isDisabled} type="number" />
                             <Field label="Copias" value={values["Copias"]} onChange={(v) => onChange("Copias", v, "number")} disabled={isDisabled} type="number" />
@@ -362,7 +362,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
                                                     value={values[row.qty]}
                                                     disabled={isDisabled || row.qty === "Imprimir B/N" || row.qty === "Etiqueta manipulación"}
                                                     onChange={e => onChange(row.qty, e.target.value, "number")}
-                                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-2 py-1.5 text-center text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 transition"
+                                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-2 py-1.5 text-center text-sm focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 transition"
                                                 />
                                             </td>
                                             <td className="px-3 py-2">
@@ -378,7 +378,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
                                 <tfoot className="border-t border-neutral-200 bg-neutral-50/60 font-bold">
                                     <tr>
                                         <td colSpan={3} className="px-3 py-2 text-right text-xs uppercase tracking-wide text-neutral-500">Suma Final</td>
-                                        <td className="px-3 py-2 text-right text-sm bg-yellow-400/10">{(values["Suma final"] ?? 0).toFixed(2)} €</td>
+                                        <td className="px-3 py-2 text-right text-sm bg-[#bf4b50]/10">{(values["Suma final"] ?? 0).toFixed(2)} €</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -390,7 +390,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
                 <button onClick={onCancel} className="px-6 py-2 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-600 rounded-lg text-xs font-bold transition">
                     Cancelar
                 </button>
-                <button onClick={generate} disabled={isDisabled || !canGenerate} className="px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm">
+                <button onClick={generate} disabled={isDisabled || !canGenerate} className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm">
                     {status === "generating" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
                     {status === "generating" ? "Generando..." : "Generar Suplido"}
                 </button>
@@ -409,7 +409,7 @@ function Field({ label, value, onChange, type = "text", disabled = false, readOn
                 onChange={(e) => onChange?.(e.target.value)}
                 disabled={disabled}
                 readOnly={readOnly}
-                className={`w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition ${className}`}
+                className={`w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition ${className}`}
             />
         </div>
     );

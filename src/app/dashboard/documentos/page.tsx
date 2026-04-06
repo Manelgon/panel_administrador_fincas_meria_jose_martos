@@ -127,7 +127,7 @@ export default function DocumentosPage() {
                             {doc.available ? (
                                 <button
                                     onClick={() => setActiveModal(doc.key as any)}
-                                    className="inline-flex rounded-md bg-yellow-400 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-yellow-500 transition shadow-sm hover:shadow"
+                                    className="inline-flex rounded-md bg-[#bf4b50] px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-[#a03d42] transition shadow-sm hover:shadow"
                                 >
                                     Crear documento
                                 </button>

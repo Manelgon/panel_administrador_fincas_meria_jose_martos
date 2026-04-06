@@ -15,7 +15,7 @@ export default function AuthLayout({
                 aria-hidden="true"
                 className="pointer-events-none absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full opacity-30"
                 style={{
-                    background: 'radial-gradient(circle, #fbbf24 0%, transparent 70%)',
+                    background: 'radial-gradient(circle, #bf4b50 0%, transparent 70%)',
                     filter: 'blur(80px)',
                 }}
             />

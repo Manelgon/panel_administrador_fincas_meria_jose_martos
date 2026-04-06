@@ -375,7 +375,7 @@ export default function FacturasComunidadesPage() {
                             </button>
                             <button
                                 onClick={handleCreateBudget}
-                                className="flex items-center gap-2 px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-neutral-900 rounded-lg transition-colors text-sm font-medium shadow-sm"
+                                className="flex items-center gap-2 px-3 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-900 rounded-lg transition-colors text-sm font-medium shadow-sm"
                             >
                                 <Plus className="w-4 h-4" />
                                 <span>Crear carpeta</span>
@@ -460,7 +460,7 @@ export default function FacturasComunidadesPage() {
                                     type="text"
                                     required
                                     autoFocus
-                                    className="w-full px-4 py-3 border-2 border-yellow-400/30 rounded-2xl focus:ring-2 focus:ring-yellow-400/20 focus:border-yellow-400 outline-none transition-all text-neutral-800"
+                                    className="w-full px-4 py-3 border-2 border-[#bf4b50]/30 rounded-2xl focus:ring-2 focus:ring-[#bf4b50]/20 focus:border-[#bf4b50] outline-none transition-all text-neutral-800"
                                     placeholder="Nombre de la carpeta"
                                     value={newFolderName}
                                     onChange={(e) => setNewFolderName(e.target.value)}
@@ -471,7 +471,7 @@ export default function FacturasComunidadesPage() {
                                 <button
                                     type="submit"
                                     disabled={isCreating}
-                                    className="px-8 py-3 bg-yellow-400 text-neutral-900 rounded-full hover:bg-yellow-500 transition-all font-bold shadow-sm disabled:opacity-50 active:scale-95"
+                                    className="px-8 py-3 bg-[#bf4b50] text-neutral-900 rounded-full hover:bg-[#a03d42] transition-all font-bold shadow-sm disabled:opacity-50 active:scale-95"
                                 >
                                     {isCreating ? 'Creando...' : 'Aceptar'}
                                 </button>
@@ -536,7 +536,7 @@ export default function FacturasComunidadesPage() {
                         <div className="flex-grow p-4 overflow-y-auto">
                             {moveLoading ? (
                                 <div className="flex flex-col items-center justify-center p-12">
-                                    <RefreshCw className="w-8 h-8 text-yellow-400 animate-spin" />
+                                    <RefreshCw className="w-8 h-8 text-[#bf4b50] animate-spin" />
                                     <span className="text-sm text-neutral-400 mt-4">Cargando carpetas...</span>
                                 </div>
                             ) : moveFolderItems.length > 0 ? (
@@ -545,7 +545,7 @@ export default function FacturasComunidadesPage() {
                                         <button
                                             key={item.id || item.name}
                                             onClick={() => handleMoveFolderClick(item.name)}
-                                            className="flex items-center gap-3 p-4 rounded-2xl border-2 border-transparent hover:border-yellow-400 hover:bg-yellow-50 transition-all text-left group"
+                                            className="flex items-center gap-3 p-4 rounded-2xl border-2 border-transparent hover:border-[#bf4b50] hover:bg-yellow-50 transition-all text-left group"
                                         >
                                             <div className="p-2 rounded-lg bg-yellow-100 text-yellow-600 group-hover:bg-yellow-200 transition-colors">
                                                 <Folder className="w-5 h-5" />
@@ -587,7 +587,7 @@ export default function FacturasComunidadesPage() {
                                 <button
                                     onClick={handleMoveConfirm}
                                     disabled={isMoving}
-                                    className="px-8 py-3 bg-yellow-400 text-neutral-900 rounded-full hover:bg-yellow-500 transition-all font-bold text-sm shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
+                                    className="px-8 py-3 bg-[#bf4b50] text-neutral-900 rounded-full hover:bg-[#a03d42] transition-all font-bold text-sm shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
                                 >
                                     {isMoving ? 'Moviendo...' : 'Mover aquí'}
                                 </button>

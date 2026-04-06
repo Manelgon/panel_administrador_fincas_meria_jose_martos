@@ -133,7 +133,7 @@ export default function AddOldTaskModal({ onClose, onAdded }: AddOldTaskModalPro
                 <div className="p-4 sm:px-5 sm:py-4 overflow-y-auto custom-scrollbar flex-1">
                     <div className="space-y-4">
                         <div>
-                            <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Datos de la Tarea</h3>
+                            <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Datos de la Tarea</h3>
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-x-4 gap-y-3">
                         <div className="md:col-span-2">
                             <label className="block text-[10px] font-black uppercase tracking-[0.15em] text-neutral-500 mb-1.5">
@@ -168,7 +168,7 @@ export default function AddOldTaskModal({ onClose, onAdded }: AddOldTaskModalPro
                             {tipoTarea === 'Otros' && (
                                 <input
                                     type="text"
-                                    className={`mt-2 w-full rounded-xl border bg-neutral-50/50 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400 focus:bg-white transition ${formErrors.otroTexto ? 'border-red-400' : 'border-neutral-200'}`}
+                                    className={`mt-2 w-full rounded-xl border bg-neutral-50/50 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/50 focus:border-[#bf4b50] focus:bg-white transition ${formErrors.otroTexto ? 'border-red-400' : 'border-neutral-200'}`}
                                     placeholder="Describe el tipo de tarea..."
                                     value={otroTexto}
                                     onChange={(e) => { setOtroTexto(e.target.value); setFormErrors(prev => ({ ...prev, otroTexto: '' })); }}
@@ -184,7 +184,7 @@ export default function AddOldTaskModal({ onClose, onAdded }: AddOldTaskModalPro
                             </label>
                             <input
                                 type="date"
-                                className={`w-full rounded-xl border bg-neutral-50/50 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400 focus:bg-white transition ${formErrors.date ? 'border-red-400' : 'border-neutral-200'}`}
+                                className={`w-full rounded-xl border bg-neutral-50/50 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/50 focus:border-[#bf4b50] focus:bg-white transition ${formErrors.date ? 'border-red-400' : 'border-neutral-200'}`}
                                 value={date}
                                 onChange={(e) => { setDate(e.target.value); setFormErrors(prev => ({ ...prev, date: '' })); }}
                                 max={new Date().toISOString().split('T')[0]}
@@ -200,7 +200,7 @@ export default function AddOldTaskModal({ onClose, onAdded }: AddOldTaskModalPro
                                 type="number"
                                 min={0}
                                 max={23}
-                                className={`w-full rounded-xl border bg-neutral-50/50 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400 focus:bg-white transition ${formErrors.duration ? 'border-red-400' : 'border-neutral-200'}`}
+                                className={`w-full rounded-xl border bg-neutral-50/50 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/50 focus:border-[#bf4b50] focus:bg-white transition ${formErrors.duration ? 'border-red-400' : 'border-neutral-200'}`}
                                 value={hours}
                                 onChange={(e) => { setHours(Math.max(0, Math.min(23, Number(e.target.value)))); setFormErrors(prev => ({ ...prev, duration: '' })); }}
                             />
@@ -214,7 +214,7 @@ export default function AddOldTaskModal({ onClose, onAdded }: AddOldTaskModalPro
                                 type="number"
                                 min={0}
                                 max={59}
-                                className={`w-full rounded-xl border bg-neutral-50/50 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400 focus:bg-white transition ${formErrors.duration ? 'border-red-400' : 'border-neutral-200'}`}
+                                className={`w-full rounded-xl border bg-neutral-50/50 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/50 focus:border-[#bf4b50] focus:bg-white transition ${formErrors.duration ? 'border-red-400' : 'border-neutral-200'}`}
                                 value={minutes}
                                 onChange={(e) => { setMinutes(Math.max(0, Math.min(59, Number(e.target.value)))); setFormErrors(prev => ({ ...prev, duration: '' })); }}
                             />
@@ -226,7 +226,7 @@ export default function AddOldTaskModal({ onClose, onAdded }: AddOldTaskModalPro
                                 Nota <span className="text-neutral-400 normal-case tracking-normal font-medium">(Opcional)</span>
                             </label>
                             <textarea
-                                className="w-full rounded-xl border border-neutral-200 bg-neutral-50/50 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400 focus:bg-white transition resize-none"
+                                className="w-full rounded-xl border border-neutral-200 bg-neutral-50/50 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/50 focus:border-[#bf4b50] focus:bg-white transition resize-none"
                                 rows={2}
                                 placeholder="Describe la tarea realizada..."
                                 value={nota}
@@ -249,7 +249,7 @@ export default function AddOldTaskModal({ onClose, onAdded }: AddOldTaskModalPro
                     <button
                         onClick={handleSave}
                         disabled={loading || !selectedCommunity}
-                        className="px-6 py-2 text-sm font-bold text-neutral-950 bg-yellow-400 hover:bg-yellow-500 rounded-lg transition shadow-sm hover:shadow-md active:scale-[0.98] flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2 text-sm font-bold text-neutral-950 bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition shadow-sm hover:shadow-md active:scale-[0.98] flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? (
                             <div className="w-4 h-4 border-2 border-neutral-400/30 border-t-neutral-900 rounded-full animate-spin" />
