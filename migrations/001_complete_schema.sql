@@ -1202,14 +1202,95 @@ to authenticated
 using (public.is_admin());
 
 -- =========================================
--- 8) STORAGE BUCKETS (ejecutar por separado si es necesario)
+-- 8) STORAGE BUCKETS
 -- =========================================
--- Necesitas crear estos buckets en Supabase Storage:
---   - doc-assets      (para logos/assets de documentos)
---   - incidencias     (para adjuntos de incidencias)
---   - morosidad       (para documentos de deudas)
---   - facturas        (para facturas de comunidades)
---   - email-reports   (para informes de email en PDF)
+
+-- Habilitar RLS en storage.objects (por si no está activo)
+alter table storage.objects enable row level security;
+
+-- ------------------------------------------------------------
+-- 8.1 BUCKET: documentos (privado)
+--     Adjuntos de incidencias, deudas, PDFs generados
+-- ------------------------------------------------------------
+insert into storage.buckets (id, name, public)
+values ('documentos', 'documentos', false)
+on conflict (id) do update set public = false;
+
+drop policy if exists "documentos: authenticated read" on storage.objects;
+create policy "documentos: authenticated read"
+on storage.objects for select
+to authenticated
+using (bucket_id = 'documentos');
+
+drop policy if exists "documentos: authenticated upload" on storage.objects;
+create policy "documentos: authenticated upload"
+on storage.objects for insert
+to authenticated
+with check (bucket_id = 'documentos');
+
+drop policy if exists "documentos: owner or admin modify" on storage.objects;
+create policy "documentos: owner or admin modify"
+on storage.objects for all
+to authenticated
+using (
+  bucket_id = 'documentos'
+  and (auth.uid() = owner or public.is_admin())
+)
+with check (
+  bucket_id = 'documentos'
+  and (auth.uid() = owner or public.is_admin())
+);
+
+-- Eliminar policy pública legada si existe
+drop policy if exists "Public read access" on storage.objects;
+
+-- ------------------------------------------------------------
+-- 8.2 BUCKET: doc-assets (privado)
+--     Logo, sello y assets estáticos para generación de PDFs
+-- ------------------------------------------------------------
+insert into storage.buckets (id, name, public)
+values ('doc-assets', 'doc-assets', false)
+on conflict (id) do update set public = false;
+
+drop policy if exists "doc-assets: authenticated read" on storage.objects;
+create policy "doc-assets: authenticated read"
+on storage.objects for select
+to authenticated
+using (bucket_id = 'doc-assets');
+
+-- Subida gestionada desde el Dashboard con service_role
+
+-- ------------------------------------------------------------
+-- 8.3 BUCKET: FACTURAS (privado)
+--     Facturas de comunidades subidas desde el módulo de facturas
+-- ------------------------------------------------------------
+insert into storage.buckets (id, name, public)
+values ('FACTURAS', 'FACTURAS', false)
+on conflict (id) do update set public = false;
+
+drop policy if exists "FACTURAS: authenticated read" on storage.objects;
+create policy "FACTURAS: authenticated read"
+on storage.objects for select
+to authenticated
+using (bucket_id = 'FACTURAS');
+
+drop policy if exists "FACTURAS: authenticated upload" on storage.objects;
+create policy "FACTURAS: authenticated upload"
+on storage.objects for insert
+to authenticated
+with check (bucket_id = 'FACTURAS');
+
+drop policy if exists "FACTURAS: owner or admin delete" on storage.objects;
+create policy "FACTURAS: owner or admin delete"
+on storage.objects for delete
+to authenticated
+using (
+  bucket_id = 'FACTURAS'
+  and (auth.uid() = owner or public.is_admin())
+);
+
+-- Eliminar policy pública legada si existe
+drop policy if exists "Public read facturas" on storage.objects;
 
 -- =========================================
 -- 9) COMPANY SETTINGS (emisor, logo, firma)

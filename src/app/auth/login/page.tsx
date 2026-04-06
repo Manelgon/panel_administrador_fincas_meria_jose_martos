@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { Eye, EyeOff, LogIn, Mail, Lock } from 'lucide-react';
-import { fetchEmisorName } from './login-action';
+import { fetchEmisorName, fetchEmisorLogoUrl } from './login-action';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -16,12 +16,12 @@ export default function LoginPage() {
     const [rememberMe, setRememberMe] = useState(false);
     const [loading, setLoading] = useState(false);
     const [emisorName, setEmisorName] = useState('');
+    const [logoUrl, setLogoUrl] = useState('');
 
-    // Load emisor name via Server Action to bypass RLS
+    // Load emisor name and logo via Server Actions to bypass RLS
     useEffect(() => {
-        fetchEmisorName().then((name) => {
-            if (name) setEmisorName(name);
-        });
+        fetchEmisorName().then((name) => { if (name) setEmisorName(name); });
+        fetchEmisorLogoUrl().then((url) => { if (url) setLogoUrl(url); });
     }, []);
 
     // Load remembered credentials on mount
@@ -146,8 +146,8 @@ export default function LoginPage() {
                             }}
                         >
                             <img
-                                src="/serincosol-logo.png"
-                                alt="Serincosol Logo"
+                                src={logoUrl || '/serincosol-logo.png'}
+                                alt="Logo"
                                 className="h-14 w-auto object-contain"
                             />
                         </div>
