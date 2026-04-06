@@ -7,7 +7,7 @@ import { getEmisor } from "@/lib/getEmisor";
 
 // --- CONSTANTS & HELPERS ---
 const A4 = { w: 595.28, h: 841.89 };
-const YELLOW = rgb(0.98, 0.84, 0.40);
+const YELLOW = rgb(0.75, 0.29, 0.31); // #bf4b50
 const BORDER = rgb(0.82, 0.82, 0.82);
 const BLACK = rgb(0, 0, 0);
 
@@ -156,19 +156,20 @@ export async function POST(req: Request) {
         const kpiW = (contentW - 20) / 3;
         const kpiY = currentY;
 
+        const WHITE = rgb(1, 1, 1);
         drawYellowBlock({
             page, x: marginX, yTop: kpiY, w: kpiW, lineH: 18, paddingX: 10, paddingY: 10,
-            lines: ["COMUNIDADES", String(communityName || 'Todas')], font: bold, size: 10, color: BLACK, bg: YELLOW
+            lines: ["COMUNIDADES", String(communityName || 'Todas')], font: bold, size: 10, color: WHITE, bg: YELLOW
         });
 
         drawYellowBlock({
             page, x: marginX + kpiW + 10, yTop: kpiY, w: kpiW, lineH: 18, paddingX: 10, paddingY: 10,
-            lines: ["INCIDENCIAS", `Pend: ${stats.incidenciasPendientes}   Res: ${stats.incidenciasResueltas}`], font: bold, size: 10, color: BLACK, bg: YELLOW
+            lines: ["INCIDENCIAS", `Pend: ${stats.incidenciasPendientes}   Res: ${stats.incidenciasResueltas}`], font: bold, size: 10, color: WHITE, bg: YELLOW
         });
 
         drawYellowBlock({
             page, x: marginX + (kpiW + 10) * 2, yTop: kpiY, w: kpiW, lineH: 18, paddingX: 10, paddingY: 10,
-            lines: ["DEUDA TOTAL", stats.totalDeuda], font: bold, size: 10, color: BLACK, bg: YELLOW
+            lines: ["DEUDA TOTAL", stats.totalDeuda], font: bold, size: 10, color: WHITE, bg: YELLOW
         });
 
         currentY -= 80;
@@ -238,10 +239,10 @@ export async function POST(req: Request) {
             let x = marginX;
 
             page.drawRectangle({ x, y: currentY - 20, width: contentW, height: 20, color: YELLOW });
-            page.drawText("Usuario", { x: x + 5, y: currentY - 15, size: 9, font: bold }); x += colW.name;
-            page.drawText("Asignadas", { x: x + 5, y: currentY - 15, size: 9, font: bold }); x += colW.ass;
-            page.drawText("Resueltas", { x: x + 5, y: currentY - 15, size: 9, font: bold }); x += colW.res;
-            page.drawText("Eficacia", { x: x + 5, y: currentY - 15, size: 9, font: bold });
+            page.drawText("Usuario", { x: x + 5, y: currentY - 15, size: 9, font: bold, color: WHITE }); x += colW.name;
+            page.drawText("Asignadas", { x: x + 5, y: currentY - 15, size: 9, font: bold, color: WHITE }); x += colW.ass;
+            page.drawText("Resueltas", { x: x + 5, y: currentY - 15, size: 9, font: bold, color: WHITE }); x += colW.res;
+            page.drawText("Eficacia", { x: x + 5, y: currentY - 15, size: 9, font: bold, color: WHITE });
 
             currentY -= 20;
 

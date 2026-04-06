@@ -11,8 +11,8 @@ import { getEmisor } from "@/lib/getEmisor";
 const A4 = { w: 595.28, h: 841.89 };
 // App-matched color palette: neutral-900 headers, [#bf4b50] accents
 const BRAND_DARK = rgb(0.09, 0.09, 0.11);    // neutral-900
-const BRAND_YELLOW = rgb(0.98, 0.84, 0.40);  // [#bf4b50]
-const BRAND_YELLOW_LIGHT = rgb(0.99, 0.95, 0.84); // yellow-50
+const BRAND_YELLOW = rgb(0.75, 0.29, 0.31);  // #bf4b50
+const BRAND_YELLOW_LIGHT = rgb(0.95, 0.88, 0.88); // #bf4b50 light tint
 const BORDER = rgb(0.90, 0.90, 0.90);         // neutral-200
 const BLACK = rgb(0, 0, 0);
 const GRAY = rgb(0.3, 0.3, 0.3);
@@ -21,7 +21,7 @@ const WHITE = rgb(1, 1, 1);
 const SECTION_BG = rgb(0.97, 0.97, 0.97);     // neutral-50
 const TABLE_HEADER_BG = rgb(0.09, 0.09, 0.11); // neutral-900
 const ALT_ROW_BG = rgb(0.98, 0.98, 0.98);     // neutral-100
-const ACCENT_TEXT = rgb(0.56, 0.49, 0.02);     // yellow-800
+const ACCENT_TEXT = rgb(0.75, 0.29, 0.31);     // #bf4b50
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -746,21 +746,21 @@ export async function POST(req: Request) {
                 const kpiY = currentY;
 
                 // KPI 1: Total Tiempo
-                page.drawRectangle({ x: marginX, y: kpiY - kpiH, width: kpiW, height: kpiH, color: BRAND_YELLOW_LIGHT, borderColor: BORDER, borderWidth: 1 });
-                page.drawText("TOTAL HORAS", { x: marginX + 10, y: kpiY - 16, size: 7, font: bold, color: ACCENT_TEXT });
-                page.drawText(fmtDur(totalSeconds), { x: marginX + 10, y: kpiY - 32, size: 12, font: bold, color: BRAND_DARK });
+                page.drawRectangle({ x: marginX, y: kpiY - kpiH, width: kpiW, height: kpiH, color: BRAND_YELLOW, borderColor: BRAND_YELLOW, borderWidth: 1 });
+                page.drawText("TOTAL HORAS", { x: marginX + 10, y: kpiY - 16, size: 7, font: bold, color: WHITE });
+                page.drawText(fmtDur(totalSeconds), { x: marginX + 10, y: kpiY - 32, size: 12, font: bold, color: WHITE });
 
                 // KPI 2: Tareas Realizadas
                 const kpi2X = marginX + kpiW + 10;
-                page.drawRectangle({ x: kpi2X, y: kpiY - kpiH, width: kpiW, height: kpiH, color: BRAND_YELLOW_LIGHT, borderColor: BORDER, borderWidth: 1 });
-                page.drawText("TAREAS REALIZADAS", { x: kpi2X + 10, y: kpiY - 16, size: 7, font: bold, color: ACCENT_TEXT });
-                page.drawText(`${totalTasks} Tareas`, { x: kpi2X + 10, y: kpiY - 32, size: 12, font: bold, color: BRAND_DARK });
+                page.drawRectangle({ x: kpi2X, y: kpiY - kpiH, width: kpiW, height: kpiH, color: BRAND_YELLOW, borderColor: BRAND_YELLOW, borderWidth: 1 });
+                page.drawText("TAREAS REALIZADAS", { x: kpi2X + 10, y: kpiY - 16, size: 7, font: bold, color: WHITE });
+                page.drawText(`${totalTasks} Tareas`, { x: kpi2X + 10, y: kpiY - 32, size: 12, font: bold, color: WHITE });
 
                 // KPI 3: Media por Tarea
                 const kpi3X = marginX + (kpiW + 10) * 2;
-                page.drawRectangle({ x: kpi3X, y: kpiY - kpiH, width: kpiW, height: kpiH, color: BRAND_YELLOW_LIGHT, borderColor: BORDER, borderWidth: 1 });
-                page.drawText("MEDIA POR TAREA", { x: kpi3X + 10, y: kpiY - 16, size: 7, font: bold, color: ACCENT_TEXT });
-                page.drawText(`${fmtDur(avgSeconds)} / Tarea`, { x: kpi3X + 10, y: kpiY - 32, size: 12, font: bold, color: BRAND_DARK });
+                page.drawRectangle({ x: kpi3X, y: kpiY - kpiH, width: kpiW, height: kpiH, color: BRAND_YELLOW, borderColor: BRAND_YELLOW, borderWidth: 1 });
+                page.drawText("MEDIA POR TAREA", { x: kpi3X + 10, y: kpiY - 16, size: 7, font: bold, color: WHITE });
+                page.drawText(`${fmtDur(avgSeconds)} / Tarea`, { x: kpi3X + 10, y: kpiY - 32, size: 12, font: bold, color: WHITE });
 
                 currentY = kpiY - kpiH - 20;
 

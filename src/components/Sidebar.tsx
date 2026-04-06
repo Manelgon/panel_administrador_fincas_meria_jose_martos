@@ -155,7 +155,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                             style={{ background: '#bf4b50' }}
                             aria-hidden="true"
                         />
-                        <span className="text-xs font-bold tracking-widest uppercase" style={{ color: '#bf4b50' }}>
+                        <span className="text-xs font-bold tracking-widest uppercase" style={{ color: '#ffffff' }}>
                             {companyName || 'Serincosol'}
                         </span>
                     </div>
@@ -183,7 +183,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     }}
                 >
                     <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-neutral-950 flex-shrink-0"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
                         style={{ background: '#bf4b50' }}
                         aria-hidden="true"
                     >
@@ -227,9 +227,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                         aria-current={isActive ? 'page' : undefined}
                                         className="group flex items-center gap-3 rounded-lg px-3 py-2 mb-0.5 text-sm font-medium transition-all duration-150"
                                         style={isActive ? {
-                                            background: 'rgba(251,191,36,0.12)',
-                                            borderLeft: '3px solid #bf4b50',
-                                            color: '#bf4b50',
+                                            background: '#bf4b50',
+                                            borderLeft: '3px solid #a03d42',
+                                            color: '#ffffff',
                                             paddingLeft: '9px',
                                         } : {
                                             borderLeft: '3px solid transparent',
@@ -237,14 +237,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                         }}
                                         onMouseEnter={e => {
                                             if (!isActive) {
-                                                e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                                                e.currentTarget.style.color = 'rgba(255,255,255,0.85)';
+                                                e.currentTarget.style.background = '#bf4b50';
+                                                e.currentTarget.style.color = '#ffffff';
+                                                e.currentTarget.style.borderLeft = '3px solid #a03d42';
                                             }
                                         }}
                                         onMouseLeave={e => {
                                             if (!isActive) {
                                                 e.currentTarget.style.background = 'transparent';
                                                 e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
+                                                e.currentTarget.style.borderLeft = '3px solid transparent';
                                             }
                                         }}
                                     >
