@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseRouteClient } from "@/lib/supabase/route";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 /**
  * POST /api/documentos/suplidos/send
@@ -40,8 +41,8 @@ export async function POST(req: Request) {
       try {
         const formData = new FormData();
 
-        // Download document
-        const { data: fileBlob, error: downloadError } = await supabase.storage
+        // Download document (admin to bypass RLS)
+        const { data: fileBlob, error: downloadError } = await supabaseAdmin.storage
           .from("documentos_administrativos")
           .download(sub.data.pdf_path);
 

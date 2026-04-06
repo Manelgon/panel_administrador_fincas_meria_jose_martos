@@ -369,6 +369,7 @@ export async function POST(req: Request) {
 
     try {
         // 0) Leer datos del emisor desde BD
+        console.log("[suplidos/generate] Step 0: getEmisor");
         const emisorData = await getEmisor();
         const EMISOR = {
             nombre: emisorData.nombre,
@@ -378,10 +379,13 @@ export async function POST(req: Request) {
         };
 
         // 0b) Forzar precios desde servidor
-        const { data: settingsData } = await supabase
+        console.log("[suplidos/generate] Step 0b: document_settings");
+        const { data: settingsData, error: settingsError } = await supabase
             .from("document_settings")
             .select("setting_key, setting_value")
             .eq("doc_key", DOC_KEY);
+
+        if (settingsError) console.warn("[suplidos/generate] settings error:", settingsError.message);
 
         const prices: Record<string, number> = {};
         if (settingsData) {
@@ -399,12 +403,20 @@ export async function POST(req: Request) {
 
         // 1) Load Assets — usa header de company_settings, fallback al header por defecto
         const headerStoragePath = emisorData.headerPath || "certificados/logo-retenciones.png";
-        const logoBytes = await downloadAssetPng(headerStoragePath);
+        console.log("[suplidos/generate] Step 1: downloading logo from", headerStoragePath);
+        let logoBytes: Uint8Array | undefined;
+        try {
+            logoBytes = await downloadAssetPng(headerStoragePath);
+        } catch (e: any) {
+            console.warn("[suplidos/generate] Logo download failed (continuing without logo):", e.message);
+        }
 
         // 2) Generar PDF
+        console.log("[suplidos/generate] Step 2: buildSuplidoPdf");
         const { pdfBytes, payloadComputed } = await buildSuplidoPdf(payload, { logoBytes }, EMISOR);
 
         // 3) Subir
+        console.log("[suplidos/generate] Step 3: uploading PDF");
         // Format: SUP_<Codigo Comunidad> <Nombre Comunidad>_<Descripcion>
         // We use "Nombre Cliente" as it likely contains the community info info or we fallback to it.
         const clean = (s: string) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9\-_.]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
@@ -426,7 +438,7 @@ export async function POST(req: Request) {
 
         const filePath = `suplidos/SUP_${clienteSafe}_${descSafe}_${Date.now()}.pdf`;
 
-        const { error: uploadError } = await supabase
+        const { error: uploadError } = await supabaseAdmin
             .storage
             .from('documentos_administrativos')
             .upload(filePath, pdfBytes, { contentType: 'application/pdf', upsert: true });
@@ -434,6 +446,7 @@ export async function POST(req: Request) {
         if (uploadError) throw new Error("Error subiendo PDF: " + uploadError.message);
 
         // 4) Guardar historial
+        console.log("[suplidos/generate] Step 4: saving to doc_submissions");
         const { data: submissionData, error: dbError } = await supabase
             .from("doc_submissions")
             .insert({
@@ -449,7 +462,7 @@ export async function POST(req: Request) {
         if (dbError) throw new Error("Error guardando datos: " + dbError.message);
 
         // 5) URL firmada
-        const { data: signedData, error: urlError } = await supabase.storage
+        const { data: signedData, error: urlError } = await supabaseAdmin.storage
             .from("documentos_administrativos")
             .createSignedUrl(filePath, 60 * 10);
 
