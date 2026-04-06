@@ -16,3 +16,8 @@ export async function fetchEmisorLogoUrl(): Promise<string> {
         .createSignedUrl(emisor.logoPath, 3600);
     return data?.signedUrl || "";
 }
+
+export async function fetchEmisorData(): Promise<{ nombre: string; logoPath: string }> {
+    const emisor = await getEmisor();
+    return { nombre: emisor.nombre, logoPath: emisor.logoPath };
+}

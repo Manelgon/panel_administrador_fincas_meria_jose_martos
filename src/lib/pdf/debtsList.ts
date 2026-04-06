@@ -243,7 +243,7 @@ export async function generateDebtsPdf({
     }
 
     // 6. Global Footer
-    const footerText = nombre || "Serincosol | Administración de Fincas Málaga";
+    const footerText = nombre || "Administración de Fincas";
     const footerSize = 8;
     const allPages = pdfDoc.getPages();
     for (const p of allPages) {

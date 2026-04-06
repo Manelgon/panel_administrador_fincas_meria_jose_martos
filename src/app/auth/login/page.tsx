@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { Eye, EyeOff, LogIn, Mail, Lock } from 'lucide-react';
-import { fetchEmisorName, fetchEmisorLogoUrl } from './login-action';
+import { fetchEmisorData } from './login-action';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -16,15 +16,13 @@ export default function LoginPage() {
     const [rememberMe, setRememberMe] = useState(false);
     const [loading, setLoading] = useState(false);
     const [emisorName, setEmisorName] = useState('');
-    const [logoUrl, setLogoUrl] = useState('');
-    const [emisorReady, setEmisorReady] = useState(false);
+    const [logoPath, setLogoPath] = useState('');
 
-    // Load emisor name and logo via Server Actions to bypass RLS
+    // Load emisor data via Server Action to bypass RLS
     useEffect(() => {
-        Promise.all([fetchEmisorName(), fetchEmisorLogoUrl()]).then(([name, url]) => {
-            if (name) setEmisorName(name);
-            if (url) setLogoUrl(url);
-            setEmisorReady(true);
+        fetchEmisorData().then(({ nombre, logoPath }) => {
+            if (nombre) setEmisorName(nombre);
+            if (logoPath) setLogoPath(logoPath);
         });
     }, []);
 
@@ -142,29 +140,25 @@ export default function LoginPage() {
                 {/* Logo */}
                 <div className="mb-8 text-center">
                     <div className="flex justify-center mb-5">
-                        {emisorReady ? (
-                            <div
-                                className="p-3 rounded-2xl"
-                                style={{
-                                    background: 'rgba(251,191,36,0.10)',
-                                    border: '1px solid rgba(251,191,36,0.25)',
-                                }}
-                            >
-                                <img
-                                    src={logoUrl || '/serincosol-logo.png'}
-                                    alt="Logo"
-                                    className="h-14 w-auto object-contain"
-                                />
-                            </div>
-                        ) : (
-                            <div className="h-20 w-40 rounded-2xl bg-neutral-100 animate-pulse" />
-                        )}
+                        <div
+                            className="p-3 rounded-2xl"
+                            style={{
+                                background: 'rgba(251,191,36,0.10)',
+                                border: '1px solid rgba(251,191,36,0.25)',
+                            }}
+                        >
+                            <img
+                                src={logoPath || '/serincosol-logo.png'}
+                                alt={emisorName ? `${emisorName} Logo` : 'Logo'}
+                                className="h-14 w-auto object-contain"
+                            />
+                        </div>
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
                         Iniciar Sesión
                     </h1>
                     <p className="text-sm mt-1.5 text-gray-500">
-                        Panel de administración{emisorReady && emisorName ? ` ${emisorName}` : ''}
+                        Panel de administración{emisorName ? ` ${emisorName}` : ''}
                     </p>
                 </div>
 

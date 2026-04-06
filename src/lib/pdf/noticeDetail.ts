@@ -246,8 +246,10 @@ export async function generateNoticeDetailPdf({ notification, entityData }: { no
     const allPages = pdfDoc.getPages();
     for (const p of allPages) {
         const { width: pW } = p.getSize();
-        p.drawText(nombre || "Serincosol | Administración de Fincas", {
-            x: pW / 2 - 80,
+        const footerText = nombre || "Administración de Fincas";
+        const textW = fontRegular.widthOfTextAtSize(footerText, 8);
+        p.drawText(footerText, {
+            x: pW / 2 - textW / 2,
             y: 20,
             size: 8,
             font: fontRegular,

@@ -70,8 +70,11 @@ export async function middleware(request: NextRequest) {
     }
 
     if (isAuthRoute && user) {
-        // Redirect to dashboard if accessing login while logged in
-        return NextResponse.redirect(new URL('/dashboard', request.url))
+        // Skip redirect if we just forced a sign-out (cookie may not have cleared yet)
+        const justLoggedOut = request.nextUrl.searchParams.get('logged_out') === '1'
+        if (!justLoggedOut) {
+            return NextResponse.redirect(new URL('/dashboard', request.url))
+        }
     }
 
     // 5. If user is authenticated and accessing a dashboard route,
@@ -86,9 +89,12 @@ export async function middleware(request: NextRequest) {
             .maybeSingle()
 
         if (!profile || !profile.activo) {
-            // Sign out the session and redirect to login
+            // Sign out and redirect — use ?logged_out=1 to prevent the
+            // middleware from re-checking on the login page while the cookie clears
             await supabase.auth.signOut()
-            return NextResponse.redirect(new URL('/auth/login', request.url))
+            const loginUrl = new URL('/auth/login', request.url)
+            loginUrl.searchParams.set('logged_out', '1')
+            return NextResponse.redirect(loginUrl)
         }
     }
 
@@ -97,14 +103,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * - api (API routes - generally you want to protect these too, but maybe differently)
-         * Feel free to modify this pattern to include more paths.
-         */
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 }

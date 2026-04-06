@@ -292,7 +292,7 @@ export async function generateActivitiesPdf({
         y -= textBlockHeight;
     }
 
-    const footerText = nombre || "Serincosol | Administración de Fincas Málaga";
+    const footerText = nombre || "Administración de Fincas";
     const allPages = pdfDoc.getPages();
     for (const p of allPages) {
         const { width: pW } = p.getSize();
