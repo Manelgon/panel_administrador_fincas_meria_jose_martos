@@ -226,7 +226,48 @@ export async function POST(req: Request) {
             }
         }
 
-        currentY -= 50; // Increased space between charts and table
+        // 4b) Gráficas nativas de barras (rendimiento por usuario)
+        if (userPerformance && userPerformance.length > 0) {
+            currentY -= 20;
+            if (currentY < 220) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+            page.drawText("Rendimiento por Gestor", { x: marginX, y: currentY, size: 11, font: bold, color: BLACK });
+            currentY -= 15;
+
+            const barMaxH = 80;
+            const barW = Math.min(40, (contentW - 20) / userPerformance.length - 10);
+            const barGap = Math.min(20, (contentW - userPerformance.length * barW) / (userPerformance.length + 1));
+            const maxVal = Math.max(...userPerformance.map((u: any) => u.assigned || 0), 1);
+            const GREEN = rgb(0, 0.77, 0.62);
+
+            let bx = marginX + barGap;
+            for (const u of userPerformance) {
+                const assignedH = ((u.assigned || 0) / maxVal) * barMaxH;
+                const resolvedH = ((u.resolved || 0) / maxVal) * barMaxH;
+                const baseY = currentY - barMaxH;
+
+                // Barra asignadas
+                page.drawRectangle({ x: bx, y: baseY, width: barW * 0.45, height: assignedH || 1, color: YELLOW });
+                // Barra resueltas
+                page.drawRectangle({ x: bx + barW * 0.5, y: baseY, width: barW * 0.45, height: resolvedH || 1, color: GREEN });
+
+                // Etiqueta nombre
+                const nameShort = (u.name || 'N/A').split(' ')[0].substring(0, 8);
+                page.drawText(nameShort, { x: bx, y: baseY - 12, size: 7, font, color: BLACK });
+
+                bx += barW + barGap;
+            }
+
+            // Leyenda
+            const legY = currentY - barMaxH - 25;
+            page.drawRectangle({ x: marginX, y: legY - 8, width: 10, height: 8, color: YELLOW });
+            page.drawText("Asignadas", { x: marginX + 13, y: legY - 7, size: 7, font, color: BLACK });
+            page.drawRectangle({ x: marginX + 70, y: legY - 8, width: 10, height: 8, color: GREEN });
+            page.drawText("Resueltas", { x: marginX + 83, y: legY - 7, size: 7, font, color: BLACK });
+
+            currentY = legY - 20;
+        }
+
+        currentY -= 20;
         if (currentY < 180) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
 
         // 5) User Performance Table
@@ -270,17 +311,42 @@ export async function POST(req: Request) {
             const cronoKpiW = (contentW - 20) / 3;
             drawYellowBlock({
                 page, x: marginX, yTop: currentY, w: cronoKpiW, lineH: 18, paddingX: 10, paddingY: 10,
-                lines: ["TOTAL HORAS", formatDuration(cronoStats.totalSeconds || 0)], font: bold, size: 10, color: BLACK, bg: YELLOW
+                lines: ["TOTAL HORAS", formatDuration(cronoStats.totalSeconds || 0)], font: bold, size: 10, color: WHITE, bg: YELLOW
             });
             drawYellowBlock({
                 page, x: marginX + cronoKpiW + 10, yTop: currentY, w: cronoKpiW, lineH: 18, paddingX: 10, paddingY: 10,
-                lines: ["TAREAS REALIZADAS", String(cronoStats.totalTasks || 0)], font: bold, size: 10, color: BLACK, bg: YELLOW
+                lines: ["TAREAS REALIZADAS", String(cronoStats.totalTasks || 0)], font: bold, size: 10, color: WHITE, bg: YELLOW
             });
             drawYellowBlock({
                 page, x: marginX + (cronoKpiW + 10) * 2, yTop: currentY, w: cronoKpiW, lineH: 18, paddingX: 10, paddingY: 10,
-                lines: ["MEDIA POR TAREA", formatDuration(cronoStats.avgSeconds || 0)], font: bold, size: 10, color: BLACK, bg: YELLOW
+                lines: ["MEDIA POR TAREA", formatDuration(cronoStats.avgSeconds || 0)], font: bold, size: 10, color: WHITE, bg: YELLOW
             });
             currentY -= 80;
+
+            // Gráfica nativa: horas por gestor
+            const cronoByGestor = body.cronoByGestor || [];
+            if (cronoByGestor.length > 0) {
+                if (currentY < 200) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                page.drawText("Horas por Gestor", { x: marginX, y: currentY, size: 11, font: bold, color: BLACK });
+                currentY -= 15;
+
+                const cBarMaxH = 70;
+                const cBarW = Math.min(45, (contentW - 20) / cronoByGestor.length - 10);
+                const cBarGap = Math.min(20, (contentW - cronoByGestor.length * cBarW) / (cronoByGestor.length + 1));
+                const maxSecs = Math.max(...cronoByGestor.map((g: any) => g.seconds || 0), 1);
+
+                let cbx = marginX + cBarGap;
+                for (const g of cronoByGestor) {
+                    const h = ((g.seconds || 0) / maxSecs) * cBarMaxH;
+                    page.drawRectangle({ x: cbx, y: currentY - cBarMaxH, width: cBarW, height: h || 1, color: YELLOW });
+                    const label = formatDuration(g.seconds || 0);
+                    page.drawText(label, { x: cbx, y: currentY - cBarMaxH - 10, size: 6, font, color: BLACK });
+                    const nameShort = (g.name || '').split(' ')[0].substring(0, 8);
+                    page.drawText(nameShort, { x: cbx, y: currentY - cBarMaxH - 20, size: 6, font, color: BLACK });
+                    cbx += cBarW + cBarGap;
+                }
+                currentY -= cBarMaxH + 30;
+            }
 
             if (charts.cronoTopCommunities) {
                 if (currentY < 200) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
