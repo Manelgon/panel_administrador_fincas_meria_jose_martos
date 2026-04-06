@@ -740,20 +740,6 @@ export default function IncidenciasPage() {
                 }
             });
 
-            // Trigger Resolved Webhook
-            if (newResuelto) {
-                setTimeout(() => {
-                    try {
-                        fetch('/api/webhooks/trigger-resolved-ticket', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: id })
-                        }).catch(e => console.error('Resolved Webhook Error:', e));
-                    } catch (e) {
-                        console.error('Resolved Webhook Trigger Error:', e);
-                    }
-                }, 2000);
-            }
         } catch (error) {
             console.error(error);
             toast.error('Error al actualizar estado');
