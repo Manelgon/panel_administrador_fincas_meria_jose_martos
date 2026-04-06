@@ -68,6 +68,11 @@ export async function generateDashboardPDF({
     const loadingToast = toast.loading('Generando reporte PDF...');
 
     try {
+        // Wait for React to render all forceOpen sections before capturing charts
+        if (includeCharts) {
+            await new Promise(resolve => setTimeout(resolve, 600));
+        }
+
         const charts = includeCharts ? {
             evolution: await captureChart('chart-evolution'),
             urgency: await captureChart('chart-urgency'),
@@ -79,6 +84,7 @@ export async function generateDashboardPDF({
             cronoTopCommunities: await captureChart('chart-crono-top-communities'),
             cronoGestor: await captureChart('chart-crono-gestor'),
             cronoWeekly: await captureChart('chart-crono-weekly'),
+            cronoDistType: await captureChart('chart-crono-dist-type'),
         } : {};
 
         const communityName = getCommunityLabel(selectedCommunity, communities);
@@ -96,6 +102,7 @@ export async function generateDashboardPDF({
             cronoStats,
             cronoByGestor: chartData.cronoByGestor,
             sections,
+            selectedCommunityId: selectedCommunity !== 'all' ? selectedCommunity : null,
             dateFrom: dateFrom || null,
             dateTo: dateTo || null,
         };

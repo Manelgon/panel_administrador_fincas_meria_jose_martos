@@ -98,13 +98,85 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => null);
     if (!body) return NextResponse.json({ error: "Body inválido" }, { status: 400 });
 
-    const { stats, period, communityName, charts, userPerformance, cronoStats } = body;
+    const { stats, period, communityName, charts, userPerformance, cronoStats,
+            sections = ['incidencias', 'rendimiento', 'deudas', 'cronometraje'],
+            selectedCommunityId, dateFrom, dateTo } = body;
 
     const formatDuration = (totalSeconds: number) => {
         const h = Math.floor(totalSeconds / 3600);
         const m = Math.floor((totalSeconds % 3600) / 60);
         return `${h}h ${m}m`;
     };
+
+    // Helper: sanitize text for WinAnsi encoding
+    const sanitize = (text: string) => (text || '')
+        .replace(/\r\n|\n|\r/g, ' ')
+        .split('').map(c => { const code = c.charCodeAt(0); return (code >= 0x20 && code <= 0xff) ? c : (code < 0x20 ? '' : ' '); }).join('')
+        .replace(/\s{2,}/g, ' ').trim();
+
+    const truncate = (text: string, max: number) => { const t = sanitize(text); return t.length > max ? t.slice(0, max - 3) + '...' : t || '-'; };
+    const fmtDate = (d: string | null | undefined) => { if (!d) return '-'; try { const dt = new Date(d); if (isNaN(dt.getTime())) return d; return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`; } catch { return d; } };
+
+    // Build date range for DB queries
+    // If no explicit dates, fall back to period (30/90 days) or no filter ('all')
+    let startIso: string | null = dateFrom ? dateFrom + 'T00:00:00' : null;
+    let endIso: string | null = dateTo ? dateTo + 'T23:59:59' : null;
+
+    if (!startIso && period && period !== 'all') {
+        const d = new Date();
+        d.setDate(d.getDate() - parseInt(period));
+        startIso = d.toISOString();
+    }
+
+    const communityFilter = selectedCommunityId && selectedCommunityId !== 'all' ? selectedCommunityId : null;
+
+    // Fetch detail data from DB — no hard limit so all rows are returned
+    let detailIncidencias: any[] = [];
+    let detailDeudas: any[] = [];
+    let detailTareas: any[] = [];
+
+    if (sections.includes('incidencias')) {
+        let q = supabaseAdmin
+            .from('incidencias')
+            .select('id, nombre_cliente, urgencia, resuelto, estado, created_at, dia_resuelto, mensaje, comunidades(nombre_cdad), profiles:gestor_asignado(nombre)')
+            .order('created_at', { ascending: false });
+        if (communityFilter) q = q.eq('comunidad_id', communityFilter);
+        if (startIso) q = q.gte('created_at', startIso);
+        if (endIso) q = q.lte('created_at', endIso);
+        const { data, error } = await q;
+        if (error) console.error('[Report] incidencias error:', error.message);
+        detailIncidencias = data || [];
+        console.log(`[Report] incidencias fetched: ${detailIncidencias.length}`);
+    }
+
+    if (sections.includes('deudas')) {
+        let q = supabaseAdmin
+            .from('morosidad')
+            .select('nombre_deudor, apellidos, titulo_documento, importe, estado, created_at, fecha_notificacion, comunidades(nombre_cdad)')
+            .order('created_at', { ascending: false });
+        if (communityFilter) q = q.eq('comunidad_id', communityFilter);
+        if (startIso) q = q.gte('created_at', startIso);
+        if (endIso) q = q.lte('created_at', endIso);
+        const { data, error } = await q;
+        if (error) console.error('[Report] morosidad error:', error.message);
+        detailDeudas = data || [];
+        console.log(`[Report] deudas fetched: ${detailDeudas.length}`);
+    }
+
+    if (sections.includes('cronometraje')) {
+        let q = supabaseAdmin
+            .from('task_timers')
+            .select('nota, start_at, duration_seconds, tipo_tarea, comunidades(nombre_cdad), profiles:user_id(nombre)')
+            .not('duration_seconds', 'is', null)
+            .order('start_at', { ascending: false });
+        if (communityFilter) q = q.eq('comunidad_id', communityFilter);
+        if (startIso) q = q.gte('start_at', startIso);
+        if (endIso) q = q.lte('start_at', endIso);
+        const { data, error } = await q;
+        if (error) console.error('[Report] task_timers error:', error.message);
+        detailTareas = data || [];
+        console.log(`[Report] tareas fetched: ${detailTareas.length}`);
+    }
 
     // Log report generation
     await logActivity({
@@ -301,13 +373,17 @@ export async function POST(req: Request) {
         }
 
         // 6) Cronometraje Section
-        if (cronoStats) {
-            currentY -= 30;
-            if (currentY < 250) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+        if (cronoStats && sections.includes('cronometraje')) {
+            page = pdfDoc.addPage([A4.w, A4.h]);
+            currentY = A4.h - 50;
 
-            page.drawText("RENDIMIENTO DE CRONOMETRAJE", { x: marginX, y: currentY, size: 12, font: bold });
-            currentY -= 25;
+            // Section header bar
+            page.drawRectangle({ x: marginX, y: currentY - 30, width: contentW, height: 30, color: rgb(0.09, 0.09, 0.11) });
+            page.drawRectangle({ x: marginX, y: currentY - 30, width: 4, height: 30, color: YELLOW });
+            page.drawText("CRONOMETRAJE DE TAREAS", { x: marginX + 14, y: currentY - 20, size: 11, font: bold, color: WHITE });
+            currentY -= 50;
 
+            // KPI blocks
             const cronoKpiW = (contentW - 20) / 3;
             drawYellowBlock({
                 page, x: marginX, yTop: currentY, w: cronoKpiW, lineH: 18, paddingX: 10, paddingY: 10,
@@ -323,53 +399,261 @@ export async function POST(req: Request) {
             });
             currentY -= 80;
 
-            // Gráfica nativa: horas por gestor
+            // Gráficas capturadas del DOM: dos en paralelo (top comunidades + gestor)
+            const hasCronoTopComm = !!charts.cronoTopCommunities;
+            const hasCronoGestor = !!charts.cronoGestor;
+
+            if (hasCronoTopComm || hasCronoGestor) {
+                if (currentY < 220) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                const halfW = (contentW - 10) / 2;
+                let y1 = currentY, y2 = currentY;
+
+                if (hasCronoTopComm) {
+                    page.drawText("Top Comunidades por Tiempo", { x: marginX, y: currentY, size: 10, font: bold, color: BLACK });
+                    y1 = await drawImage(pdfDoc, page, charts.cronoTopCommunities, marginX, currentY - 14, halfW);
+                }
+                if (hasCronoGestor) {
+                    const col2X = marginX + halfW + 10;
+                    page.drawText("Rendimiento por Gestor", { x: col2X, y: currentY, size: 10, font: bold, color: BLACK });
+                    y2 = await drawImage(pdfDoc, page, charts.cronoGestor, col2X, currentY - 14, halfW);
+                }
+                currentY = Math.min(y1, y2) - 10;
+            }
+
+            // Gráfica evolución semanal (ancho completo)
+            if (charts.cronoWeekly) {
+                if (currentY < 220) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                page.drawText("Evolución Semanal de Horas", { x: marginX, y: currentY, size: 10, font: bold, color: BLACK });
+                currentY -= 14;
+                currentY = await drawImage(pdfDoc, page, charts.cronoWeekly, marginX, currentY, contentW);
+                currentY -= 15;
+            }
+
+            // Gráfica distribución por tipo de tarea (ancho completo)
+            if (charts.cronoDistType) {
+                if (currentY < 220) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                page.drawText("Distribución por Tipo de Tarea", { x: marginX, y: currentY, size: 10, font: bold, color: BLACK });
+                currentY -= 14;
+                currentY = await drawImage(pdfDoc, page, charts.cronoDistType, marginX, currentY, contentW);
+                currentY -= 15;
+            }
+
+            // Tabla de gestor con horas (nativa, como resumen)
             const cronoByGestor = body.cronoByGestor || [];
             if (cronoByGestor.length > 0) {
-                if (currentY < 200) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
-                page.drawText("Horas por Gestor", { x: marginX, y: currentY, size: 11, font: bold, color: BLACK });
-                currentY -= 15;
+                if (currentY < 150) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                page.drawText("Resumen por Gestor", { x: marginX, y: currentY, size: 10, font: bold, color: BLACK });
+                currentY -= 14;
 
-                const cBarMaxH = 70;
-                const cBarW = Math.min(45, (contentW - 20) / cronoByGestor.length - 10);
-                const cBarGap = Math.min(20, (contentW - cronoByGestor.length * cBarW) / (cronoByGestor.length + 1));
-                const maxSecs = Math.max(...cronoByGestor.map((g: any) => g.seconds || 0), 1);
+                // Table header
+                const gCols = [{ label: 'Gestor', w: 160 }, { label: 'Tareas', w: 80 }, { label: 'Tiempo Total', w: 100 }, { label: 'Media por Tarea', w: 120 }];
+                const gTotalW = gCols.reduce((s, c) => s + c.w, 0);
+                page.drawRectangle({ x: marginX, y: currentY - 20, width: gTotalW, height: 20, color: rgb(0.97,0.97,0.97) });
+                page.drawLine({ start: { x: marginX, y: currentY - 20 }, end: { x: marginX + gTotalW, y: currentY - 20 }, thickness: 1, color: YELLOW });
+                let ghx = marginX;
+                for (const col of gCols) { page.drawText(col.label.toUpperCase(), { x: ghx + 5, y: currentY - 14, size: 7, font: bold, color: rgb(0.09,0.09,0.11) }); ghx += col.w; }
+                currentY -= 20;
 
-                let cbx = marginX + cBarGap;
-                for (const g of cronoByGestor) {
-                    const h = ((g.seconds || 0) / maxSecs) * cBarMaxH;
-                    page.drawRectangle({ x: cbx, y: currentY - cBarMaxH, width: cBarW, height: h || 1, color: YELLOW });
-                    const label = formatDuration(g.seconds || 0);
-                    page.drawText(label, { x: cbx, y: currentY - cBarMaxH - 10, size: 6, font, color: BLACK });
-                    const nameShort = (g.name || '').split(' ')[0].substring(0, 8);
-                    page.drawText(nameShort, { x: cbx, y: currentY - cBarMaxH - 20, size: 6, font, color: BLACK });
-                    cbx += cBarW + cBarGap;
+                for (let i = 0; i < cronoByGestor.length; i++) {
+                    if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                    const g = cronoByGestor[i];
+                    const rowH = 18;
+                    if (i % 2 === 1) page.drawRectangle({ x: marginX, y: currentY - rowH, width: gTotalW, height: rowH, color: rgb(0.98,0.98,0.98) });
+                    page.drawLine({ start: { x: marginX, y: currentY - rowH }, end: { x: marginX + gTotalW, y: currentY - rowH }, thickness: 0.3, color: BORDER });
+                    const avgSecs = g.tasks > 0 ? Math.round(g.seconds / g.tasks) : 0;
+                    const vals = [g.name || '-', String(g.tasks || 0), formatDuration(g.seconds || 0), formatDuration(avgSecs)];
+                    let gvx = marginX;
+                    for (let j = 0; j < gCols.length; j++) {
+                        page.drawText(vals[j], { x: gvx + 5, y: currentY - 13, size: 7.5, font: j === 0 ? bold : font, color: rgb(0.3,0.3,0.3) });
+                        gvx += gCols[j].w;
+                    }
+                    currentY -= rowH;
                 }
-                currentY -= cBarMaxH + 30;
             }
+        }
 
-            if (charts.cronoTopCommunities) {
-                if (currentY < 200) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
-                page.drawText("Top Comunidades por Tiempo", { x: marginX, y: currentY, size: 12, font: bold });
-                currentY -= 15;
-                currentY = await drawImage(pdfDoc, page, charts.cronoTopCommunities, marginX, currentY, contentW);
-                currentY -= 20;
+        // Helper: draw a full-width section header bar + optional stats line, returns new Y
+        const drawDetailHeader = (p: any, title: string, stats: string) => {
+            p.drawRectangle({ x: marginX, y: currentY - 30, width: contentW, height: 30, color: rgb(0.09, 0.09, 0.11) });
+            p.drawRectangle({ x: marginX, y: currentY - 30, width: 4, height: 30, color: YELLOW });
+            p.drawText(title, { x: marginX + 14, y: currentY - 20, size: 11, font: bold, color: rgb(1,1,1) });
+            currentY -= 42;
+            if (stats) {
+                p.drawText(stats, { x: marginX + 5, y: currentY, size: 8.5, font: bold, color: YELLOW });
+                currentY -= 18;
             }
+        };
 
-            if (charts.cronoGestor) {
-                if (currentY < 200) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
-                page.drawText("Rendimiento por Gestor", { x: marginX, y: currentY, size: 12, font: bold });
-                currentY -= 15;
-                currentY = await drawImage(pdfDoc, page, charts.cronoGestor, marginX, currentY, contentW);
-                currentY -= 20;
+        // Helper: draw table header row, returns new Y
+        const drawTH = (p: any, cols: {label:string;w:number}[]) => {
+            const tw = cols.reduce((s,c)=>s+c.w,0);
+            p.drawRectangle({ x: marginX, y: currentY - 22, width: tw, height: 22, color: rgb(0.97,0.97,0.97) });
+            p.drawLine({ start:{x:marginX,y:currentY-22}, end:{x:marginX+tw,y:currentY-22}, thickness:1, color:YELLOW });
+            let hx = marginX;
+            for (const col of cols) { p.drawText(col.label.toUpperCase(), { x:hx+5, y:currentY-15, size:7, font:bold, color:rgb(0.09,0.09,0.11) }); hx+=col.w; }
+            currentY -= 22;
+        };
+
+        // Helper: draw a table data row, returns new Y
+        const drawTR = (p: any, vals: string[], cols: {label:string;w:number}[], rowIdx: number, colors?: (string|null)[]) => {
+            const tw = cols.reduce((s,c)=>s+c.w,0);
+            const rowH = 18;
+            if (rowIdx % 2 === 1) p.drawRectangle({ x:marginX, y:currentY-rowH, width:tw, height:rowH, color:rgb(0.98,0.98,0.98) });
+            p.drawLine({ start:{x:marginX,y:currentY-rowH}, end:{x:marginX+tw,y:currentY-rowH}, thickness:0.3, color:BORDER });
+            let vx = marginX;
+            for (let j=0; j<cols.length; j++) {
+                let col_color = rgb(0.3,0.3,0.3);
+                if (colors && colors[j]) {
+                    const c = colors[j]!;
+                    if (c === 'bold') col_color = rgb(0.09,0.09,0.11);
+                    else if (c === 'red') col_color = rgb(0.9,0.3,0.1);
+                    else if (c === 'green') col_color = rgb(0,0.7,0.5);
+                    else if (c === 'yellow') col_color = YELLOW;
+                }
+                p.drawText(vals[j]||'-', { x:vx+5, y:currentY-13, size:7.5, font: (colors&&colors[j]==='bold')||j===0 ? bold : font, color:col_color });
+                vx += cols[j].w;
             }
+            currentY -= rowH;
+        };
 
-            if (charts.cronoWeekly) {
-                if (currentY < 200) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
-                page.drawText("Evolución Semanal de Horas", { x: marginX, y: currentY, size: 12, font: bold });
-                currentY -= 15;
-                currentY = await drawImage(pdfDoc, page, charts.cronoWeekly, marginX, currentY, contentW);
-                currentY -= 20;
+        // ===== DETALLE: INCIDENCIAS =====
+        if (sections.includes('incidencias')) {
+            page = pdfDoc.addPage([A4.w, A4.h]);
+            currentY = A4.h - 50;
+
+            const incPend = detailIncidencias.filter((i: any) => !i.resuelto).length;
+            const incRes = detailIncidencias.filter((i: any) => i.resuelto).length;
+            drawDetailHeader(page,
+                `DETALLE DE INCIDENCIAS (${detailIncidencias.length})`,
+                `Pendientes: ${incPend}  |  Resueltas: ${incRes}  |  Total: ${detailIncidencias.length}`
+            );
+
+            if (detailIncidencias.length === 0) {
+                page.drawText('No se encontraron incidencias en el periodo seleccionado.', { x: marginX+5, y: currentY, size: 9, font, color: rgb(0.5,0.5,0.5) });
+            } else {
+                // Columns — include Comunidad if "Todas"
+                const incCols = !communityFilter
+                    ? [{ label:'Fecha',w:58},{label:'Comunidad',w:110},{label:'Nombre',w:100},{label:'Urgencia',w:58},{label:'Estado',w:62},{label:'Gestor',w:75},{label:'Descripcion',w:32}]
+                    : [{ label:'Fecha',w:65},{label:'Nombre',w:140},{label:'Urgencia',w:65},{label:'Estado',w:70},{label:'Gestor',w:90},{label:'Descripcion',w:65}];
+                drawTH(page, incCols);
+
+                for (let i=0; i<detailIncidencias.length; i++) {
+                    if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; drawTH(page, incCols); }
+                    const inc = detailIncidencias[i];
+                    const prof = Array.isArray(inc.profiles) ? inc.profiles[0] : inc.profiles;
+                    const gestor = truncate((prof as any)?.nombre||'-', 14);
+                    const estado = inc.resuelto ? 'Resuelta' : (inc.estado||'Pendiente');
+                    const urgColor = inc.urgencia==='Alta' ? 'red' : inc.urgencia==='Media' ? 'yellow' : 'green';
+                    const estadoColor = inc.resuelto ? 'green' : 'yellow';
+                    const comName = truncate((inc.comunidades as any)?.nombre_cdad||'-', 17);
+
+                    if (!communityFilter) {
+                        drawTR(page, [
+                            fmtDate(inc.created_at), comName,
+                            truncate(inc.nombre_cliente||'-',16), truncate(inc.urgencia||'-',9),
+                            truncate(estado,10), gestor, truncate(inc.mensaje||'-',5)
+                        ], incCols, i, [null,'bold',null,urgColor,estadoColor,null,null]);
+                    } else {
+                        drawTR(page, [
+                            fmtDate(inc.created_at), truncate(inc.nombre_cliente||'-',22),
+                            truncate(inc.urgencia||'-',10), truncate(estado,11),
+                            gestor, truncate(inc.mensaje||'-',10)
+                        ], incCols, i, [null,null,urgColor,estadoColor,null,null]);
+                    }
+                }
+            }
+        }
+
+        // ===== DETALLE: DEUDAS =====
+        if (sections.includes('deudas')) {
+            page = pdfDoc.addPage([A4.w, A4.h]);
+            currentY = A4.h - 50;
+
+            const totalImporte = detailDeudas.reduce((s: number, d: any) => s + (d.importe||0), 0);
+            const pendCount = detailDeudas.filter((d: any) => d.estado==='Pendiente').length;
+            drawDetailHeader(page,
+                `DETALLE DE DEUDAS / MOROSIDAD (${detailDeudas.length})`,
+                `Pendientes: ${pendCount}  |  Importe total: ${totalImporte.toLocaleString('es-ES')} EUR  |  Registros: ${detailDeudas.length}`
+            );
+
+            if (detailDeudas.length === 0) {
+                page.drawText('No se encontraron deudas en el periodo seleccionado.', { x: marginX+5, y: currentY, size: 9, font, color: rgb(0.5,0.5,0.5) });
+            } else {
+                const deudaCols = !communityFilter
+                    ? [{label:'Fecha',w:58},{label:'Comunidad',w:100},{label:'Deudor',w:115},{label:'Importe',w:72},{label:'Estado',w:60},{label:'F.Notif.',w:65},{label:'Concepto',w:25}]
+                    : [{label:'Fecha',w:65},{label:'Deudor',w:150},{label:'Importe',w:80},{label:'Estado',w:70},{label:'F.Notificacion',w:85},{label:'Concepto',w:45}];
+                drawTH(page, deudaCols);
+
+                for (let i=0; i<detailDeudas.length; i++) {
+                    if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; drawTH(page, deudaCols); }
+                    const d = detailDeudas[i];
+                    const isPagado = (d.estado||'').toLowerCase()==='pagado';
+                    const stColor = isPagado ? 'green' : 'yellow';
+                    const deudorName = truncate(`${d.nombre_deudor||''} ${d.apellidos||''}`.trim()||'-', 20);
+                    const comName = truncate((d.comunidades as any)?.nombre_cdad||'-', 16);
+
+                    if (!communityFilter) {
+                        drawTR(page, [
+                            fmtDate(d.created_at), comName, deudorName,
+                            `${(d.importe||0).toLocaleString('es-ES')} EUR`,
+                            truncate(d.estado||'-',10), fmtDate(d.fecha_notificacion),
+                            truncate(d.titulo_documento||'-',4)
+                        ], deudaCols, i, [null,'bold',null,'bold',stColor,null,null]);
+                    } else {
+                        drawTR(page, [
+                            fmtDate(d.created_at), deudorName,
+                            `${(d.importe||0).toLocaleString('es-ES')} EUR`,
+                            truncate(d.estado||'-',11), fmtDate(d.fecha_notificacion),
+                            truncate(d.titulo_documento||'-',8)
+                        ], deudaCols, i, [null,null,'bold',stColor,null,null]);
+                    }
+                }
+            }
+        }
+
+        // ===== DETALLE: CRONOMETRAJE =====
+        if (sections.includes('cronometraje')) {
+            page = pdfDoc.addPage([A4.w, A4.h]);
+            currentY = A4.h - 50;
+
+            const totalSecs = detailTareas.reduce((s: number, t: any) => s + (t.duration_seconds||0), 0);
+            drawDetailHeader(page,
+                `DETALLE DE TAREAS / CRONOMETRAJE (${detailTareas.length})`,
+                `Tareas: ${detailTareas.length}  |  Tiempo total: ${formatDuration(totalSecs)}`
+            );
+
+            if (detailTareas.length === 0) {
+                page.drawText('No se encontraron tareas en el periodo seleccionado.', { x: marginX+5, y: currentY, size: 9, font, color: rgb(0.5,0.5,0.5) });
+            } else {
+                const tCols = !communityFilter
+                    ? [{label:'Fecha',w:58},{label:'Comunidad',w:110},{label:'Gestor',w:90},{label:'Tipo',w:90},{label:'Duracion',w:65},{label:'Nota',w:82}]
+                    : [{label:'Fecha',w:65},{label:'Gestor',w:120},{label:'Tipo',w:110},{label:'Duracion',w:75},{label:'Nota',w:125}];
+                drawTH(page, tCols);
+
+                for (let i=0; i<detailTareas.length; i++) {
+                    if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; drawTH(page, tCols); }
+                    const t = detailTareas[i];
+                    const prof = Array.isArray(t.profiles) ? t.profiles[0] : t.profiles;
+                    const comName = truncate((t.comunidades as any)?.nombre_cdad||'-', 18);
+
+                    if (!communityFilter) {
+                        drawTR(page, [
+                            fmtDate(t.start_at), comName,
+                            truncate((prof as any)?.nombre||'-',14),
+                            truncate(t.tipo_tarea||'Otros',14),
+                            formatDuration(t.duration_seconds||0),
+                            truncate(t.nota||'-',13)
+                        ], tCols, i, [null,'bold',null,null,null,null]);
+                    } else {
+                        drawTR(page, [
+                            fmtDate(t.start_at),
+                            truncate((prof as any)?.nombre||'-',19),
+                            truncate(t.tipo_tarea||'Otros',17),
+                            formatDuration(t.duration_seconds||0),
+                            truncate(t.nota||'-',20)
+                        ], tCols, i, [null,null,null,null,null]);
+                    }
+                }
             }
         }
 

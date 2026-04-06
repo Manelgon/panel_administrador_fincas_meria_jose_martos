@@ -243,32 +243,65 @@ export async function POST(req: Request) {
         if (!inputId) return NextResponse.json({ error: "Comunidad requerida" }, { status: 400 });
 
         // Default dates if not provided
-        const finalStartDate = startDate || new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split('T')[0];
-        const finalEndDate = endDate || new Date().toISOString().split('T')[0];
+        const finalStartDate = (startDate || new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split('T')[0]) + 'T00:00:00';
+        const finalEndDate = (endDate || new Date().toISOString().split('T')[0]) + 'T23:59:59';
 
         // 1) Logic to find actual community ID in Supabase if inputId is an OneDrive ID
         let communityId = inputId;
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(inputId);
 
-        console.log(`[CommunityReport] Lookup Strategy for: "${communityName}"`);
+        console.log(`[CommunityReport] Lookup Strategy for: "${communityName}" (inputId: ${inputId})`);
 
         if (!isUuid) {
-            // Extract code: "010 - Test" -> "010"
-            const codeMatch = communityName.match(/^(\d+)/);
+            // Extract numeric code from name: "010 - CARLINDA 4" -> "010", "010" -> "010"
+            const codeMatch = (communityName || '').match(/^(\d+)/);
             const extractedCode = codeMatch ? codeMatch[1] : communityCode;
+            const extractedCodeInt = extractedCode ? parseInt(extractedCode, 10).toString() : null; // "010" -> "10"
 
-            // Search by code or exact name
-            const { data: commData } = await supabaseAdmin
-                .from('comunidades')
-                .select('id, nombre_cdad, codigo')
-                .or(`codigo.eq."${extractedCode}",nombre_cdad.eq."${communityName}"`)
-                .maybeSingle();
+            let commData: any = null;
+
+            // Pass 1: exact code match (with leading zeros and without)
+            if (extractedCode) {
+                const { data } = await supabaseAdmin
+                    .from('comunidades')
+                    .select('id, nombre_cdad, codigo')
+                    .or(`codigo.eq.${extractedCode},codigo.eq.${extractedCodeInt}`)
+                    .limit(1);
+                if (data && data.length > 0) commData = data[0];
+            }
+
+            // Pass 2: exact name match
+            if (!commData && communityName) {
+                const { data } = await supabaseAdmin
+                    .from('comunidades')
+                    .select('id, nombre_cdad, codigo')
+                    .eq('nombre_cdad', communityName)
+                    .limit(1);
+                if (data && data.length > 0) commData = data[0];
+            }
+
+            // Pass 3: partial name match (ilike) — strip code prefix first
+            if (!commData && communityName) {
+                const nameWithoutCode = communityName.replace(/^\d+\s*[-–]?\s*/, '').trim();
+                if (nameWithoutCode.length > 2) {
+                    const { data } = await supabaseAdmin
+                        .from('comunidades')
+                        .select('id, nombre_cdad, codigo')
+                        .ilike('nombre_cdad', `%${nameWithoutCode}%`)
+                        .limit(1);
+                    if (data && data.length > 0) commData = data[0];
+                }
+            }
 
             if (commData) {
                 communityId = commData.id;
-                console.log(`[CommunityReport] Redirected ${inputId} -> Supabase ID ${communityId} (${commData.nombre_cdad})`);
+                console.log(`[CommunityReport] Matched: "${communityName}" -> Supabase ID ${communityId} (${commData.nombre_cdad})`);
             } else {
-                console.warn(`[CommunityReport] Community not found for "${communityName}". Using fallback.`);
+                console.error(`[CommunityReport] Community NOT found for "${communityName}" (code: ${extractedCode}). Cannot generate report with empty data.`);
+                return NextResponse.json(
+                    { error: `No se encontró la comunidad "${communityName}" en la base de datos. Verifica que el nombre de la carpeta coincide con el nombre en Supabase.` },
+                    { status: 404 }
+                );
             }
         }
 
@@ -334,7 +367,7 @@ export async function POST(req: Request) {
                     .select('id, nombre_cliente, telefono, email, mensaje, urgencia, sentimiento, resuelto, fecha_recordatorio, dia_resuelto, created_at, profiles:gestor_asignado(nombre)')
                     .eq('comunidad_id', communityId)
                     .gte('created_at', finalStartDate)
-                    .lte('created_at', finalEndDate + 'T23:59:59')
+                    .lte('created_at', finalEndDate)
                     .order('created_at', { ascending: false });
                 if (ticketFilter === 'pending') ticketsQuery = ticketsQuery.eq('resuelto', false);
                 const { data: tickets, error: tErr } = await ticketsQuery;
@@ -565,7 +598,7 @@ export async function POST(req: Request) {
                     .select('nombre_deudor, apellidos, titulo_documento, importe, estado, fecha_notificacion, created_at')
                     .eq('comunidad_id', communityId)
                     .gte('created_at', finalStartDate)
-                    .lte('created_at', finalEndDate + 'T23:59:59')
+                    .lte('created_at', finalEndDate)
                     .order('created_at', { ascending: false });
                 if (debtFilter === 'pending') debtsQuery = debtsQuery.eq('estado', 'Pendiente');
                 const { data: debts, error: dErr } = await debtsQuery;
@@ -699,7 +732,7 @@ export async function POST(req: Request) {
                     .select('id, nota, start_at, end_at, duration_seconds, is_manual, tipo_tarea, comunidad_id, profiles:user_id(nombre)')
                     .eq('comunidad_id', communityId)
                     .gte('start_at', finalStartDate)
-                    .lte('start_at', finalEndDate + 'T23:59:59')
+                    .lte('start_at', finalEndDate)
                     .not('duration_seconds', 'is', null)
                     .order('start_at', { ascending: false });
 
@@ -711,7 +744,7 @@ export async function POST(req: Request) {
                     .select('id, nota, start_at, end_at, duration_seconds, is_manual, tipo_tarea, comunidad_id, profiles:user_id(nombre)')
                     .is('comunidad_id', null)
                     .gte('start_at', finalStartDate)
-                    .lte('start_at', finalEndDate + 'T23:59:59')
+                    .lte('start_at', finalEndDate)
                     .not('duration_seconds', 'is', null)
                     .order('start_at', { ascending: false });
 
@@ -869,7 +902,7 @@ export async function POST(req: Request) {
             currentY = drawSectionTitle(page, "GESTIÓN DE COMUNICACIONES (IA)", marginX, currentY, contentW, bold);
 
             try {
-                const n8nRes = await fetch('https://serinwebhook.afcademia.com/webhook/135d1aad-2cd5-42b6-b51e-4307a4be5444', {
+                const n8nRes = await fetch(process.env.COMMUNITY_REPORT_EMAIL_WEBHOOK!, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

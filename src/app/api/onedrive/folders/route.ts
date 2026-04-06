@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
     try {
-        const response = await fetch('https://serinwebhook.afcademia.com/webhook/6f428d72-971d-4bfe-8c34-4a8adae7b133', {
+        const response = await fetch(process.env.ONEDRIVE_FOLDERS_WEBHOOK!, {
             method: 'GET',
         });
 

@@ -9,7 +9,7 @@ const TITLE = "Suplido";
 
 // --- CONSTANTS & HELPERS ---
 const A4 = { w: 595.28, h: 841.89 };
-const YELLOW = rgb(0.98, 0.84, 0.40);
+const YELLOW = rgb(0.749, 0.294, 0.314);
 const BORDER = rgb(0.82, 0.82, 0.82);
 const BLACK = rgb(0, 0, 0);
 
