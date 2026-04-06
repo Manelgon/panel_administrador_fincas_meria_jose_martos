@@ -486,52 +486,6 @@ export default function IncidenciasPage() {
                     }
                 });
 
-                // Trigger Webhook only for new tickets
-                try {
-                    const webhookUrl = process.env.NEXT_PUBLIC_INCIDENT_WEBHOOK || "";
-                    const webhookPayload = new FormData();
-                    webhookPayload.append('nombre_cliente', formData.nombre_cliente);
-                    webhookPayload.append('telefono', formData.telefono);
-                    webhookPayload.append('email', formData.email);
-                    webhookPayload.append('mensaje', formData.mensaje);
-
-                    webhookPayload.append('comunidad_id', formData.comunidad_id);
-                    webhookPayload.append('comunidad_nombre', comunidad?.nombre_cdad || '');
-                    webhookPayload.append('codigo_comunidad', comunidad?.codigo || '');
-
-                    const gestorObj = profiles.find(p => p.user_id === formData.gestor_asignado);
-                    webhookPayload.append('gestor_asignado', formData.gestor_asignado || '');
-                    webhookPayload.append('gestor_asignado_nombre', gestorObj?.nombre || '');
-
-                    const receptorObj = profiles.find(p => p.user_id === formData.recibido_por);
-                    webhookPayload.append('recibido_por', formData.recibido_por || '');
-                    webhookPayload.append('recibido_por_nombre', receptorObj?.nombre || '');
-
-                    webhookPayload.append('fecha', new Date().toISOString());
-                    if (incidenciaId) {
-                        webhookPayload.append('incidencia_id', incidenciaId.toString());
-                    }
-                    webhookPayload.append('notificacion', enviarAviso ? 'true' : 'false');
-                    webhookPayload.append('canal_email', notifEmail ? 'true' : 'false');
-                    webhookPayload.append('canal_whatsapp', notifWhatsapp ? 'true' : 'false');
-                    webhookPayload.append('notificacion_propietario', (!notifEmail && !notifWhatsapp) ? '0' : (notifWhatsapp && !notifEmail) ? '1' : (!notifWhatsapp && notifEmail) ? '2' : '3');
-
-                    webhookPayload.append('adjuntos_count', files.length.toString());
-                    files.forEach((file, index) => {
-                        webhookPayload.append(`adjunto_nombre_${index + 1}`, file.name);
-                    });
-
-                    files.forEach((file) => {
-                        webhookPayload.append('adjuntos', file);
-                    });
-
-                    await fetch(webhookUrl, {
-                        method: 'POST',
-                        body: webhookPayload
-                    });
-                } catch (webhookError) {
-                    console.error('Webhook trigger failed:', webhookError);
-                }
             }
 
             setShowForm(false);
