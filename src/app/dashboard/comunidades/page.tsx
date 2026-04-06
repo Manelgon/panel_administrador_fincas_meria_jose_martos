@@ -338,7 +338,7 @@ export default function ComunidadesPage() {
             label: 'Estado',
             render: (row) => (
                 <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${row.activo
-                    ? 'bg-[#bf4b50] text-neutral-950'
+                    ? 'bg-[#bf4b50] text-white'
                     : 'bg-neutral-900 text-white'
                     }`}>
                     {row.activo ? 'Activo' : 'Inactivo'}
@@ -369,7 +369,7 @@ export default function ComunidadesPage() {
                                 setFormData({ codigo: '', nombre_cdad: '', direccion: '', cp: '', ciudad: '', provincia: '', cif: '', tipo: 'comunidad de propietarios' });
                             }
                         }}
-                        className="bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-3 py-2 rounded-xl flex items-center gap-1.5 transition font-semibold text-sm shadow-sm"
+                        className="bg-[#bf4b50] hover:bg-[#a03d42] text-white px-3 py-2 rounded-xl flex items-center gap-1.5 transition font-semibold text-sm shadow-sm"
                     >
                         <Plus className="w-4 h-4 flex-shrink-0" />
                         <span className="hidden sm:inline">{showForm ? 'Cancelar' : 'Nueva Comunidad'}</span>
@@ -382,7 +382,7 @@ export default function ComunidadesPage() {
             <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
                 <button
                     onClick={() => setFilterEstado('activo')}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'activo' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'activo' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                 >
                     Activas
                 </button>
@@ -506,7 +506,7 @@ export default function ComunidadesPage() {
                             <button
                                 form="comunidad-form"
                                 type="submit"
-                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm"
+                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm"
                             >
                                 <Plus className="w-3.5 h-3.5" />
                                 {editingId ? 'Guardar Cambios' : 'Guardar Comunidad'}

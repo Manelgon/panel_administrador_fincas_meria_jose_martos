@@ -40,7 +40,7 @@ export default function VariosFacturasPage() {
                     </Link>
                     <button
                         onClick={() => setShowForm(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-md text-sm font-bold transition shadow-sm hover:shadow-lg"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-md text-sm font-bold transition shadow-sm hover:shadow-lg"
                     >
                         <Plus className="w-4 h-4" />
                         Nueva Factura/Certificado
@@ -60,7 +60,7 @@ export default function VariosFacturasPage() {
                     </p>
                     <button
                         onClick={() => setShowForm(true)}
-                        className="bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-6 py-3 rounded-lg font-bold transition shadow-md hover:shadow-xl flex items-center gap-2"
+                        className="bg-[#bf4b50] hover:bg-[#a03d42] text-white px-6 py-3 rounded-lg font-bold transition shadow-md hover:shadow-xl flex items-center gap-2"
                     >
                         <Plus className="w-5 h-5" />
                         Crear Documento

@@ -390,7 +390,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
                 <button onClick={onCancel} className="px-6 py-2 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-600 rounded-lg text-xs font-bold transition">
                     Cancelar
                 </button>
-                <button onClick={generate} disabled={isDisabled || !canGenerate} className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm">
+                <button onClick={generate} disabled={isDisabled || !canGenerate} className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm">
                     {status === "generating" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
                     {status === "generating" ? "Generando..." : "Generar Suplido"}
                 </button>

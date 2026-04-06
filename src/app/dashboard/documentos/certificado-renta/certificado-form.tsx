@@ -330,7 +330,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
                     type="button"
                     onClick={generate}
                     disabled={status === "generating"}
-                    className="w-full sm:w-auto h-12 px-8 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
+                    className="w-full sm:w-auto h-12 px-8 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
                 >
                     {status === "generating" ? (
                         <>

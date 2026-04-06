@@ -1324,7 +1324,7 @@ export default function IncidenciasPage() {
                             setFormErrors({});
                             setShowForm(!showForm);
                         }}
-                        className="bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-3 py-2 rounded-md flex items-center gap-1.5 transition font-semibold text-sm"
+                        className="bg-[#bf4b50] hover:bg-[#a03d42] text-white px-3 py-2 rounded-md flex items-center gap-1.5 transition font-semibold text-sm"
                     >
                         <Plus className="w-4 h-4 flex-shrink-0" />
                         <span className="hidden sm:inline">Nuevo Ticket</span>
@@ -1338,7 +1338,7 @@ export default function IncidenciasPage() {
                 <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-2">
                     <button
                         onClick={() => setFilterEstado('pendiente')}
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'pendiente' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'pendiente' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
                         Pendientes
                     </button>
@@ -1763,7 +1763,7 @@ export default function IncidenciasPage() {
                                     !!(formData.telefono && !/^\d{9}$/.test(formData.telefono)) ||
                                     !!(formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
                                 }
-                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
                             >
                                 {isSubmitting || uploading ? (
                                     <>
@@ -1823,7 +1823,7 @@ export default function IncidenciasPage() {
                                             handleExport(params.type, params.ids, true);
                                         }
                                     }}
-                                    className="w-full py-3 bg-[#bf4b50] text-neutral-950 rounded-full font-bold hover:bg-[#a03d42] transition shadow-md"
+                                    className="w-full py-3 bg-[#bf4b50] text-white rounded-full font-bold hover:bg-[#a03d42] transition shadow-md"
                                 >
                                     SÍ
                                 </button>
@@ -2059,7 +2059,7 @@ export default function IncidenciasPage() {
                                             {!isReassigning && (
                                                 <button
                                                     onClick={() => { setNewGestorId(selectedDetailIncidencia.gestor_asignado || ''); setIsReassigning(true); }}
-                                                    className="p-1 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded border border-[#a03d42] transition-all shrink-0"
+                                                    className="p-1 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded border border-[#a03d42] transition-all shrink-0"
                                                     title="Reasignar gestor"
                                                 >
                                                     <UserCog className="w-3.5 h-3.5" />
@@ -2488,7 +2488,7 @@ export default function IncidenciasPage() {
                                 type="button"
                                 onClick={handleConfirmImport}
                                 disabled={importPreviewData.to_insert + Object.keys(importRecordComunidades).length === 0}
-                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
                             >
                                 <FileText className="w-3.5 h-3.5" />
                                 Importar {importPreviewData.to_insert + Object.keys(importRecordComunidades).length} registros

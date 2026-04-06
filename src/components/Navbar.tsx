@@ -237,7 +237,7 @@ export default function Navbar() {
                     </div>
                 ) : (
                     <button onClick={handleClockIn} disabled={fichajeLoading} aria-label="Fichar entrada"
-                        className="flex items-center gap-1.5 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm disabled:opacity-50">
+                        className="flex items-center gap-1.5 bg-[#bf4b50] hover:bg-[#a03d42] text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm disabled:opacity-50">
                         {fichajeLoading ? <div className="w-3.5 h-3.5 border-2 border-neutral-900/30 border-t-neutral-900 rounded-full animate-spin" /> : <Play className="w-3 h-3" aria-hidden="true" />}
                         <span className="hidden sm:inline">Fichar</span> Entrada
                     </button>
@@ -261,7 +261,7 @@ export default function Navbar() {
                     </div>
                 ) : (
                     <button onClick={() => setShowStartTaskModal(true)} aria-label="Empezar tarea"
-                        className="flex items-center gap-1.5 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
+                        className="flex items-center gap-1.5 bg-[#bf4b50] hover:bg-[#a03d42] text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
                         <Play className="w-3 h-3" aria-hidden="true" />
                         <span className="hidden sm:inline">Empezar</span> Tarea
                     </button>

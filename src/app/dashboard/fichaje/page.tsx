@@ -290,7 +290,7 @@ export default function FichajePage() {
                                 </div>
                                 <button
                                     onClick={handleClockIn}
-                                    className="w-full bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-4 py-3 rounded-md flex items-center justify-center gap-2 transition font-semibold"
+                                    className="w-full bg-[#bf4b50] hover:bg-[#a03d42] text-white px-4 py-3 rounded-md flex items-center justify-center gap-2 transition font-semibold"
                                 >
                                     <Play className="w-5 h-5" />
                                     Fichar Entrada

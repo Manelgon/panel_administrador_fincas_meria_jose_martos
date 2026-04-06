@@ -150,7 +150,7 @@ export default function AvisosPage() {
             render: (row) => (
                 <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${row.is_read
                     ? 'bg-neutral-100 text-neutral-600'
-                    : 'bg-[#bf4b50] text-neutral-950'
+                    : 'bg-[#bf4b50] text-white'
                     }`}>
                     {row.is_read ? 'Leído' : 'Nuevo'}
                 </span>
@@ -247,7 +247,7 @@ export default function AvisosPage() {
             <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
                 <button
                     onClick={() => setFilterState('unread')}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterState === 'unread' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterState === 'unread' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                 >
                     No leídos
                 </button>

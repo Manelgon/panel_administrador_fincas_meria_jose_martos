@@ -400,19 +400,19 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                 <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
                     <Link
                         href="/dashboard/documentos/suplidos/historial"
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'suplidos' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'suplidos' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
                         Suplidos
                     </Link>
                     <Link
                         href="/dashboard/documentos/certificado-renta/historial"
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'certificado-renta' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'certificado-renta' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
                         Certif. Renta
                     </Link>
                     <Link
                         href="/dashboard/documentos/varios/historial"
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'varios' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'varios' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
                         Certif. Estar al Día y Factura
                     </Link>
@@ -557,7 +557,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                                     </button>
                                     <button
                                         onClick={() => setDetailModalOpen(false)}
-                                        className="px-4 py-2 bg-[#bf4b50] text-neutral-950 rounded-lg text-sm font-semibold hover:bg-[#a03d42] transition"
+                                        className="px-4 py-2 bg-[#bf4b50] text-white rounded-lg text-sm font-semibold hover:bg-[#a03d42] transition"
                                     >
                                         Cerrar
                                     </button>
@@ -674,7 +674,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                                 <button
                                     type="submit"
                                     disabled={isSending}
-                                    className="px-3 py-2 text-sm bg-[#bf4b50] text-neutral-950 font-medium rounded-md hover:bg-[#a03d42] disabled:opacity-50 flex items-center gap-2"
+                                    className="px-3 py-2 text-sm bg-[#bf4b50] text-white font-medium rounded-md hover:bg-[#a03d42] disabled:opacity-50 flex items-center gap-2"
                                 >
                                     {isSending ? "Enviando..." : <><Send className="w-3 h-3" /> Enviar</>}
                                 </button>

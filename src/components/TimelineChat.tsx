@@ -237,7 +237,7 @@ export default function TimelineChat({ entityType, entityId }: TimelineChatProps
                             <button
                                 type="submit"
                                 disabled={sending || !newMessage.trim()}
-                                className="absolute right-1.5 p-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-full transition shadow-sm disabled:opacity-50"
+                                className="absolute right-1.5 p-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-full transition shadow-sm disabled:opacity-50"
                             >
                                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                             </button>

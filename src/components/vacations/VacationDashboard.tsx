@@ -140,7 +140,7 @@ export default function VacationDashboard() {
                 >
                     <span className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full flex-shrink-0 ${
                         todayFlag
-                            ? 'bg-[#bf4b50] text-neutral-950'
+                            ? 'bg-[#bf4b50] text-white'
                             : numColor
                     }`}>
                         {i}
@@ -193,7 +193,7 @@ export default function VacationDashboard() {
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-4 py-2 rounded-xl font-bold text-sm transition shadow-sm"
+                    className="flex items-center gap-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white px-4 py-2 rounded-xl font-bold text-sm transition shadow-sm"
                 >
                     <Plus className="w-4 h-4" />
                     Solicitar días

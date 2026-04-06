@@ -350,7 +350,7 @@ export default function PerfilesPage() {
                 </h1>
                 <button
                     onClick={handleOpenCreate}
-                    className="flex items-center gap-1.5 bg-[#bf4b50] text-neutral-950 px-3 py-2 rounded-lg hover:bg-[#a03d42] transition font-medium shadow-sm flex-shrink-0"
+                    className="flex items-center gap-1.5 bg-[#bf4b50] text-white px-3 py-2 rounded-lg hover:bg-[#a03d42] transition font-medium shadow-sm flex-shrink-0"
                 >
                     <UserPlus className="w-4 h-4 flex-shrink-0" />
                     <span className="hidden sm:inline">Nuevo Usuario</span>
@@ -501,7 +501,7 @@ export default function PerfilesPage() {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="px-6 py-2 bg-[#bf4b50] text-neutral-950 rounded-lg hover:bg-[#a03d42] transition font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                    className="px-6 py-2 bg-[#bf4b50] text-white rounded-lg hover:bg-[#a03d42] transition font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
                                     {processing ? (
                                         <>
@@ -604,7 +604,7 @@ export default function PerfilesPage() {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="px-6 py-2 bg-[#bf4b50] text-neutral-950 rounded-lg hover:bg-[#a03d42] transition font-bold shadow-sm disabled:opacity-50 flex items-center gap-2"
+                                    className="px-6 py-2 bg-[#bf4b50] text-white rounded-lg hover:bg-[#a03d42] transition font-bold shadow-sm disabled:opacity-50 flex items-center gap-2"
                                 >
                                     {processing ? 'Guardando...' : 'Guardar Cambios'}
                                 </button>
@@ -672,7 +672,7 @@ export default function PerfilesPage() {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="px-6 py-2 bg-[#bf4b50] text-neutral-950 rounded-lg hover:bg-[#a03d42] transition font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                    className="px-6 py-2 bg-[#bf4b50] text-white rounded-lg hover:bg-[#a03d42] transition font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
                                     {processing ? 'Guardando...' : 'Guardar'}
                                 </button>

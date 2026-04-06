@@ -149,7 +149,7 @@ export default function DashboardPage() {
                                 <button
                                     key={p}
                                     onClick={() => changePeriod(p)}
-                                    className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 text-xs font-medium rounded-md transition ${period === p ? 'bg-[#bf4b50] text-neutral-950 shadow-sm' : 'text-neutral-600 hover:bg-neutral-50'}`}
+                                    className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 text-xs font-medium rounded-md transition ${period === p ? 'bg-[#bf4b50] text-white shadow-sm' : 'text-neutral-600 hover:bg-neutral-50'}`}
                                 >
                                     {p === 'all' ? 'Todo' : `${p} días`}
                                 </button>
@@ -511,7 +511,7 @@ export default function DashboardPage() {
                             <button
                                 onClick={handleGeneratePDF}
                                 disabled={pdfSections.length === 0 || isGeneratingPDF}
-                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                                className="px-6 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
                             >
                                 <FileDown className="w-3.5 h-3.5" />
                                 Generar PDF

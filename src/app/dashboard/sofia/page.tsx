@@ -808,7 +808,7 @@ export default function SofiaPage() {
                 return (
                     <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${row.resuelto
                         ? 'bg-neutral-900 text-white'
-                        : 'bg-[#bf4b50] text-neutral-950'
+                        : 'bg-[#bf4b50] text-white'
                         }`}
                     >
                         {row.resuelto ? 'Resuelto' : 'Pendiente'}
@@ -832,7 +832,7 @@ export default function SofiaPage() {
                             onClick={() => setFilterEstado(status)}
                             className={`px-3 py-1 rounded-full text-sm font-medium transition ${
                                 filterEstado === status
-                                    ? status === 'aplazado' ? 'bg-orange-400 text-white' : 'bg-[#bf4b50] text-neutral-950'
+                                    ? status === 'aplazado' ? 'bg-orange-400 text-white' : 'bg-[#bf4b50] text-white'
                                     : 'bg-neutral-200'
                             }`}
                         >

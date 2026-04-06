@@ -209,7 +209,7 @@ export default function RequestVacationModal({ isOpen, onClose, onSuccess, userI
                         <button
                             type="submit"
                             disabled={loading || daysCount <= 0 || isOverLimit}
-                            className="flex-[2] py-2 px-4 bg-[#bf4b50] text-neutral-950 rounded-lg text-xs font-bold hover:bg-[#a03d42] transition shadow-sm disabled:opacity-50 disabled:bg-neutral-200 disabled:shadow-none"
+                            className="flex-[2] py-2 px-4 bg-[#bf4b50] text-white rounded-lg text-xs font-bold hover:bg-[#a03d42] transition shadow-sm disabled:opacity-50 disabled:bg-neutral-200 disabled:shadow-none"
                         >
                             {loading ? "Enviando..." : "Enviar Solicitud"}
                         </button>

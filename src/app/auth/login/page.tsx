@@ -294,7 +294,7 @@ export default function LoginPage() {
                         className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         style={{
                             background: loading ? '#a03d42' : '#bf4b50',
-                            color: '#1c1917',
+                            color: '#ffffff',
                             boxShadow: loading ? 'none' : '0 1px 3px rgba(0,0,0,0.12), 0 4px 16px rgba(251,191,36,0.35)',
                         }}
                         onMouseEnter={e => {

@@ -253,7 +253,7 @@ export default function ProveedoresPage() {
             label: 'Estado',
             render: (row) => (
                 <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${row.activo
-                    ? 'bg-[#bf4b50] text-neutral-950'
+                    ? 'bg-[#bf4b50] text-white'
                     : 'bg-neutral-900 text-white'
                     }`}>
                     {row.activo ? 'Activo' : 'Inactivo'}
@@ -275,7 +275,7 @@ export default function ProveedoresPage() {
                             setFormData({ nombre: '', telefono: '', email: '', cif: '', direccion: '', cp: '', ciudad: '', provincia: '' });
                         }
                     }}
-                    className="bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-3 py-2 rounded-xl flex items-center gap-1.5 transition font-semibold text-sm shadow-sm flex-shrink-0"
+                    className="bg-[#bf4b50] hover:bg-[#a03d42] text-white px-3 py-2 rounded-xl flex items-center gap-1.5 transition font-semibold text-sm shadow-sm flex-shrink-0"
                 >
                     <Plus className="w-4 h-4 flex-shrink-0" />
                     <span className="hidden sm:inline">{showForm ? 'Cancelar' : 'Nuevo Proveedor'}</span>
@@ -286,7 +286,7 @@ export default function ProveedoresPage() {
             <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
                 <button
                     onClick={() => setFilterEstado('activo')}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'activo' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'activo' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                 >
                     Activos
                 </button>

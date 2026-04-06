@@ -759,7 +759,7 @@ export default function MorosidadPage() {
                             });
                         }
                     }}
-                    className="bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 px-3 py-2 rounded-md flex items-center gap-1.5 transition font-semibold text-sm flex-shrink-0"
+                    className="bg-[#bf4b50] hover:bg-[#a03d42] text-white px-3 py-2 rounded-md flex items-center gap-1.5 transition font-semibold text-sm flex-shrink-0"
                 >
                     <Plus className={`w-4 h-4 flex-shrink-0 ${showForm ? 'rotate-45' : ''} transition-transform`} />
                     <span className="hidden sm:inline">{showForm ? 'Cancelar' : 'Registrar Deuda'}</span>
@@ -772,7 +772,7 @@ export default function MorosidadPage() {
                 <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
                     <button
                         onClick={() => setFilterEstado('pendiente')}
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'pendiente' ? 'bg-[#bf4b50] text-neutral-950' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition ${filterEstado === 'pendiente' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
                         Pendientes
                     </button>
@@ -1129,7 +1129,7 @@ export default function MorosidadPage() {
                                     (formData.telefono_deudor ? !/^\d{9}$/.test(formData.telefono_deudor) : false) ||
                                     (formData.email_deudor ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_deudor) : false)
                                 }
-                                className="h-12 px-8 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] rounded-xl transition-all shadow-lg shadow-amber-200/50 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                                className="h-12 px-8 bg-[#bf4b50] hover:bg-[#a03d42] text-white font-black text-xs uppercase tracking-[0.15em] rounded-xl transition-all shadow-lg shadow-amber-200/50 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
                             >
                                 {isSubmitting || uploading ? (
                                     <>
@@ -1185,7 +1185,7 @@ export default function MorosidadPage() {
                                         setShowExportModal(false);
                                         if (params) { handleExport(params.type, params.ids, true); }
                                     }}
-                                    className="w-full py-2.5 bg-[#bf4b50] text-neutral-950 rounded-xl font-bold text-sm hover:bg-[#a03d42] transition shadow-sm"
+                                    className="w-full py-2.5 bg-[#bf4b50] text-white rounded-xl font-bold text-sm hover:bg-[#a03d42] transition shadow-sm"
                                 >
                                     Sí, incluir notas
                                 </button>

@@ -668,7 +668,7 @@ export default function CronometrajePage() {
                     <button
                         onClick={() => setShowStartModal(true)}
                         disabled={!!activeTask}
-                        className="flex items-center gap-1.5 px-3 py-2 text-sm font-bold bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1.5 px-3 py-2 text-sm font-bold bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Play className="w-4 h-4 flex-shrink-0" />
                         <span className="hidden sm:inline">Empezar Tarea</span>
@@ -729,7 +729,7 @@ export default function CronometrajePage() {
                     <p className="text-sm text-neutral-500">No hay ninguna tarea en curso.</p>
                     <button
                         onClick={() => setShowStartModal(true)}
-                        className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-bold bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-950 rounded-lg transition"
+                        className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-bold bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg transition"
                     >
                         <Play className="w-4 h-4" />
                         Empezar Tarea
@@ -793,7 +793,7 @@ export default function CronometrajePage() {
                                         onClick={() => setPeriodFilter(opt.value)}
                                         className={`px-3 py-1.5 text-xs font-medium transition ${
                                             periodFilter === opt.value
-                                                ? 'bg-[#bf4b50] text-neutral-900 font-bold'
+                                                ? 'bg-[#bf4b50] text-white font-bold'
                                                 : 'text-neutral-600 hover:bg-neutral-200'
                                         }`}
                                     >
