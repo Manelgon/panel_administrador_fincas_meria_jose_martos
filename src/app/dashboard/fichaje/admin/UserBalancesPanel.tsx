@@ -247,7 +247,7 @@ export default function UserBalancesPanel({ adminId }: UserBalancesPanelProps) {
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="w-full mt-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-900 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-yellow-100"
+                                className="w-full mt-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-yellow-100"
                             >
                                 {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                                 Actualizar Saldos

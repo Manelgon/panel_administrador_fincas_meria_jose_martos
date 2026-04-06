@@ -194,7 +194,7 @@ export default function AdminSettingsPanel({ adminId }: AdminSettingsProps) {
                     />
                     <button
                         onClick={handleAddBlockedDate}
-                        className="w-full py-2 bg-[#bf4b50] text-neutral-900 rounded-lg font-bold text-xs hover:bg-[#a03d42] transition flex items-center justify-center gap-1"
+                        className="w-full py-2 bg-[#bf4b50] text-white rounded-lg font-bold text-xs hover:bg-[#a03d42] transition flex items-center justify-center gap-1"
                     >
                         <Plus className="w-4 h-4" /> Añadir Restricción
                     </button>

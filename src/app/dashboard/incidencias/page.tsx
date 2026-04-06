@@ -2251,7 +2251,7 @@ export default function IncidenciasPage() {
                             </button>
                             <button
                                 onClick={handleDeleteAttachment}
-                                className="flex-1 py-3 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-900 rounded-xl font-bold transition-transform active:scale-[0.98] shadow-lg shadow-yellow-100"
+                                className="flex-1 py-3 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-xl font-bold transition-transform active:scale-[0.98] shadow-lg shadow-yellow-100"
                             >
                                 Eliminar
                             </button>

@@ -294,7 +294,7 @@ export default function InformesComunidadPage() {
                 <button
                     onClick={fetchFolders}
                     disabled={loadingFolders || isGenerating}
-                    className="bg-[#bf4b50] text-neutral-900 px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-[#a03d42] transition flex items-center gap-2 disabled:opacity-50"
+                    className="bg-[#bf4b50] text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-[#a03d42] transition flex items-center gap-2 disabled:opacity-50"
                 >
                     {loadingFolders ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                     Nuevo Informe Global

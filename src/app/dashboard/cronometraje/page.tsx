@@ -778,7 +778,7 @@ export default function CronometrajePage() {
                             {/* Download button */}
                             <button
                                 onClick={openReportModal}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-900 rounded-lg transition shadow-sm flex-shrink-0"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg transition shadow-sm flex-shrink-0"
                             >
                                 <FileText className="w-3.5 h-3.5" />
                                 Descargar

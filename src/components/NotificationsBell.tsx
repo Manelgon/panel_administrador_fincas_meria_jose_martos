@@ -198,7 +198,7 @@ export default function NotificationsBell({ align = 'right' }: NotificationsBell
             {soundEnabled ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5 opacity-70" />}
 
             {unread > 0 && (
-                <span className="absolute -right-1 -top-1 rounded-full bg-[#bf4b50] px-1.5 py-0.5 text-xs font-bold text-black min-w-[1.25rem]">
+                <span className="absolute -right-1 -top-1 rounded-full bg-[#bf4b50] px-1.5 py-0.5 text-xs font-bold text-white min-w-[1.25rem]">
                     {unread}
                 </span>
             )}

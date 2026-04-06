@@ -375,7 +375,7 @@ export default function FacturasComunidadesPage() {
                             </button>
                             <button
                                 onClick={handleCreateBudget}
-                                className="flex items-center gap-2 px-3 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-neutral-900 rounded-lg transition-colors text-sm font-medium shadow-sm"
+                                className="flex items-center gap-2 px-3 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg transition-colors text-sm font-medium shadow-sm"
                             >
                                 <Plus className="w-4 h-4" />
                                 <span>Crear carpeta</span>
@@ -471,7 +471,7 @@ export default function FacturasComunidadesPage() {
                                 <button
                                     type="submit"
                                     disabled={isCreating}
-                                    className="px-8 py-3 bg-[#bf4b50] text-neutral-900 rounded-full hover:bg-[#a03d42] transition-all font-bold shadow-sm disabled:opacity-50 active:scale-95"
+                                    className="px-8 py-3 bg-[#bf4b50] text-white rounded-full hover:bg-[#a03d42] transition-all font-bold shadow-sm disabled:opacity-50 active:scale-95"
                                 >
                                     {isCreating ? 'Creando...' : 'Aceptar'}
                                 </button>
@@ -587,7 +587,7 @@ export default function FacturasComunidadesPage() {
                                 <button
                                     onClick={handleMoveConfirm}
                                     disabled={isMoving}
-                                    className="px-8 py-3 bg-[#bf4b50] text-neutral-900 rounded-full hover:bg-[#a03d42] transition-all font-bold text-sm shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
+                                    className="px-8 py-3 bg-[#bf4b50] text-white rounded-full hover:bg-[#a03d42] transition-all font-bold text-sm shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
                                 >
                                     {isMoving ? 'Moviendo...' : 'Mover aquí'}
                                 </button>
