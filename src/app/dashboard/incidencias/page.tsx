@@ -2185,7 +2185,7 @@ export default function IncidenciasPage() {
                                 ) : (
                                     <button
                                         onClick={() => { toggleResuelto(selectedDetailIncidencia.id, selectedDetailIncidencia.resuelto); setShowDetailModal(false); }}
-                                        className="px-5 py-2.5 text-sm font-black text-neutral-900 bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
+                                        className="px-5 py-2.5 text-sm font-black text-white bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
                                     >
                                         <Check className="w-4 h-4" />
                                         <span className="hidden sm:inline">Resolver </span>Ticket

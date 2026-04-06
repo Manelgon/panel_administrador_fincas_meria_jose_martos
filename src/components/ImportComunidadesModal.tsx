@@ -351,7 +351,7 @@ export default function ImportComunidadesModal({ onClose, onImported }: ImportCo
                         <button
                             onClick={handleImport}
                             disabled={importing}
-                            className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-neutral-950 bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-white bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                             {importing ? (
                                 <>

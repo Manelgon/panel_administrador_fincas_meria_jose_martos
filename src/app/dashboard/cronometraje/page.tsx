@@ -633,7 +633,7 @@ export default function CronometrajePage() {
                                         await generatePDFReport(reportIncludeCharts, reportCommunity, reportDateFrom, reportDateTo);
                                     }}
                                     disabled={generatingPDF || generatingXLS}
-                                    className="flex items-center gap-2 px-5 py-2 text-sm font-bold text-neutral-900 bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition-colors shadow-sm disabled:opacity-50"
+                                    className="flex items-center gap-2 px-5 py-2 text-sm font-bold text-white bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition-colors shadow-sm disabled:opacity-50"
                                 >
                                     {generatingPDF ? (
                                         <div className="w-3.5 h-3.5 border-2 border-neutral-400/40 border-t-neutral-800 rounded-full animate-spin" />

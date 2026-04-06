@@ -331,7 +331,7 @@ export default function EmployeeResume({ userId, allowExport = false }: Employee
                                 <button
                                     onClick={confirmSend}
                                     disabled={sending}
-                                    className="flex-[2] py-2 text-sm font-bold text-neutral-950 bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="flex-[2] py-2 text-sm font-bold text-white bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
                                     {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                                     {sending ? 'Enviando...' : 'Enviar'}

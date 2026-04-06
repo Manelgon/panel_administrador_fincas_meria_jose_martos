@@ -643,7 +643,7 @@ export default function ComunidadesPage() {
                                 </button>
                                 <button
                                     onClick={() => { toggleActive(selectedDetailComunidad.id, selectedDetailComunidad.activo); setSelectedDetailComunidad({ ...selectedDetailComunidad, activo: !selectedDetailComunidad.activo }); }}
-                                    className="px-8 py-3 text-sm font-black text-neutral-900 bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 hover:shadow-md hover:-translate-y-0.5"
+                                    className="px-8 py-3 text-sm font-black text-white bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 hover:shadow-md hover:-translate-y-0.5"
                                 >
                                     {selectedDetailComunidad.activo ? <><X className="w-4 h-4" /> Desactivar</> : <><Plus className="w-4 h-4" /> Activar</>}
                                 </button>

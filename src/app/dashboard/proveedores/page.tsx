@@ -403,7 +403,7 @@ export default function ProveedoresPage() {
                             <button
                                 form="proveedor-form"
                                 type="submit"
-                                className="px-8 py-3 text-sm font-black text-neutral-900 bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 hover:shadow-md hover:-translate-y-0.5"
+                                className="px-8 py-3 text-sm font-black text-white bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 hover:shadow-md hover:-translate-y-0.5"
                             >
                                 <Plus className="w-4 h-4" />
                                 {editingId ? 'Guardar Cambios' : 'Crear Proveedor'}
@@ -535,7 +535,7 @@ export default function ProveedoresPage() {
                             ]} />
                             <button
                                 onClick={() => { toggleActive(selectedDetailProveedor.id, selectedDetailProveedor.activo); setSelectedDetailProveedor({ ...selectedDetailProveedor, activo: !selectedDetailProveedor.activo }); }}
-                                className="px-5 py-2.5 text-sm font-black text-neutral-900 bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
+                                className="px-5 py-2.5 text-sm font-black text-white bg-[#bf4b50] hover:bg-[#a03d42] rounded-xl transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
                             >
                                 {selectedDetailProveedor.activo ? <><X className="w-4 h-4" /><span className="hidden sm:inline">Des</span>activar</> : <><Plus className="w-4 h-4" /> Activar</>}
                             </button>

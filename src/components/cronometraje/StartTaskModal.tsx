@@ -189,7 +189,7 @@ export default function StartTaskModal({ onClose, onStarted }: StartTaskModalPro
                     <button
                         onClick={handleStart}
                         disabled={loading || !selectedCommunity}
-                        className="px-6 py-2 text-xs font-bold text-neutral-950 bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2 text-xs font-bold text-white bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? (
                             <div className="w-3.5 h-3.5 border-2 border-neutral-400/30 border-t-neutral-900 rounded-full animate-spin" />

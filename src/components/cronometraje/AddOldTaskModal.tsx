@@ -249,7 +249,7 @@ export default function AddOldTaskModal({ onClose, onAdded }: AddOldTaskModalPro
                     <button
                         onClick={handleSave}
                         disabled={loading || !selectedCommunity}
-                        className="px-6 py-2 text-sm font-bold text-neutral-950 bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition shadow-sm hover:shadow-md active:scale-[0.98] flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2 text-sm font-bold text-white bg-[#bf4b50] hover:bg-[#a03d42] rounded-lg transition shadow-sm hover:shadow-md active:scale-[0.98] flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? (
                             <div className="w-4 h-4 border-2 border-neutral-400/30 border-t-neutral-900 rounded-full animate-spin" />
