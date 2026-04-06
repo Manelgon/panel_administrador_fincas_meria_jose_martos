@@ -8,21 +8,14 @@ export async function fetchEmisorName(): Promise<string> {
     return emisor.nombre;
 }
 
-export async function fetchEmisorLogoUrl(): Promise<string> {
+export async function fetchEmisorData(): Promise<{ nombre: string; logoUrl: string }> {
     const emisor = await getEmisor();
-    if (!emisor.logoPath) return "";
-    // Descargar el archivo y devolverlo como data URL para que funcione sin sesión
-    const { data, error } = await supabaseAdmin.storage
-        .from("doc-assets")
-        .download(emisor.logoPath);
-    if (error || !data) return "";
-    const buffer = Buffer.from(await data.arrayBuffer());
-    const base64 = buffer.toString("base64");
-    const mimeType = data.type || "image/png";
-    return `data:${mimeType};base64,${base64}`;
-}
-
-export async function fetchEmisorData(): Promise<{ nombre: string; logoPath: string }> {
-    const emisor = await getEmisor();
-    return { nombre: emisor.nombre, logoPath: emisor.logoPath };
+    let logoUrl = "";
+    if (emisor.logoPath) {
+        const { data } = await supabaseAdmin.storage
+            .from("doc-assets")
+            .createSignedUrl(emisor.logoPath, 3600);
+        logoUrl = data?.signedUrl || "";
+    }
+    return { nombre: emisor.nombre, logoUrl };
 }

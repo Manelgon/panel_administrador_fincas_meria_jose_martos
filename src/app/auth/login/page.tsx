@@ -16,13 +16,15 @@ export default function LoginPage() {
     const [rememberMe, setRememberMe] = useState(false);
     const [loading, setLoading] = useState(false);
     const [emisorName, setEmisorName] = useState('');
-    const [logoPath, setLogoPath] = useState('');
+    const [logoUrl, setLogoUrl] = useState('');
+    const [emisorReady, setEmisorReady] = useState(false);
 
     // Load emisor data via Server Action to bypass RLS
     useEffect(() => {
-        fetchEmisorData().then(({ nombre, logoPath }) => {
+        fetchEmisorData().then(({ nombre, logoUrl }) => {
             if (nombre) setEmisorName(nombre);
-            if (logoPath) setLogoPath(logoPath);
+            if (logoUrl) setLogoUrl(logoUrl);
+            setEmisorReady(true);
         });
     }, []);
 
@@ -142,7 +144,7 @@ export default function LoginPage() {
                     <div className="flex justify-center mb-5">
                         {!emisorReady ? (
                             <div className="h-20 w-40 rounded-2xl bg-neutral-100 animate-pulse" />
-                        ) : logoPath ? (
+                        ) : logoUrl ? (
                             <div
                                 className="p-3 rounded-2xl"
                                 style={{
@@ -151,7 +153,7 @@ export default function LoginPage() {
                                 }}
                             >
                                 <img
-                                    src={logoPath}
+                                    src={logoUrl}
                                     alt={emisorName ? `${emisorName} Logo` : 'Logo'}
                                     className="h-14 w-auto object-contain"
                                 />
