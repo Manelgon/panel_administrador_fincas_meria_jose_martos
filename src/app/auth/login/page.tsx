@@ -17,11 +17,15 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [emisorName, setEmisorName] = useState('');
     const [logoUrl, setLogoUrl] = useState('');
+    const [emisorReady, setEmisorReady] = useState(false);
 
     // Load emisor name and logo via Server Actions to bypass RLS
     useEffect(() => {
-        fetchEmisorName().then((name) => { if (name) setEmisorName(name); });
-        fetchEmisorLogoUrl().then((url) => { if (url) setLogoUrl(url); });
+        Promise.all([fetchEmisorName(), fetchEmisorLogoUrl()]).then(([name, url]) => {
+            if (name) setEmisorName(name);
+            if (url) setLogoUrl(url);
+            setEmisorReady(true);
+        });
     }, []);
 
     // Load remembered credentials on mount
@@ -138,25 +142,29 @@ export default function LoginPage() {
                 {/* Logo */}
                 <div className="mb-8 text-center">
                     <div className="flex justify-center mb-5">
-                        <div
-                            className="p-3 rounded-2xl"
-                            style={{
-                                background: 'rgba(251,191,36,0.10)',
-                                border: '1px solid rgba(251,191,36,0.25)',
-                            }}
-                        >
-                            <img
-                                src={logoUrl || '/serincosol-logo.png'}
-                                alt="Logo"
-                                className="h-14 w-auto object-contain"
-                            />
-                        </div>
+                        {emisorReady ? (
+                            <div
+                                className="p-3 rounded-2xl"
+                                style={{
+                                    background: 'rgba(251,191,36,0.10)',
+                                    border: '1px solid rgba(251,191,36,0.25)',
+                                }}
+                            >
+                                <img
+                                    src={logoUrl || '/serincosol-logo.png'}
+                                    alt="Logo"
+                                    className="h-14 w-auto object-contain"
+                                />
+                            </div>
+                        ) : (
+                            <div className="h-20 w-40 rounded-2xl bg-neutral-100 animate-pulse" />
+                        )}
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
                         Iniciar Sesión
                     </h1>
                     <p className="text-sm mt-1.5 text-gray-500">
-                        Panel de administración{emisorName ? ` ${emisorName}` : ''}
+                        Panel de administración{emisorReady && emisorName ? ` ${emisorName}` : ''}
                     </p>
                 </div>
 
