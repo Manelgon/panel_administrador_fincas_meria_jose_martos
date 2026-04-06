@@ -264,6 +264,7 @@ export default function MorosidadPage() {
                         id_email_deuda: formData.id_email_deuda || null,
                         gestor: formData.gestor || null,
                         ref: autoRef || null,
+                        aviso: (!notifEmail && !notifWhatsapp) ? 0 : (notifWhatsapp && !notifEmail) ? 1 : (!notifWhatsapp && notifEmail) ? 2 : 3,
                     }]).select().single();
 
                     if (error) throw error;
@@ -276,23 +277,6 @@ export default function MorosidadPage() {
                         details: { comunidad: comunidad?.nombre_cdad, importe: formData.importe, concepto: formData.titulo_documento }
                     });
 
-                    const gestorProfile = profiles.find(p => p.user_id === formData.gestor);
-                    const webhookPayload = new FormData();
-                    Object.entries(formData).forEach(([key, value]) => { webhookPayload.append(key, value || ''); });
-                    webhookPayload.append('id', newDebt.id.toString());
-                    webhookPayload.append('comunidad_nombre', comunidad?.nombre_cdad || '');
-                    webhookPayload.append('comunidad_codigo', comunidad?.codigo || '');
-                    webhookPayload.append('comunidad_direccion', comunidad?.direccion || '');
-                    webhookPayload.append('gestor_nombre', gestorProfile?.nombre || 'Desconocido');
-                    webhookPayload.append('documento_url', docUrl || '');
-                    webhookPayload.append('notificacion', enviarNotificacion ? 'true' : 'false');
-                    webhookPayload.append('canal_email', notifEmail ? 'true' : 'false');
-                    webhookPayload.append('canal_whatsapp', notifWhatsapp ? 'true' : 'false');
-                    webhookPayload.append('notificacion_propietario', (!notifEmail && !notifWhatsapp) ? '0' : (notifWhatsapp && !notifEmail) ? '1' : (!notifWhatsapp && notifEmail) ? '2' : '3');
-                    webhookPayload.append('adjuntos_count', file ? '1' : '0');
-                    if (file) webhookPayload.append('adjunto', file);
-                    fetch('/api/webhooks/trigger-debt', { method: 'POST', body: webhookPayload })
-                        .catch(err => console.error('Webhook trigger error:', err));
 
                     setShowForm(false); setFormErrors({});
                     setFormData({ comunidad_id: '', nombre_deudor: '', apellidos: '', telefono_deudor: '', email_deudor: '', titulo_documento: '', fecha_notificacion: '', importe: '', observaciones: '', gestor: '', documento: '', aviso: null, id_email_deuda: '' });
@@ -700,6 +684,17 @@ export default function MorosidadPage() {
             key: 'aviso',
             label: 'Aviso',
             defaultVisible: false,
+            render: (row) => {
+                const v = Number(row.aviso);
+                const labels: Record<number, { label: string; cls: string }> = {
+                    0: { label: 'Sin aviso', cls: 'bg-neutral-100 text-neutral-500' },
+                    1: { label: 'WhatsApp', cls: 'bg-green-100 text-green-700' },
+                    2: { label: 'Email', cls: 'bg-blue-100 text-blue-700' },
+                    3: { label: 'Email + WA', cls: 'bg-indigo-100 text-indigo-700' },
+                };
+                const entry = labels[v] ?? { label: '-', cls: 'text-neutral-400' };
+                return <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${entry.cls}`}>{entry.label}</span>;
+            },
         },
         {
             key: 'fecha_notificacion',
@@ -1422,7 +1417,13 @@ export default function MorosidadPage() {
                                     </div>
                                     <div>
                                         <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Aviso</label>
-                                        <div className="w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900">{selectedDetailMorosidad.aviso || '—'}</div>
+                                        <div className="w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900">
+                                            {(() => {
+                                                const v = Number(selectedDetailMorosidad.aviso);
+                                                const labels: Record<number, string> = { 0: 'Sin aviso', 1: 'WhatsApp', 2: 'Email', 3: 'Email + WhatsApp' };
+                                                return labels[v] ?? '—';
+                                            })()}
+                                        </div>
                                     </div>
                                     {selectedDetailMorosidad.observaciones && (
                                         <div className="sm:col-span-2 lg:col-span-3">
