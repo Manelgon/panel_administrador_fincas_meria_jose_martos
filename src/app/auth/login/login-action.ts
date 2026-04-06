@@ -11,10 +11,15 @@ export async function fetchEmisorName(): Promise<string> {
 export async function fetchEmisorLogoUrl(): Promise<string> {
     const emisor = await getEmisor();
     if (!emisor.logoPath) return "";
-    const { data } = await supabaseAdmin.storage
+    // Descargar el archivo y devolverlo como data URL para que funcione sin sesión
+    const { data, error } = await supabaseAdmin.storage
         .from("doc-assets")
-        .createSignedUrl(emisor.logoPath, 3600);
-    return data?.signedUrl || "";
+        .download(emisor.logoPath);
+    if (error || !data) return "";
+    const buffer = Buffer.from(await data.arrayBuffer());
+    const base64 = buffer.toString("base64");
+    const mimeType = data.type || "image/png";
+    return `data:${mimeType};base64,${base64}`;
 }
 
 export async function fetchEmisorData(): Promise<{ nombre: string; logoPath: string }> {
