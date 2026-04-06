@@ -140,25 +140,29 @@ export default function LoginPage() {
                 {/* Logo */}
                 <div className="mb-8 text-center">
                     <div className="flex justify-center mb-5">
-                        <div
-                            className="p-3 rounded-2xl"
-                            style={{
-                                background: 'rgba(251,191,36,0.10)',
-                                border: '1px solid rgba(251,191,36,0.25)',
-                            }}
-                        >
-                            <img
-                                src={logoPath || '/serincosol-logo.png'}
-                                alt={emisorName ? `${emisorName} Logo` : 'Logo'}
-                                className="h-14 w-auto object-contain"
-                            />
-                        </div>
+                        {!emisorReady ? (
+                            <div className="h-20 w-40 rounded-2xl bg-neutral-100 animate-pulse" />
+                        ) : logoPath ? (
+                            <div
+                                className="p-3 rounded-2xl"
+                                style={{
+                                    background: 'rgba(251,191,36,0.10)',
+                                    border: '1px solid rgba(251,191,36,0.25)',
+                                }}
+                            >
+                                <img
+                                    src={logoPath}
+                                    alt={emisorName ? `${emisorName} Logo` : 'Logo'}
+                                    className="h-14 w-auto object-contain"
+                                />
+                            </div>
+                        ) : null}
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
                         Iniciar Sesión
                     </h1>
                     <p className="text-sm mt-1.5 text-gray-500">
-                        Panel de administración{emisorName ? ` ${emisorName}` : ''}
+                        Panel de administración{emisorReady && emisorName ? ` ${emisorName}` : ''}
                     </p>
                 </div>
 
