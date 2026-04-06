@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { logActivity } from '@/lib/logActivity';
 import { useGlobalLoading } from '@/lib/globalLoading';
@@ -64,6 +65,8 @@ export default function CronometrajePage() {
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const [selectedTask, setSelectedTask] = useState<TaskTimer | null>(null);
     const [taskToDelete, setTaskToDelete] = useState<TaskTimer | null>(null);
+    const [portalReady, setPortalReady] = useState(false);
+    useEffect(() => { setPortalReady(true); }, []);
     const [isDeleting, setIsDeleting] = useState(false);
     const [generatingPDF, setGeneratingPDF] = useState(false);
     const [generatingXLS, setGeneratingXLS] = useState(false);
@@ -518,9 +521,9 @@ export default function CronometrajePage() {
 
 
             {/* Report Config Modal */}
-            {showPDFOptionsModal && (
+            {portalReady && showPDFOptionsModal && createPortal(
                 <div
-                    className="fixed inset-0 bg-black/50 z-[150] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm animate-in fade-in duration-200"
+                    className="fixed inset-0 bg-black/50 z-[99999] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm animate-in fade-in duration-200"
                     onClick={() => setShowPDFOptionsModal(false)}
                 >
                     <div
@@ -642,7 +645,8 @@ export default function CronometrajePage() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Header */}

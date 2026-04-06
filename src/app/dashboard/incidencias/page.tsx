@@ -2196,7 +2196,7 @@ export default function IncidenciasPage() {
             {/* Document Delete Confirmation Modal */}
             {portalReady && showDeleteDocConfirm && createPortal(
                 <div
-                    className="fixed inset-0 bg-neutral-900/60 z-[110] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm animate-in fade-in duration-200"
+                    className="fixed inset-0 bg-neutral-900/60 z-[99999] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm animate-in fade-in duration-200"
                 >
                     <div
                         className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-sm p-6 relative flex flex-col items-center text-center max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-200"
@@ -2471,7 +2471,7 @@ export default function IncidenciasPage() {
             {/* Aplazar Date Picker Modal */}
             {portalReady && showAplazarModal && createPortal(
                 <div
-                    className="fixed inset-0 bg-neutral-900/60 z-[110] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm animate-in fade-in duration-200"
+                    className="fixed inset-0 bg-neutral-900/60 z-[99999] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm animate-in fade-in duration-200"
                 >
                     <div
                         className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-sm p-6 relative flex flex-col items-center text-center max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-200"

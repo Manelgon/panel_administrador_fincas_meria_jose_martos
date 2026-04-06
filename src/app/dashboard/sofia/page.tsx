@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'react-hot-toast';
 import { Check, RotateCcw, Paperclip, Trash2, X, FileText, Download, Loader2, Building, Users, Clock, UserCog, Save, Pause, CalendarClock } from 'lucide-react';
@@ -75,6 +76,9 @@ export default function SofiaPage() {
 
     const [profiles, setProfiles] = useState<any[]>([]);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState<number | null>(null);
+
+    const [portalReady, setPortalReady] = useState(false);
+    useEffect(() => { setPortalReady(true); }, []);
 
     // Delete state
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -1113,19 +1117,20 @@ export default function SofiaPage() {
                 isDeleting={isDeleting}
             />
 
-            {showReassignSuccessModal && (
-                <div className="fixed inset-0 bg-neutral-900/60 z-[110] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm">
+            {portalReady && showReassignSuccessModal && createPortal(
+                <div className="fixed inset-0 bg-neutral-900/60 z-[99999] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm">
                     <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-sm p-6 text-center max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"><Check className="w-8 h-8 text-green-600" /></div>
                         <h3 className="text-xl font-bold mb-2">Gestor Reasignado</h3>
                         <button onClick={() => setShowReassignSuccessModal(false)} className="w-full py-3 bg-neutral-900 text-white rounded-xl font-bold">Aceptar</button>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Aplazar Modal */}
-            {showAplazarModal && (
-                <div className="fixed inset-0 bg-neutral-900/60 z-[110] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm">
+            {portalReady && showAplazarModal && createPortal(
+                <div className="fixed inset-0 bg-neutral-900/60 z-[99999] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm">
                     <div
                         className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-sm p-6 flex flex-col items-center max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-200"
                         onClick={e => e.stopPropagation()}
@@ -1156,7 +1161,8 @@ export default function SofiaPage() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
