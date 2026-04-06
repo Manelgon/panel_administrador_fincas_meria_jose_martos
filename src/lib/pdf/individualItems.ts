@@ -62,7 +62,7 @@ const drawYellowBlock = (page: any, x: number, y: number, w: number, h: number, 
 
 // Common Layout Boilerplate
 async function setupPdf(title: string) {
-    const { headerPath, nombre } = await getEmisor();
+    const { headerPath } = await getEmisor();
     const logoBytes = await downloadAssetPng(headerPath || "certificados/logo-retenciones.png");
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([595.28, 841.89]); // A4 Portrait
@@ -91,6 +91,7 @@ async function setupPdf(title: string) {
 }
 
 async function addFooter(pdfDoc: any, font: any) {
+    const { nombre } = await getEmisor();
     const footerText = nombre || "Serincosol | Administración de Fincas Málaga";
     const pages = pdfDoc.getPages();
     for (const p of pages) {
