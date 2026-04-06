@@ -87,6 +87,7 @@ export async function buildRentaCertificatePdf(
     data: any,
     assets: { logoBytes?: Buffer | null; selloBytes?: Buffer | null }
 ) {
+    const { nombre: emisorNombre } = await getEmisor();
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([pageW, pageH]);
 
@@ -261,7 +262,7 @@ export async function buildRentaCertificatePdf(
     page.drawText("Administrador de fincas", { x: marginX, y: 102, size: 10.5, font, color: BLACK });
 
     // 7. Global Footer
-    const footerText = "Serincosol | Administración de Fincas Málaga";
+    const footerText = emisorNombre || "Serincosol | Administración de Fincas Málaga";
     const footerSize = 8;
     const allPages = pdfDoc.getPages();
     for (const p of allPages) {

@@ -56,7 +56,7 @@ function wrapText(text: string, maxWidth: number, font: PDFFont, size: number): 
 }
 
 export async function generateNoticeDetailPdf({ notification, entityData }: { notification: any, entityData: any }) {
-    const { headerPath } = await getEmisor();
+    const { headerPath, nombre } = await getEmisor();
     const logoBytes = await downloadAssetPng(headerPath || "certificados/logo-retenciones.png");
     const pdfDoc = await PDFDocument.create();
     let page = pdfDoc.addPage([595.28, 841.89]); // A4 Portrait
@@ -246,7 +246,7 @@ export async function generateNoticeDetailPdf({ notification, entityData }: { no
     const allPages = pdfDoc.getPages();
     for (const p of allPages) {
         const { width: pW } = p.getSize();
-        p.drawText("Serincosol | Administración de Fincas", {
+        p.drawText(nombre || "Serincosol | Administración de Fincas", {
             x: pW / 2 - 80,
             y: 20,
             size: 8,

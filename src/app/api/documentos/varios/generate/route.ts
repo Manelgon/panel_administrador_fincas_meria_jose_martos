@@ -414,7 +414,7 @@ export async function buildFacturaVariosPdf(
     }
 
     // Global Footer
-    const footerText = "Serincosol | Administración de Fincas Málaga";
+    const footerText = EMISOR.nombre || "Serincosol | Administración de Fincas Málaga";
     const footerSize = 8;
     const allPages = pdfDoc.getPages();
     for (const p of allPages) {
@@ -485,6 +485,7 @@ function drawJustifiedLine(
  * assets.logoBytes y assets.selloBytes vienen descargados de tu bucket privado (doc-assets).
  */
 export async function buildPagosAlDiaPdf(payload: any, assets: { logoBytes: Uint8Array; selloBytes: Uint8Array }) {
+    const { nombre: emisorNombre } = await getEmisor();
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([A4.w, A4.h]);
 
@@ -609,7 +610,7 @@ export async function buildPagosAlDiaPdf(payload: any, assets: { logoBytes: Uint
     page.drawText("Administrador de fincas", { x: marginX, y: 92, size: 11, font, color: BLACK });
 
     // Global Footer
-    const footerText = "Serincosol | Administración de Fincas Málaga";
+    const footerText = emisorNombre || "Serincosol | Administración de Fincas Málaga";
     const footerSize = 8;
     const allPages = pdfDoc.getPages();
     for (const p of allPages) {

@@ -308,7 +308,7 @@ export async function POST(req: Request) {
 
         console.log("[Report] Adding footers...");
         const pages = pdfDoc.getPages();
-        const footerText = "Serincosol | Administración de Fincas Málaga";
+        const footerText = emisorData.nombre || "Serincosol | Administración de Fincas Málaga";
         const footerSize = 8;
         const footerFont = font;
 
