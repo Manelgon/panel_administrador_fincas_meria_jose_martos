@@ -268,12 +268,12 @@ export default function LoginPage() {
                             onChange={(e) => setRememberMe(e.target.checked)}
                             className="w-4 h-4 rounded cursor-pointer appearance-none transition-all"
                             style={{
-                                background: rememberMe ? '#bf4b50' : '#f8fafc',
+                                backgroundColor: rememberMe ? '#bf4b50' : '#f8fafc',
                                 border: `1px solid ${rememberMe ? '#bf4b50' : '#d1d5db'}`,
                                 boxShadow: rememberMe ? '0 0 0 3px rgba(251,191,36,0.20)' : 'none',
                                 backgroundImage: rememberMe
                                     ? `url("data:image/svg+xml,%3Csvg viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l3 3 5-6' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`
-                                    : 'none',
+                                    : `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E")`,
                                 backgroundRepeat: 'no-repeat',
                                 backgroundPosition: 'center',
                                 backgroundSize: '10px 8px',

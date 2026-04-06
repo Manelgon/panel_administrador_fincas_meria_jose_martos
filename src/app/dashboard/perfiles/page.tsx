@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabaseClient';
 import DataTable, { Column } from '@/components/DataTable';
 import { toast } from 'react-hot-toast';
 import { Plus, UserPlus, Loader2, Pencil, Trash2, KeyRound, AlertCircle, X } from 'lucide-react';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
+import SearchableSelect from '@/components/SearchableSelect';
 import { logActivity } from '@/lib/logActivity';
 import { useGlobalLoading } from '@/lib/globalLoading';
 
@@ -379,7 +381,7 @@ export default function PerfilesPage() {
             />
 
             {/* Create User Modal */}
-            {showCreateModal && (
+            {showCreateModal && createPortal(
                 <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center sm:justify-center z-[9999] backdrop-blur-sm sm:p-4">
                     <div className="bg-white rounded-t-2xl sm:rounded-xl shadow-2xl max-w-md w-full overflow-hidden max-h-[92dvh] sm:max-h-[90dvh] flex flex-col animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200">
                         <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/40">
@@ -476,14 +478,14 @@ export default function PerfilesPage() {
 
                             <div>
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Rol</label>
-                                <select
-                                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
+                                <SearchableSelect
+                                    options={[
+                                        { value: 'gestor', label: 'Gestor' },
+                                        { value: 'admin', label: 'Administrador' },
+                                    ]}
                                     value={createFormData.rol}
-                                    onChange={e => setCreateFormData({ ...createFormData, rol: e.target.value as any })}
-                                >
-                                    <option value="gestor">Gestor</option>
-                                    <option value="admin">Administrador</option>
-                                </select>
+                                    onChange={v => setCreateFormData({ ...createFormData, rol: v as any })}
+                                />
                                 <p className="text-[10px] text-neutral-400 mt-1">
                                     {createFormData.rol === 'admin' ? '⚠️ Acceso total al sistema' :
                                         'ℹ️ Gestión de incidencias, morosidad y comunidades asignadas'}
@@ -519,10 +521,10 @@ export default function PerfilesPage() {
                         </form>
                     </div>
                 </div>
-            )}
+            , document.body)}
 
             {/* Edit User Modal */}
-            {showEditModal && selectedProfile && (
+            {showEditModal && selectedProfile && createPortal(
                 <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center sm:justify-center z-[9999] backdrop-blur-sm sm:p-4">
                     <div className="bg-white rounded-t-2xl sm:rounded-xl shadow-2xl max-w-md w-full overflow-hidden max-h-[92dvh] sm:max-h-[90dvh] flex flex-col animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200">
                         <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/40">
@@ -583,14 +585,14 @@ export default function PerfilesPage() {
 
                             <div>
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Rol</label>
-                                <select
-                                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
+                                <SearchableSelect
+                                    options={[
+                                        { value: 'gestor', label: 'Gestor' },
+                                        { value: 'admin', label: 'Administrador' },
+                                    ]}
                                     value={editFormData.rol}
-                                    onChange={e => setEditFormData({ ...editFormData, rol: e.target.value as any })}
-                                >
-                                    <option value="gestor">Gestor</option>
-                                    <option value="admin">Administrador</option>
-                                </select>
+                                    onChange={v => setEditFormData({ ...editFormData, rol: v as any })}
+                                />
                             </div>
 
                             <div className="pt-4 flex gap-3 justify-end border-t border-neutral-100 mt-4">
@@ -612,10 +614,10 @@ export default function PerfilesPage() {
                         </form>
                     </div>
                 </div>
-            )}
+            , document.body)}
 
             {/* Password Reset Modal */}
-            {showPasswordModal && selectedProfile && (
+            {showPasswordModal && selectedProfile && createPortal(
                 <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center sm:justify-center z-[9999] backdrop-blur-sm sm:p-4">
                     <div className="bg-white rounded-t-2xl sm:rounded-xl shadow-2xl max-w-sm w-full overflow-hidden max-h-[92dvh] sm:max-h-[90dvh] flex flex-col animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200">
                         <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50/40">
@@ -680,7 +682,7 @@ export default function PerfilesPage() {
                         </form>
                     </div>
                 </div>
-            )}
+            , document.body)}
 
             {/* Delete Confirmation Modal */}
             <DeleteConfirmationModal

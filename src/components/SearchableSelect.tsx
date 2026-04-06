@@ -204,8 +204,8 @@ export default function SearchableSelect({
                             key={opt.value}
                             data-idx={idx}
                             className={`px-3 py-2 text-sm cursor-pointer flex items-center justify-between ${
-                                String(opt.value) === String(value) ? "bg-yellow-100 text-yellow-900 font-medium" : "text-gray-700"
-                            } ${idx === activeIdx ? "bg-yellow-50 ring-1 ring-inset ring-yellow-300" : "hover:bg-yellow-100"}`}
+                                String(opt.value) === String(value) ? "bg-[#bf4b50]/10 text-[#bf4b50] font-medium" : "text-gray-700"
+                            } ${idx === activeIdx ? "bg-[#bf4b50]/10 ring-1 ring-inset ring-[#bf4b50]/30" : "hover:bg-[#bf4b50]/10 hover:text-[#bf4b50]"}`}
                             role="option"
                             aria-selected={String(opt.value) === String(value)}
                             onMouseDown={(e) => {
@@ -214,7 +214,7 @@ export default function SearchableSelect({
                             }}
                         >
                             <span>{opt.label}</span>
-                            {String(opt.value) === String(value) && <Check className="w-4 h-4 text-yellow-600" aria-hidden="true" />}
+                            {String(opt.value) === String(value) && <Check className="w-4 h-4 text-[#bf4b50]" aria-hidden="true" />}
                         </div>
                     ))
                 )}
