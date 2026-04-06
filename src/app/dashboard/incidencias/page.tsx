@@ -488,7 +488,7 @@ export default function IncidenciasPage() {
 
                 // Trigger Webhook only for new tickets
                 try {
-                    const webhookUrl = "https://serinwebhook.afcademia.com/webhook/c38663f7-31e9-417d-b0aa-acf60ccd8c5c";
+                    const webhookUrl = process.env.NEXT_PUBLIC_INCIDENT_WEBHOOK || "";
                     const webhookPayload = new FormData();
                     webhookPayload.append('nombre_cliente', formData.nombre_cliente);
                     webhookPayload.append('telefono', formData.telefono);
