@@ -76,16 +76,23 @@ export default function PerfilesPage() {
 
     const fetchProfiles = async () => {
         setLoading(true);
-        const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const res = await fetch('/api/admin/list-profiles', {
+                headers: session?.access_token
+                    ? { Authorization: `Bearer ${session.access_token}` }
+                    : {},
+            });
+            const json = await res.json();
+            if (!res.ok) {
+                toast.error('Error al cargar perfiles');
+                console.error(json.error);
+            } else {
+                setProfiles(json.profiles || []);
+            }
+        } catch (e) {
             toast.error('Error al cargar perfiles');
-            console.error(error);
-        } else {
-            setProfiles(data || []);
+            console.error(e);
         }
         setLoading(false);
     };
