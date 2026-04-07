@@ -33,7 +33,6 @@ export default function InformesComunidadPage() {
     const [selectedFolder, setSelectedFolder] = useState<string>('');
     const [fechaInicio, setFechaInicio] = useState<string>('');
     const [fechaFin, setFechaFin] = useState<string>('');
-    const [isAdmin, setIsAdmin] = useState(false);
 
     // Section selections
     const [includeEmails, setIncludeEmails] = useState(true);
@@ -73,18 +72,6 @@ export default function InformesComunidadPage() {
     useEffect(() => setPortalReady(true), []);
 
     useEffect(() => {
-        const checkRole = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user) {
-                const { data } = await supabase
-                    .from('profiles')
-                    .select('rol')
-                    .eq('user_id', session.user.id)
-                    .single();
-                if (data?.rol === 'admin') setIsAdmin(true);
-            }
-        };
-        checkRole();
         fetchHistory();
 
         // Set default dates
@@ -347,7 +334,6 @@ export default function InformesComunidadPage() {
                         icon: <Trash2 className="w-3.5 h-3.5" />,
                         onClick: (row) => handleDeleteReport(row.id),
                         variant: 'danger',
-                        hidden: !isAdmin,
                         separator: true,
                     },
                 ]}
