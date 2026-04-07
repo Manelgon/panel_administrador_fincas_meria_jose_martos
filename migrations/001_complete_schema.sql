@@ -810,10 +810,13 @@ to authenticated
 using (true);
 
 drop policy if exists "comunidades: admin insert" on public.comunidades;
-create policy "comunidades: admin insert"
+drop policy if exists "comunidades: gestor insert" on public.comunidades;
+create policy "comunidades: gestor insert"
 on public.comunidades for insert
 to authenticated
-with check (public.is_admin());
+with check (
+  (select rol from public.profiles where user_id = auth.uid()) in ('gestor', 'admin')
+);
 
 drop policy if exists "comunidades: admin update" on public.comunidades;
 drop policy if exists "comunidades: gestor update" on public.comunidades;

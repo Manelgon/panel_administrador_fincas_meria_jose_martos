@@ -470,14 +470,18 @@ export default function InformesComunidadPage() {
                                 )}
                             </div>
 
-                            {/* Emails + Cronometraje en fila */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${includeEmails ? 'border-[#bf4b50] bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
+                            {/* Emails */}
+                            <div className={`rounded-xl border-2 transition-all ${includeEmails ? 'border-[#bf4b50] bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
+                                <label className="flex items-center gap-3 p-4 cursor-pointer">
                                     <input type="checkbox" checked={includeEmails} onChange={e => { setIncludeEmails(e.target.checked); setFormErrors(prev => ({ ...prev, sections: '' })); }} className="w-4 h-4 accent-[#a03d42]" />
                                     <Mail className={`w-5 h-5 ${includeEmails ? 'text-yellow-600' : 'text-neutral-400'}`} />
                                     <span className="text-sm font-semibold text-neutral-800">Emails</span>
                                 </label>
-                                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${includeCronometraje ? 'border-[#bf4b50] bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
+                            </div>
+
+                            {/* Cronometraje */}
+                            <div className={`rounded-xl border-2 transition-all ${includeCronometraje ? 'border-[#bf4b50] bg-yellow-50' : formErrors.sections ? 'border-red-300' : 'border-neutral-100 bg-neutral-50'}`}>
+                                <label className="flex items-center gap-3 p-4 cursor-pointer">
                                     <input type="checkbox" checked={includeCronometraje} onChange={e => { setIncludeCronometraje(e.target.checked); setFormErrors(prev => ({ ...prev, sections: '' })); }} className="w-4 h-4 accent-[#a03d42]" />
                                     <Clock className={`w-5 h-5 ${includeCronometraje ? 'text-yellow-600' : 'text-neutral-400'}`} />
                                     <span className="text-sm font-semibold text-neutral-800">Cronometraje</span>
