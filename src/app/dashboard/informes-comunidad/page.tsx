@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useGlobalLoading } from '@/lib/globalLoading';
 import { createPortal } from 'react-dom';
 import { Plus, Mail, Building, FileText, Loader2, Download, ExternalLink, CheckCircle2, AlertCircle, Trash2, ChevronUp, ChevronDown, Filter, CreditCard, TicketCheck, Eye, Clock, X, BarChart2, ChevronRight } from 'lucide-react';
+import DataTable, { Column, RowAction } from '@/components/DataTable';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { toast } from 'react-hot-toast';
 import { supabase } from '@/lib/supabaseClient';
@@ -49,10 +50,6 @@ export default function InformesComunidadPage() {
     const [historicalReports, setHistoricalReports] = useState<HistoricalReport[]>([]);
     const [loadingHistory, setLoadingHistory] = useState(true);
     const [filterCommunity, setFilterCommunity] = useState<string>('all');
-    const [sortConfig, setSortConfig] = useState<{ key: keyof HistoricalReport; direction: 'asc' | 'desc' }>({
-        key: 'created_at',
-        direction: 'desc'
-    });
 
     // UI State
     const [isGenerating, setIsGenerating] = useState(false);
@@ -258,31 +255,8 @@ export default function InformesComunidadPage() {
         }, 'Eliminando informe...');
     };
 
-    const requestSort = (key: keyof HistoricalReport) => {
-        let direction: 'asc' | 'desc' = 'asc';
-        if (sortConfig.key === key && sortConfig.direction === 'asc') {
-            direction = 'desc';
-        }
-        setSortConfig({ key, direction });
-    };
-
-    const getSortIcon = (key: keyof HistoricalReport) => {
-        if (sortConfig.key !== key) return <ChevronUp className="w-3 h-3 text-neutral-300" />;
-        return sortConfig.direction === 'asc'
-            ? <ChevronUp className="w-3 h-3 text-[#a03d42]" />
-            : <ChevronDown className="w-3 h-3 text-[#a03d42]" />;
-    };
-
     const communitiesList = Array.from(new Set(historicalReports.map(r => r.community_name))).sort();
-    const sortedAndFilteredReports = [...historicalReports]
-        .filter(r => filterCommunity === 'all' || r.community_name === filterCommunity)
-        .sort((a, b) => {
-            const aValue = a[sortConfig.key];
-            const bValue = b[sortConfig.key];
-            if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-            if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-            return 0;
-        });
+    const filteredReports = historicalReports.filter(r => filterCommunity === 'all' || r.community_name === filterCommunity);
 
     return (
         <div className="space-y-6 md:space-y-8 pb-10">
@@ -301,13 +275,14 @@ export default function InformesComunidadPage() {
                 </button>
             </div>
 
-            {/* History Table — always visible */}
-            <div className="space-y-6">
-                {/* Filters */}
-                <div className="flex flex-wrap items-center gap-4 bg-white p-4 rounded-xl border border-neutral-200">
-                    <div className="flex items-center gap-2 text-sm text-neutral-500 mr-2">
-                        <Filter className="w-4 h-4" /> Filtrar por:
-                    </div>
+            {/* History Table */}
+            <DataTable<HistoricalReport>
+                data={filteredReports}
+                loading={loadingHistory}
+                keyExtractor={(r) => r.id}
+                storageKey="informes-comunidad"
+                emptyMessage="No hay informes globales generados aún."
+                extraFilters={
                     <select
                         value={filterCommunity}
                         onChange={(e) => setFilterCommunity(e.target.value)}
@@ -316,68 +291,67 @@ export default function InformesComunidadPage() {
                         <option value="all">Todas las comunidades</option>
                         {communitiesList.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
-                </div>
-
-                {/* Table */}
-                <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-[700px]">
-                        <thead className="bg-neutral-50 border-b border-neutral-200">
-                            <tr>
-                                <th className="px-6 py-4 text-[10px] font-bold text-neutral-400 uppercase tracking-wider cursor-pointer" onClick={() => requestSort('created_at')}>
-                                    <div className="flex items-center gap-1">Fecha {getSortIcon('created_at')}</div>
-                                </th>
-                                <th className="px-6 py-4 text-[10px] font-bold text-neutral-400 uppercase tracking-wider cursor-pointer" onClick={() => requestSort('community_name')}>
-                                    <div className="flex items-center gap-1">Comunidad {getSortIcon('community_name')}</div>
-                                </th>
-                                <th className="px-6 py-4 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Periodo</th>
-                                <th className="px-6 py-4 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Contenido</th>
-                                <th className="px-6 py-4 text-[10px] font-bold text-neutral-400 uppercase tracking-wider text-right">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-neutral-100">
-                            {loadingHistory ? (
-                                <tr><td colSpan={5} className="px-6 py-12 text-center text-neutral-400"><Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" /> Cargando...</td></tr>
-                            ) : sortedAndFilteredReports.length === 0 ? (
-                                <tr><td colSpan={5} className="px-6 py-12 text-center text-neutral-400">No hay informes globales generados aún.</td></tr>
-                            ) : (
-                                sortedAndFilteredReports.map((report) => (
-                                    <tr key={report.id} className="hover:bg-neutral-50 transition-colors">
-                                        <td className="px-6 py-4 text-sm font-medium text-neutral-900">
-                                            <div className="flex flex-col">
-                                                <span>{new Date(report.created_at).toLocaleDateString()}</span>
-                                                <span className="text-[10px] text-neutral-400 font-normal">{new Date(report.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-neutral-700">
-                                            <div className="flex items-center gap-2">
-                                                <Building className="w-4 h-4 text-[#a03d42]" />
-                                                {report.community_name}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-neutral-500">{new Date(report.period_start).toLocaleDateString()} al {new Date(report.period_end).toLocaleDateString()}</td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm text-neutral-600">
-                                                    {report.title.replace('Informe Global: ', '')}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <button onClick={() => handleViewPdf(report.pdf_path)} className="p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors" title="Ver Online"><Eye className="w-4 h-4" /></button>
-                                                <button onClick={() => handleDownloadPdf(report.pdf_path, report.title)} className="p-1.5 rounded-full bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors" title="Descargar"><Download className="w-4 h-4" /></button>
-                                                {isAdmin && (
-                                                    <button onClick={() => handleDeleteReport(report.id)} className="p-1.5 rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Borrar"><Trash2 className="w-4 h-4" /></button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                }
+                columns={[
+                    {
+                        key: 'created_at',
+                        label: 'Fecha',
+                        render: (r) => (
+                            <div className="flex flex-col">
+                                <span className="font-medium text-neutral-900">{new Date(r.created_at).toLocaleDateString()}</span>
+                                <span className="text-[10px] text-neutral-400">{new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                        ),
+                        getSearchValue: (r) => new Date(r.created_at).toLocaleDateString(),
+                    },
+                    {
+                        key: 'community_name',
+                        label: 'Comunidad',
+                        render: (r) => (
+                            <div className="flex items-center gap-2">
+                                <Building className="w-4 h-4 text-[#a03d42] shrink-0" />
+                                <span>{r.community_name}</span>
+                            </div>
+                        ),
+                    },
+                    {
+                        key: 'period_start',
+                        label: 'Periodo',
+                        render: (r) => (
+                            <span className="text-neutral-500">
+                                {new Date(r.period_start).toLocaleDateString()} — {new Date(r.period_end).toLocaleDateString()}
+                            </span>
+                        ),
+                        getSearchValue: (r) => `${new Date(r.period_start).toLocaleDateString()} ${new Date(r.period_end).toLocaleDateString()}`,
+                    },
+                    {
+                        key: 'title',
+                        label: 'Contenido',
+                        render: (r) => <span className="text-neutral-600">{r.title.replace('Informe Global: ', '')}</span>,
+                    },
+                ] as Column<HistoricalReport>[]}
+                rowActions={(r) => [
+                    {
+                        label: 'Ver PDF',
+                        icon: <Eye className="w-3.5 h-3.5" />,
+                        onClick: (row) => handleViewPdf(row.pdf_path),
+                    },
+                    {
+                        label: 'Descargar',
+                        icon: <Download className="w-3.5 h-3.5" />,
+                        onClick: (row) => handleDownloadPdf(row.pdf_path, row.title),
+                        variant: 'success',
+                    },
+                    {
+                        label: 'Eliminar',
+                        icon: <Trash2 className="w-3.5 h-3.5" />,
+                        onClick: (row) => handleDeleteReport(row.id),
+                        variant: 'danger',
+                        hidden: !isAdmin,
+                        separator: true,
+                    },
+                ]}
+            />
 
             {/* Generator Modal */}
             {portalReady && showGenerator && createPortal(
