@@ -416,7 +416,10 @@ with (lists = 100);
 
 create or replace function public.is_admin()
 returns boolean
-language sql stable as $$
+language sql stable
+security definer
+set search_path = public
+as $$
   select exists (
     select 1
     from public.profiles p
@@ -428,7 +431,10 @@ $$;
 
 create or replace function public.is_active_employee()
 returns boolean
-language sql stable as $$
+language sql stable
+security definer
+set search_path = public
+as $$
   select exists (
     select 1
     from public.profiles p
@@ -439,7 +445,10 @@ $$;
 
 create or replace function public.has_comunidad(_comunidad_id bigint)
 returns boolean
-language sql stable as $$
+language sql stable
+security definer
+set search_path = public
+as $$
   select public.is_admin()
   or exists (
     select 1
@@ -768,10 +777,11 @@ using (public.is_admin());
 
 -- ---------- PROFILES ----------
 drop policy if exists "profiles: read own or admin" on public.profiles;
-create policy "profiles: read own or admin"
+drop policy if exists "profiles: read authenticated" on public.profiles;
+create policy "profiles: read authenticated"
 on public.profiles for select
 to authenticated
-using (user_id = auth.uid() or public.is_admin());
+using (auth.uid() is not null);
 
 drop policy if exists "profiles: update own or admin" on public.profiles;
 create policy "profiles: update own or admin"
@@ -839,10 +849,11 @@ using (public.is_admin() or user_id = auth.uid());
 
 -- ---------- INCIDENCIAS ----------
 drop policy if exists "incidencias: read by comunidad" on public.incidencias;
-create policy "incidencias: read by comunidad"
+drop policy if exists "incidencias: read authenticated" on public.incidencias;
+create policy "incidencias: read authenticated"
 on public.incidencias for select
 to authenticated
-using (public.has_comunidad(comunidad_id));
+using (public.is_active_employee());
 
 drop policy if exists "incidencias: insert by comunidad" on public.incidencias;
 create policy "incidencias: insert by comunidad"
@@ -865,10 +876,11 @@ using (public.is_admin());
 
 -- ---------- MOROSIDAD ----------
 drop policy if exists "morosidad: read by comunidad" on public.morosidad;
-create policy "morosidad: read by comunidad"
+drop policy if exists "morosidad: read authenticated" on public.morosidad;
+create policy "morosidad: read authenticated"
 on public.morosidad for select
 to authenticated
-using (public.has_comunidad(comunidad_id));
+using (public.is_active_employee());
 
 drop policy if exists "morosidad: insert by comunidad" on public.morosidad;
 create policy "morosidad: insert by comunidad"
@@ -1036,10 +1048,11 @@ with check (user_id = auth.uid());
 
 -- ---------- DOC_SUBMISSIONS ----------
 drop policy if exists "doc_submissions: read own or admin" on public.doc_submissions;
-create policy "doc_submissions: read own or admin"
+drop policy if exists "doc_submissions: read authenticated" on public.doc_submissions;
+create policy "doc_submissions: read authenticated"
 on public.doc_submissions for select
 to authenticated
-using (user_id = auth.uid() or public.is_admin());
+using (public.is_active_employee());
 
 drop policy if exists "doc_submissions: insert own" on public.doc_submissions;
 create policy "doc_submissions: insert own"
