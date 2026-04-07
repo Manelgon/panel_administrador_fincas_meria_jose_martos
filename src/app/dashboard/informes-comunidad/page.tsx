@@ -118,13 +118,13 @@ export default function InformesComunidadPage() {
     };
 
     const fetchFolders = async () => {
+        setShowGenerator(true);
         setLoadingFolders(true);
         try {
             const response = await fetch('/api/onedrive/folders');
             if (!response.ok) throw new Error('Error al cargar comunidades');
             const data = await response.json();
             setFolders(data || []);
-            setShowGenerator(true);
         } catch (error) {
             console.error(error);
             toast.error('No se pudieron cargar las carpetas de Outlook');
@@ -405,9 +405,10 @@ export default function InformesComunidadPage() {
                                 <select
                                     value={selectedFolder}
                                     onChange={(e) => { setSelectedFolder(e.target.value); setFormErrors(prev => ({ ...prev, config: '' })); }}
-                                    className={`w-full bg-neutral-50 border rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#bf4b50] ${formErrors.config ? 'border-red-400' : 'border-neutral-200'}`}
+                                    disabled={loadingFolders}
+                                    className={`w-full bg-neutral-50 border rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#bf4b50] disabled:opacity-60 ${formErrors.config ? 'border-red-400' : 'border-neutral-200'}`}
                                 >
-                                    <option value="">Selecciona una comunidad...</option>
+                                    <option value="">{loadingFolders ? 'Cargando comunidades...' : 'Selecciona una comunidad...'}</option>
                                     {folders.map(f => <option key={f.id} value={f.id}>{f.displayName || f.name}</option>)}
                                 </select>
                             </div>
