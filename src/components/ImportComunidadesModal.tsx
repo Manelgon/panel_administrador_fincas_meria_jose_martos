@@ -3,6 +3,9 @@
 import { useState, useRef, useCallback } from 'react';
 import { X, Upload, FileSpreadsheet, CheckCircle, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+// TODO: xlsx tiene CVEs conocidos (GHSA-4r6h-8v6p-xvw6, GHSA-5pgg-2g8v-p4x9).
+// Riesgo acotado: solo procesa archivos que el propio admin sube, sin datos externos.
+// Migrar a exceljs cuando haya una ventana de refactor.
 import * as XLSX from 'xlsx';
 import ModalPortal from '@/components/ModalPortal';
 
@@ -36,7 +39,7 @@ export default function ImportComunidadesModal({ onClose, onImported }: ImportCo
         reader.onload = (e) => {
             try {
                 const data = e.target?.result;
-                const wb = XLSX.read(data, { type: 'binary' });
+                const wb = XLSX.read(data, { type: 'array' });
                 const ws = wb.Sheets[wb.SheetNames[0]];
                 // Convert to array of arrays
                 const raw: string[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
@@ -89,7 +92,7 @@ export default function ImportComunidadesModal({ onClose, onImported }: ImportCo
                 toast.error('Error al leer el fichero. Asegúrate de que es CSV o Excel válido.');
             }
         };
-        reader.readAsBinaryString(file);
+        reader.readAsArrayBuffer(file);
     }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
