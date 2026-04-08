@@ -174,8 +174,8 @@ export default function MorosidadPage() {
             }
             const data = await res.json();
             return data.publicUrl;
-        } catch (error: unknown) {
-            toast.error('Error subiendo archivo: ' + (error instanceof Error ? error.message : String(error)));
+        } catch (error: any) {
+            toast.error('Error subiendo archivo: ' + error.message);
             console.error(error);
             return null;
         } finally {
@@ -238,8 +238,8 @@ export default function MorosidadPage() {
                     setFormData({ comunidad_id: '', nombre_deudor: '', apellidos: '', telefono_deudor: '', email_deudor: '', titulo_documento: '', fecha_notificacion: '', importe: '', observaciones: '', gestor: '', documento: '', aviso: null, id_email_deuda: '' });
                     setFile(null);
                     fetchMorosidad();
-                } catch (error: unknown) {
-                    toast.error('Error al actualizar: ' + (error instanceof Error ? error.message : String(error)));
+                } catch (error: any) {
+                    toast.error('Error al actualizar: ' + error.message);
                 } finally {
                     toast.dismiss(loadingToastId);
                     setIsSubmitting(false);
@@ -282,8 +282,8 @@ export default function MorosidadPage() {
                     setFormData({ comunidad_id: '', nombre_deudor: '', apellidos: '', telefono_deudor: '', email_deudor: '', titulo_documento: '', fecha_notificacion: '', importe: '', observaciones: '', gestor: '', documento: '', aviso: null, id_email_deuda: '' });
                     setEnviarNotificacion(null); setNotifEmail(false); setNotifWhatsapp(false); setFile(null);
                     fetchMorosidad();
-                } catch (error: unknown) {
-                    toast.error('Error: ' + (error instanceof Error ? error.message : String(error)));
+                } catch (error: any) {
+                    toast.error('Error: ' + error.message);
                 } finally {
                     toast.dismiss(loadingToastId);
                     setIsSubmitting(false);
@@ -333,7 +333,7 @@ export default function MorosidadPage() {
             setMorosos(prev => prev.map(m => m.id === selectedDetailMorosidad.id ? { ...m, documento: docUrl } : m));
 
             toast.success('Documento actualizado', { id: loadingToast });
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error(error);
             toast.error('Error al subir archivo', { id: loadingToast });
         } finally {
@@ -472,8 +472,8 @@ export default function MorosidadPage() {
 
                 setShowDeleteModal(false);
                 setDeleteId(null);
-            } catch (error: unknown) {
-                toast.error((error instanceof Error ? error.message : String(error)));
+            } catch (error: any) {
+                toast.error(error.message);
             } finally {
                 setIsDeleting(false);
             }

@@ -407,8 +407,8 @@ export async function POST(req: Request) {
         let logoBytes: Uint8Array | undefined;
         try {
             logoBytes = await downloadAssetPng(headerStoragePath);
-        } catch (e: unknown) {
-            console.warn("[suplidos/generate] Logo download failed (continuing without logo):", (e instanceof Error ? e.message : String(e)));
+        } catch (e: any) {
+            console.warn("[suplidos/generate] Logo download failed (continuing without logo):", e.message);
         }
 
         // 2) Generar PDF
@@ -490,8 +490,8 @@ export async function POST(req: Request) {
             pdfUrl: signedData.signedUrl,
         });
 
-    } catch (err: unknown) {
+    } catch (err: any) {
         console.error("Endpoint error:", err);
-        return NextResponse.json({ error: "Error interno: " + (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ error: "Error interno: " + err.message }, { status: 500 });
     }
 }

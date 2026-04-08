@@ -56,13 +56,13 @@ export async function POST(req: NextRequest) {
                 } else {
                     results.push({ codigo: row.codigo, status: 'error', message: insertError.message });
                 }
-            } catch (err: unknown) {
-                results.push({ codigo: row.codigo, status: 'error', message: err instanceof Error ? err.message : 'Error desconocido' });
+            } catch (err: any) {
+                results.push({ codigo: row.codigo, status: 'error', message: err?.message || 'Error desconocido' });
             }
         }
 
         return NextResponse.json({ results });
-    } catch (err: unknown) {
-        return NextResponse.json({ error: err instanceof Error ? err.message : 'Server error' }, { status: 500 });
+    } catch (err: any) {
+        return NextResponse.json({ error: err?.message || 'Server error' }, { status: 500 });
     }
 }

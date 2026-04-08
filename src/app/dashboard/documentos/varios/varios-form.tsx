@@ -147,10 +147,10 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
 
             setStatus("ready");
             toast.success("Documentos generados correctamente ✅");
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error(error);
             setStatus("error");
-            toast.error((error instanceof Error ? error.message : String(error)));
+            toast.error(error.message);
         }
     };
 
@@ -188,9 +188,9 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
 
             setStatus("ready");
             toast.success("Email enviado correctamente ✅");
-        } catch (e: unknown) {
+        } catch (e: any) {
             setStatus("ready");
-            toast.error((e instanceof Error ? e.message : null) || "Error enviando");
+            toast.error(e?.message || "Error enviando");
         }
     };
 

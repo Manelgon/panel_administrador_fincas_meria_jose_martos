@@ -113,8 +113,8 @@ export async function GET(request: Request) {
             policy: policy || { max_approved_per_day: 1, count_holidays: false, count_weekends: false }
         });
 
-    } catch (error: unknown) {
+    } catch (error: any) {
         console.error('Vacation status error:', error);
-        return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

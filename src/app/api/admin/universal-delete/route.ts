@@ -159,8 +159,8 @@ export async function POST(request: Request) {
             }
 
         } else if (type === 'morosidad') {
-            const { data } = await supabaseAdmin.from('morosidad').select('nombre_deudor, titulo_documento').eq('id', id).single();
-            entityName = data?.titulo_documento || data?.nombre_deudor || `Morosidad #${id}`;
+            const { data } = await supabaseAdmin.from('morosidad').select('nombre_cliente, titulo').eq('id', id).single();
+            entityName = data?.titulo || data?.nombre_cliente || `Morosidad #${id}`;
 
             // Delete timeline messages for morosidad too
             await supabaseAdmin
@@ -247,8 +247,8 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true });
 
-    } catch (error: unknown) {
+    } catch (error: any) {
         console.error('[universal-delete] API error:', error);
-        return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || 'Error interno del servidor' }, { status: 500 });
+        return NextResponse.json({ error: error.message || 'Error interno del servidor' }, { status: 500 });
     }
 }

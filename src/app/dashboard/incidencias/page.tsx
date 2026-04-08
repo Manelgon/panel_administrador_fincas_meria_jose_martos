@@ -508,8 +508,8 @@ export default function IncidenciasPage() {
             setNotifEmail(false);
             setNotifWhatsapp(false);
             fetchIncidencias();
-        } catch (error: unknown) {
-            toast.error('Error: ' + (error instanceof Error ? error.message : String(error)));
+        } catch (error: any) {
+            toast.error('Error: ' + error.message);
         } finally {
             toast.dismiss(loadingToastId);
             setIsSubmitting(false);
@@ -592,7 +592,7 @@ export default function IncidenciasPage() {
             });
 
             toast.success('Archivos añadidos hoy', { id: loadingToast });
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error(error);
             toast.error('Error al subir archivos', { id: loadingToast });
         } finally {
@@ -684,7 +684,7 @@ export default function IncidenciasPage() {
             });
 
             toast.success('Documento eliminado', { id: loadingToast });
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error(error);
             toast.error('Error al eliminar el documento', { id: loadingToast });
         } finally {
@@ -849,7 +849,7 @@ export default function IncidenciasPage() {
             setShowAplazarModal(false);
             setAplazarIncidenciaId(null);
             setAplazarDate('');
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error(error);
             toast.error('Error al aplazar el ticket', { id: loadingToast });
         }
@@ -969,8 +969,8 @@ export default function IncidenciasPage() {
                 }
             });
 
-        } catch (error: unknown) {
-            toast.error((error instanceof Error ? error.message : String(error)));
+        } catch (error: any) {
+            toast.error(error.message);
         } finally {
             setIsDeleting(false);
         }
@@ -1058,7 +1058,7 @@ export default function IncidenciasPage() {
             setNewGestorId('');
             setShowReassignSuccessModal(true);
 
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error('Error updating gestor:', error);
             toast.error('Error al reasignar gestor');
         } finally {

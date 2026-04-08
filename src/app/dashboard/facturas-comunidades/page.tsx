@@ -69,7 +69,7 @@ export default function FacturasComunidadesPage() {
 
             if (error) throw error;
             setComunidades(data || []);
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error('Error loading comunidades:', error);
         }
     };
@@ -86,8 +86,8 @@ export default function FacturasComunidadesPage() {
                 item.name !== '.emptyFolderPlaceholder' && item.name !== '.keep'
             );
             setItems(filteredItems);
-        } catch (error: unknown) {
-            toast.error((error instanceof Error ? error.message : String(error)));
+        } catch (error: any) {
+            toast.error(error.message);
         } finally {
             setLoading(false);
         }
@@ -117,8 +117,8 @@ export default function FacturasComunidadesPage() {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        } catch (error: unknown) {
-            toast.error((error instanceof Error ? error.message : String(error)));
+        } catch (error: any) {
+            toast.error(error.message);
         }
     };
 
@@ -157,8 +157,8 @@ export default function FacturasComunidadesPage() {
             setShowCreateModal(false);
             setNewFolderName('');
             fetchItems();
-        } catch (error: unknown) {
-            toast.error((error instanceof Error ? error.message : String(error)), { id: loadingToast });
+        } catch (error: any) {
+            toast.error(error.message, { id: loadingToast });
         } finally {
             setIsCreating(false);
         }
@@ -189,8 +189,8 @@ export default function FacturasComunidadesPage() {
 
             toast.success('Archivo subido correctamente', { id: loadingToast });
             fetchItems();
-        } catch (error: unknown) {
-            toast.error((error instanceof Error ? error.message : String(error)), { id: loadingToast });
+        } catch (error: any) {
+            toast.error(error.message, { id: loadingToast });
         } finally {
             if (fileInputRef.current) fileInputRef.current.value = '';
         }
@@ -215,8 +215,8 @@ export default function FacturasComunidadesPage() {
 
             const folders = (data.items || []).filter((item: BucketItem) => !item.metadata);
             setMoveFolderItems(folders);
-        } catch (error: unknown) {
-            toast.error((error instanceof Error ? error.message : String(error)));
+        } catch (error: any) {
+            toast.error(error.message);
         } finally {
             setMoveLoading(false);
         }
@@ -251,8 +251,8 @@ export default function FacturasComunidadesPage() {
             setShowMoveModal(false);
             setMovingFile(null);
             fetchItems();
-        } catch (error: unknown) {
-            toast.error((error instanceof Error ? error.message : String(error)), { id: loadingToast });
+        } catch (error: any) {
+            toast.error(error.message, { id: loadingToast });
         } finally {
             setIsMoving(false);
         }

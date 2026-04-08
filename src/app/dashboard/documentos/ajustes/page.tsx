@@ -86,9 +86,9 @@ export default function AjustesSuplidosPage() {
             router.push("/dashboard/documentos");
             router.refresh();
 
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error(error);
-            toast.error((error instanceof Error ? error.message : String(error)) || "Error al guardar");
+            toast.error(error.message || "Error al guardar");
         } finally {
             setSaving(false);
         }

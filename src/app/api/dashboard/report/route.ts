@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseRouteClient } from "@/lib/supabase/route";
-import { PDFDocument, rgb, StandardFonts, PDFPage, PDFFont, RGB } from "pdf-lib";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { createClient } from "@supabase/supabase-js";
 import { logActivity } from "@/lib/logActivity";
 import { getEmisor } from "@/lib/getEmisor";
@@ -43,7 +43,7 @@ async function downloadAssetPng(path: string): Promise<Uint8Array> {
 }
 
 function drawYellowBlock(params: {
-    page: PDFPage;
+    page: any;
     x: number;
     yTop: number;
     w: number;
@@ -51,10 +51,10 @@ function drawYellowBlock(params: {
     paddingX: number;
     paddingY: number;
     lines: string[];
-    font: PDFFont;
+    font: any;
     size: number;
-    color: RGB;
-    bg: RGB;
+    color: any;
+    bg: any;
 }) {
     const { page, x, yTop, w, lineH, paddingX, paddingY, lines, font, size, color, bg } = params;
     const h = paddingY * 2 + lines.length * lineH;
@@ -68,7 +68,7 @@ function drawYellowBlock(params: {
     return { h, yBottom: y };
 }
 
-async function drawImage(pdfDoc: PDFDocument, page: PDFPage, base64: string, x: number, yTop: number, maxW: number) {
+async function drawImage(pdfDoc: any, page: any, base64: string, x: number, yTop: number, maxW: number) {
     if (!base64 || !base64.startsWith('data:image')) return yTop;
     try {
         const base64Data = base64.split(',')[1];
@@ -131,9 +131,9 @@ export async function POST(req: Request) {
     const communityFilter = selectedCommunityId && selectedCommunityId !== 'all' ? selectedCommunityId : null;
 
     // Fetch detail data from DB — no hard limit so all rows are returned
-    let detailIncidencias: Record<string, unknown>[] = [];
-    let detailDeudas: Record<string, unknown>[] = [];
-    let detailTareas: Record<string, unknown>[] = [];
+    let detailIncidencias: any[] = [];
+    let detailDeudas: any[] = [];
+    let detailTareas: any[] = [];
 
     if (sections.includes('incidencias')) {
         let q = supabaseAdmin
@@ -308,7 +308,7 @@ export async function POST(req: Request) {
             const barMaxH = 80;
             const barW = Math.min(40, (contentW - 20) / userPerformance.length - 10);
             const barGap = Math.min(20, (contentW - userPerformance.length * barW) / (userPerformance.length + 1));
-            const maxVal = Math.max(...userPerformance.map((u: Record<string, unknown>) => (u.assigned as number) || 0), 1);
+            const maxVal = Math.max(...userPerformance.map((u: any) => u.assigned || 0), 1);
             const GREEN = rgb(0, 0.77, 0.62);
 
             let bx = marginX + barGap;
@@ -473,7 +473,7 @@ export async function POST(req: Request) {
         }
 
         // Helper: draw a full-width section header bar + optional stats line, returns new Y
-        const drawDetailHeader = (p: PDFPage, title: string, stats: string) => {
+        const drawDetailHeader = (p: any, title: string, stats: string) => {
             p.drawRectangle({ x: marginX, y: currentY - 30, width: contentW, height: 30, color: rgb(0.09, 0.09, 0.11) });
             p.drawRectangle({ x: marginX, y: currentY - 30, width: 4, height: 30, color: YELLOW });
             p.drawText(title, { x: marginX + 14, y: currentY - 20, size: 11, font: bold, color: rgb(1,1,1) });
@@ -485,7 +485,7 @@ export async function POST(req: Request) {
         };
 
         // Helper: draw table header row, returns new Y
-        const drawTH = (p: PDFPage, cols: {label:string;w:number}[]) => {
+        const drawTH = (p: any, cols: {label:string;w:number}[]) => {
             const tw = cols.reduce((s,c)=>s+c.w,0);
             p.drawRectangle({ x: marginX, y: currentY - 22, width: tw, height: 22, color: rgb(0.97,0.97,0.97) });
             p.drawLine({ start:{x:marginX,y:currentY-22}, end:{x:marginX+tw,y:currentY-22}, thickness:1, color:YELLOW });
@@ -495,7 +495,7 @@ export async function POST(req: Request) {
         };
 
         // Helper: draw a table data row, returns new Y
-        const drawTR = (p: PDFPage, vals: string[], cols: {label:string;w:number}[], rowIdx: number, colors?: (string|null)[]) => {
+        const drawTR = (p: any, vals: string[], cols: {label:string;w:number}[], rowIdx: number, colors?: (string|null)[]) => {
             const tw = cols.reduce((s,c)=>s+c.w,0);
             const rowH = 18;
             if (rowIdx % 2 === 1) p.drawRectangle({ x:marginX, y:currentY-rowH, width:tw, height:rowH, color:rgb(0.98,0.98,0.98) });
@@ -521,8 +521,8 @@ export async function POST(req: Request) {
             page = pdfDoc.addPage([A4.w, A4.h]);
             currentY = A4.h - 50;
 
-            const incPend = detailIncidencias.filter((i) => !i.resuelto).length;
-            const incRes = detailIncidencias.filter((i) => i.resuelto).length;
+            const incPend = detailIncidencias.filter((i: any) => !i.resuelto).length;
+            const incRes = detailIncidencias.filter((i: any) => i.resuelto).length;
             drawDetailHeader(page,
                 `DETALLE DE INCIDENCIAS (${detailIncidencias.length})`,
                 `Pendientes: ${incPend}  |  Resueltas: ${incRes}  |  Total: ${detailIncidencias.length}`
@@ -549,15 +549,15 @@ export async function POST(req: Request) {
 
                     if (!communityFilter) {
                         drawTR(page, [
-                            fmtDate(inc.created_at as string | null | undefined), comName,
-                            truncate(String(inc.nombre_cliente||'-'),16), truncate(String(inc.urgencia||'-'),9),
-                            truncate(estado as string,10), gestor, truncate(String(inc.mensaje||'-'),5)
+                            fmtDate(inc.created_at), comName,
+                            truncate(inc.nombre_cliente||'-',16), truncate(inc.urgencia||'-',9),
+                            truncate(estado,10), gestor, truncate(inc.mensaje||'-',5)
                         ], incCols, i, [null,'bold',null,urgColor,estadoColor,null,null]);
                     } else {
                         drawTR(page, [
-                            fmtDate(inc.created_at as string | null | undefined), truncate(String(inc.nombre_cliente||'-'),22),
-                            truncate(String(inc.urgencia||'-'),10), truncate(estado as string,11),
-                            gestor, truncate(String(inc.mensaje||'-'),10)
+                            fmtDate(inc.created_at), truncate(inc.nombre_cliente||'-',22),
+                            truncate(inc.urgencia||'-',10), truncate(estado,11),
+                            gestor, truncate(inc.mensaje||'-',10)
                         ], incCols, i, [null,null,urgColor,estadoColor,null,null]);
                     }
                 }
@@ -569,8 +569,8 @@ export async function POST(req: Request) {
             page = pdfDoc.addPage([A4.w, A4.h]);
             currentY = A4.h - 50;
 
-            const totalImporte = detailDeudas.reduce((s: number, d) => s + ((d.importe as number)||0), 0);
-            const pendCount = detailDeudas.filter((d) => d.estado==='Pendiente').length;
+            const totalImporte = detailDeudas.reduce((s: number, d: any) => s + (d.importe||0), 0);
+            const pendCount = detailDeudas.filter((d: any) => d.estado==='Pendiente').length;
             drawDetailHeader(page,
                 `DETALLE DE DEUDAS / MOROSIDAD (${detailDeudas.length})`,
                 `Pendientes: ${pendCount}  |  Importe total: ${totalImporte.toLocaleString('es-ES')} EUR  |  Registros: ${detailDeudas.length}`
@@ -587,24 +587,24 @@ export async function POST(req: Request) {
                 for (let i=0; i<detailDeudas.length; i++) {
                     if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; drawTH(page, deudaCols); }
                     const d = detailDeudas[i];
-                    const isPagado = (String(d.estado||'')).toLowerCase()==='pagado';
+                    const isPagado = (d.estado||'').toLowerCase()==='pagado';
                     const stColor = isPagado ? 'green' : 'yellow';
-                    const deudorName = truncate(`${String(d.nombre_deudor||'')} ${String(d.apellidos||'')}`.trim()||'-', 20);
+                    const deudorName = truncate(`${d.nombre_deudor||''} ${d.apellidos||''}`.trim()||'-', 20);
                     const comName = truncate((d.comunidades as any)?.nombre_cdad||'-', 16);
 
                     if (!communityFilter) {
                         drawTR(page, [
-                            fmtDate(d.created_at as string | null | undefined), comName, deudorName,
-                            `${((d.importe as number)||0).toLocaleString('es-ES')} EUR`,
-                            truncate(String(d.estado||'-'),10), fmtDate(d.fecha_notificacion as string | null | undefined),
-                            truncate(String(d.titulo_documento||'-'),4)
+                            fmtDate(d.created_at), comName, deudorName,
+                            `${(d.importe||0).toLocaleString('es-ES')} EUR`,
+                            truncate(d.estado||'-',10), fmtDate(d.fecha_notificacion),
+                            truncate(d.titulo_documento||'-',4)
                         ], deudaCols, i, [null,'bold',null,'bold',stColor,null,null]);
                     } else {
                         drawTR(page, [
-                            fmtDate(d.created_at as string | null | undefined), deudorName,
-                            `${((d.importe as number)||0).toLocaleString('es-ES')} EUR`,
-                            truncate(String(d.estado||'-'),11), fmtDate(d.fecha_notificacion as string | null | undefined),
-                            truncate(String(d.titulo_documento||'-'),8)
+                            fmtDate(d.created_at), deudorName,
+                            `${(d.importe||0).toLocaleString('es-ES')} EUR`,
+                            truncate(d.estado||'-',11), fmtDate(d.fecha_notificacion),
+                            truncate(d.titulo_documento||'-',8)
                         ], deudaCols, i, [null,null,'bold',stColor,null,null]);
                     }
                 }
@@ -616,7 +616,7 @@ export async function POST(req: Request) {
             page = pdfDoc.addPage([A4.w, A4.h]);
             currentY = A4.h - 50;
 
-            const totalSecs = detailTareas.reduce((s: number, t) => s + ((t.duration_seconds as number)||0), 0);
+            const totalSecs = detailTareas.reduce((s: number, t: any) => s + (t.duration_seconds||0), 0);
             drawDetailHeader(page,
                 `DETALLE DE TAREAS / CRONOMETRAJE (${detailTareas.length})`,
                 `Tareas: ${detailTareas.length}  |  Tiempo total: ${formatDuration(totalSecs)}`
@@ -638,19 +638,19 @@ export async function POST(req: Request) {
 
                     if (!communityFilter) {
                         drawTR(page, [
-                            fmtDate(t.start_at as string | null | undefined), comName,
+                            fmtDate(t.start_at), comName,
                             truncate((prof as any)?.nombre||'-',14),
-                            truncate(String(t.tipo_tarea||'Otros'),14),
-                            formatDuration((t.duration_seconds as number)||0),
-                            truncate(String(t.nota||'-'),13)
+                            truncate(t.tipo_tarea||'Otros',14),
+                            formatDuration(t.duration_seconds||0),
+                            truncate(t.nota||'-',13)
                         ], tCols, i, [null,'bold',null,null,null,null]);
                     } else {
                         drawTR(page, [
-                            fmtDate(t.start_at as string | null | undefined),
+                            fmtDate(t.start_at),
                             truncate((prof as any)?.nombre||'-',19),
-                            truncate(String(t.tipo_tarea||'Otros'),17),
-                            formatDuration((t.duration_seconds as number)||0),
-                            truncate(String(t.nota||'-'),20)
+                            truncate(t.tipo_tarea||'Otros',17),
+                            formatDuration(t.duration_seconds||0),
+                            truncate(t.nota||'-',20)
                         ], tCols, i, [null,null,null,null,null]);
                     }
                 }
@@ -690,9 +690,8 @@ export async function POST(req: Request) {
             }
         });
 
-    } catch (err: unknown) {
+    } catch (err: any) {
         console.error("[Report] Final error:", err);
-        const msg = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : String(err);
-        return NextResponse.json({ error: "Error interno: " + msg }, { status: 500 });
+        return NextResponse.json({ error: "Error interno: " + err.message }, { status: 500 });
     }
 }

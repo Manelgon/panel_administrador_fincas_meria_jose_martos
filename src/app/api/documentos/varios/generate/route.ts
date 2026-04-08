@@ -799,8 +799,8 @@ export async function POST(req: Request) {
             pdfUrlCertificado: signed2.data?.signedUrl
         });
 
-    } catch (e: unknown) {
+    } catch (e: any) {
         console.error("Error generating Varios PDF:", e);
-        return NextResponse.json({ error: (e instanceof Error ? e.message : String(e)) }, { status: 500 });
+        return NextResponse.json({ error: e.message }, { status: 500 });
     }
 }

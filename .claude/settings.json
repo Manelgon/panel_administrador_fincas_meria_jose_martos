@@ -3,45 +3,5 @@
     "allow": [
       "Bash(find c:/Users/manel/.000.Proyectos.DEV -type f -name *.tsx)"
     ]
-  },
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node -e \"const ch=[]; process.stdin.on('data',d=>ch.push(d)); process.stdin.on('end',()=>{ const data=JSON.parse(ch.join('')); const fp=data.tool_input?.file_path||data.tool_response?.filePath||''; if(!fp.match(/.(ts|tsx)$/)){process.exit(0);} const {execSync}=require('child_process'); try{ execSync('npx tsc --noEmit --skipLibCheck 2>&1',{stdio:'pipe',cwd:process.cwd()}); }catch(e){ const out=e.stdout?.toString()||''; const errs=out.split('\n').filter(l=>l.includes('error TS')).slice(0,5).join('\n'); console.log(JSON.stringify({hookSpecificOutput:{hookEventName:'PostToolUse',additionalContext:'TypeScript errors tras editar '+fp+':\n'+errs}})); } });\"",
-            "timeout": 60,
-            "statusMessage": "Verificando tipos TypeScript...",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "mcp__supabase__execute_sql|mcp__supabase__apply_migration",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node -e \"const ch=[]; process.stdin.on('data',d=>ch.push(d)); process.stdin.on('end',()=>{ const data=JSON.parse(ch.join('')); const inp=data.tool_input||{}; const sql=(inp.query||inp.sql||inp.migration_sql||inp.content||'').toUpperCase(); const bad=[{p:/DROPs+TABLE/,m:'DROP TABLE detectado'},{p:/TRUNCATEs+/,m:'TRUNCATE detectado'},{p:/DELETEs+FROMs+w+s*(?:;|$)/,m:'DELETE sin WHERE detectado'}]; const hit=bad.find(d=>d.p.test(sql)); if(hit){console.log(JSON.stringify({decision:'block',reason:hit.m+' — Confirma antes de ejecutar operaciones destructivas en produccion.'}));process.exit(2);} });\"",
-            "timeout": 10,
-            "statusMessage": "Validando SQL..."
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node -e \"const c=[]; process.stdin.on('data',d=>c.push(d)); process.stdin.on('end',()=>{  const data=JSON.parse(c.join(''));  const inp=data.tool_input||{};  const fp=(inp.file_path||'').replace(/\\/g,'/');  if(fp.includes('/.claude/')||fp.endsWith('.md')||fp.endsWith('.env')||fp.endsWith('.env.local')||fp.endsWith('.env.example')){process.exit(0);}  const content=inp.content||inp.new_string||'';  const pats=[    /eyJ[A-Za-z0-9_-]{20,}/,    /SUPABASE[_-]?SERVICE[_-]?ROLE[_-]?KEYs*[:=]s*[^s$'\\\"{]{10,}/i,    /passwords*=s*['\\\"][^'\\\"$]{8,}['\\\"]/i,    /api[_-]keys*=s*['\\\"][^'\\\"$]{10,}['\\\"]/i  ];  const hit=pats.find(p=>p.test(content));  if(hit){console.log(JSON.stringify({decision:'block',reason:'Posible secret hardcodeado. Usa variables de entorno en .env.local.'}));process.exit(2);}});\"",
-            "timeout": 10,
-            "statusMessage": "Escaneando secrets..."
-          }
-        ]
-      }
-    ]
   }
 }

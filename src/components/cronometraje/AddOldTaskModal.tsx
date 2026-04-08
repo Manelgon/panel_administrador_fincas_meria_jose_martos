@@ -97,8 +97,8 @@ export default function AddOldTaskModal({ onClose, onAdded }: AddOldTaskModalPro
             toast.success('Tarea añadida correctamente');
             onAdded();
             onClose();
-        } catch (error: unknown) {
-            toast.error((error instanceof Error ? error.message : String(error)) || 'Error al guardar la tarea');
+        } catch (error: any) {
+            toast.error(error.message || 'Error al guardar la tarea');
         } finally {
             setLoading(false);
         }

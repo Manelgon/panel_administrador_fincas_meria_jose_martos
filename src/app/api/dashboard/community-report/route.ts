@@ -579,8 +579,8 @@ export async function POST(req: Request) {
                     page.drawText("No se encontraron incidencias en este periodo.", { x: marginX + 5, y: currentY, size: 9, font, color: GRAY });
                     currentY -= 20;
                 }
-            } catch (e: unknown) {
-                page.drawText(`Error de datos (Tickets): ${(e instanceof Error ? e.message : String(e))}`, { x: marginX + 5, y: currentY, size: 9, font, color: rgb(0.8, 0, 0) });
+            } catch (e: any) {
+                page.drawText(`Error de datos (Tickets): ${e.message}`, { x: marginX + 5, y: currentY, size: 9, font, color: rgb(0.8, 0, 0) });
                 currentY -= 20;
             }
             currentY -= 20;
@@ -712,8 +712,8 @@ export async function POST(req: Request) {
                     page.drawText("No se encontraron deudas en este periodo.", { x: marginX + 5, y: currentY, size: 9, font, color: GRAY });
                     currentY -= 20;
                 }
-            } catch (e: unknown) {
-                page.drawText(`Error de datos (Deudas): ${(e instanceof Error ? e.message : String(e))}`, { x: marginX + 5, y: currentY, size: 9, font, color: rgb(0.8, 0, 0) });
+            } catch (e: any) {
+                page.drawText(`Error de datos (Deudas): ${e.message}`, { x: marginX + 5, y: currentY, size: 9, font, color: rgb(0.8, 0, 0) });
                 currentY -= 20;
             }
             currentY -= 20;
@@ -888,8 +888,8 @@ export async function POST(req: Request) {
                     page.drawText("No se encontraron tareas directas en este periodo.", { x: marginX + 5, y: currentY, size: 9, font, color: GRAY });
                     currentY -= 20;
                 }
-            } catch (e: unknown) {
-                page.drawText(`Error de datos (Cronometraje): ${(e instanceof Error ? e.message : String(e))}`, { x: marginX + 5, y: currentY, size: 9, font, color: rgb(0.8, 0, 0) });
+            } catch (e: any) {
+                page.drawText(`Error de datos (Cronometraje): ${e.message}`, { x: marginX + 5, y: currentY, size: 9, font, color: rgb(0.8, 0, 0) });
                 currentY -= 20;
             }
             currentY -= 20;
@@ -941,8 +941,8 @@ export async function POST(req: Request) {
                 } else {
                     throw new Error("Conexión con n8n fallida");
                 }
-            } catch (e: unknown) {
-                page.drawText(`Error de comunicaciones: ${(e instanceof Error ? e.message : String(e))}`, { x: marginX + 5, y: currentY, size: 9, font, color: GRAY });
+            } catch (e: any) {
+                page.drawText(`Error de comunicaciones: ${e.message}`, { x: marginX + 5, y: currentY, size: 9, font, color: GRAY });
                 currentY -= 20;
             }
         }
@@ -985,8 +985,8 @@ export async function POST(req: Request) {
             headers: { 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="Informe_${communityName.replace(/\s/g, '_')}.pdf"` }
         });
 
-    } catch (err: unknown) {
+    } catch (err: any) {
         console.error("[CommunityReport] Fatal:", err);
-        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

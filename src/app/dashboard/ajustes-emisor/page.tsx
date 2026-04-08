@@ -81,7 +81,7 @@ export default function AjustesEmisorPage() {
             setFirma({ url: json.urls?.firma_url || "", uploading: false, isDefault: !hasCustomFirma });
             setHeader({ url: json.urls?.header_url || "", uploading: false, isDefault: !hasCustomHeader });
         } catch (err: unknown) {
-            const msg = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Error cargando ajustes";
+            const msg = err instanceof Error ? err.message : "Error cargando ajustes";
             toast.error(msg);
         } finally {
             setLoading(false);
@@ -102,7 +102,7 @@ export default function AjustesEmisorPage() {
                 if (!res.ok) throw new Error(json.error);
                 toast.success("Datos del emisor actualizados");
             } catch (err: unknown) {
-                const msg = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Error al guardar";
+                const msg = err instanceof Error ? err.message : "Error al guardar";
                 toast.error(msg);
             } finally {
                 setSaving(false);
@@ -131,7 +131,7 @@ export default function AjustesEmisorPage() {
                 const successLabels: Record<string, string> = { logo: "Logo actualizado", firma: "Firma actualizada", header: "Header actualizado" };
                 toast.success(successLabels[type]);
             } catch (err: unknown) {
-                const msg = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Error al subir imagen";
+                const msg = err instanceof Error ? err.message : "Error al subir imagen";
                 toast.error(msg);
                 setter(prev => ({ ...prev, uploading: false }));
             }

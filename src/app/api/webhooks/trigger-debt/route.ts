@@ -52,8 +52,8 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true });
 
-    } catch (error: unknown) {
+    } catch (error: any) {
         console.error('Error triggering debt webhook:', error);
-        return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

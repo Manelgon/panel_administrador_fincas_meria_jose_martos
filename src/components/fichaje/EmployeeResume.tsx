@@ -108,8 +108,8 @@ export default function EmployeeResume({ userId, allowExport = false }: Employee
             toast.success("Resumen enviado correctamente");
             setShowSendModal(false);
             setEmail('');
-        } catch (error: unknown) {
-            toast.error((error instanceof Error ? error.message : String(error)));
+        } catch (error: any) {
+            toast.error(error.message);
         } finally {
             setSending(false);
         }

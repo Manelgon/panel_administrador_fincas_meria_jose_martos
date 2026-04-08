@@ -92,8 +92,8 @@ export default function CronometrajePage() {
                 setTaskToDelete(null);
                 setSelectedTask(null);
                 await fetchData();
-            } catch (err: unknown) {
-                toast.error((err instanceof Error ? err.message : String(err)));
+            } catch (err: any) {
+                toast.error(err.message);
             } finally {
                 setIsDeleting(false);
             }
@@ -176,8 +176,8 @@ export default function CronometrajePage() {
                 setElapsed(0);
                 window.dispatchEvent(new Event('taskTimerChanged'));
                 await fetchData();
-            } catch (error: unknown) {
-                toast.error((error instanceof Error ? error.message : String(error)) || 'Error al parar la tarea');
+            } catch (error: any) {
+                toast.error(error.message || 'Error al parar la tarea');
             } finally {
                 setStopping(false);
             }

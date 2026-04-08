@@ -57,9 +57,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Incident not found' }, { status: 404 });
         }
 
-        if (process.env.NODE_ENV === 'development') {
-            console.log(`📡 Triggering Resolved Webhook for Ticket #${id}`);
-        }
+        console.log('🔍 Debug Incidencia Data:', JSON.stringify(incidencia, null, 2));
+        console.log(`📡 Triggering Resolved Webhook for Ticket #${id} to: ${webhookUrl}`);
 
         const response = await fetch(webhookUrl, {
             method: 'POST',
@@ -93,11 +92,11 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Webhook failed upstream', status: response.status }, { status: 502 });
         }
 
-        if (process.env.NODE_ENV === 'development') console.log('✅ Webhook triggered successfully');
+        console.log('✅ Webhook triggered successfully');
         return NextResponse.json({ success: true });
 
-    } catch (error: unknown) {
+    } catch (error: any) {
         console.error('Error triggering resolved ticket webhook:', error);
-        return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

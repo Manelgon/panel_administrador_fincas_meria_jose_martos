@@ -147,8 +147,8 @@ export default function FichajePage() {
                 setNote('');
                 window.dispatchEvent(new Event('fichajeChanged'));
                 await fetchData();
-            } catch (error: unknown) {
-                toast.error((error instanceof Error ? error.message : String(error)) || 'Error al fichar entrada');
+            } catch (error: any) {
+                toast.error(error.message || 'Error al fichar entrada');
             }
         }, 'Fichando entrada...');
     };
@@ -178,8 +178,8 @@ export default function FichajePage() {
                 toast.success('Fichaje de salida registrado');
                 window.dispatchEvent(new Event('fichajeChanged'));
                 await fetchData();
-            } catch (error: unknown) {
-                toast.error((error instanceof Error ? error.message : String(error)) || 'Error al fichar salida');
+            } catch (error: any) {
+                toast.error(error.message || 'Error al fichar salida');
             }
         }, 'Fichando salida...');
     };

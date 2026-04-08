@@ -163,8 +163,8 @@ export default function PerfilesPage() {
                 await logActivity({ action: 'create', entityType: 'profile', entityName: createFormData.nombre, details: { ...createFormData, password: undefined } });
                 setShowCreateModal(false);
                 fetchProfiles();
-            } catch (error: unknown) {
-                toast.error((error instanceof Error ? error.message : String(error)));
+            } catch (error: any) {
+                toast.error(error.message);
             } finally {
                 setProcessing(false);
             }
@@ -196,8 +196,8 @@ export default function PerfilesPage() {
                 await logActivity({ action: 'update', entityType: 'profile', entityName: editFormData.nombre, details: { userId: selectedProfile.user_id, ...editFormData } });
                 setShowEditModal(false);
                 fetchProfiles();
-            } catch (error: unknown) {
-                toast.error((error instanceof Error ? error.message : String(error)));
+            } catch (error: any) {
+                toast.error(error.message);
             } finally {
                 setProcessing(false);
             }
@@ -230,8 +230,8 @@ export default function PerfilesPage() {
                 toast.success('Contraseña actualizada correctamente');
                 await logActivity({ action: 'update_password', entityType: 'profile', entityName: selectedProfile.nombre, details: { userId: selectedProfile.user_id } });
                 setShowPasswordModal(false);
-            } catch (error: unknown) {
-                toast.error((error instanceof Error ? error.message : String(error)));
+            } catch (error: any) {
+                toast.error(error.message);
             } finally {
                 setProcessing(false);
             }
@@ -254,8 +254,8 @@ export default function PerfilesPage() {
                 toast.success(`Usuario ${profile.activo ? 'desactivado' : 'activado'} correctamente`);
                 fetchProfiles();
                 await logActivity({ action: 'toggle_active', entityType: 'profile', entityName: profile.nombre, details: { previousStatus: profile.activo, newStatus: !profile.activo } });
-            } catch (error: unknown) {
-                toast.error((error instanceof Error ? error.message : String(error)));
+            } catch (error: any) {
+                toast.error(error.message);
             }
         }, profile.activo ? 'Desactivando usuario...' : 'Activando usuario...');
     };
@@ -276,8 +276,8 @@ export default function PerfilesPage() {
                 toast.success('Usuario eliminado correctamente');
                 await logActivity({ action: 'delete', entityType: 'profile', entityId: 0, entityName: userToDelete.nombre, details: { deleted_by_admin: email } });
                 setTimeout(() => window.location.reload(), 1000);
-            } catch (error: unknown) {
-                toast.error((error instanceof Error ? error.message : String(error)));
+            } catch (error: any) {
+                toast.error(error.message);
                 setIsDeleting(false);
             }
         }, 'Eliminando usuario...');

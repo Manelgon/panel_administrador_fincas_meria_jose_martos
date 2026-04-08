@@ -93,8 +93,8 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
             toast.success("Documento eliminado correctamente");
             setDeleteModalOpen(false);
             window.location.reload();
-        } catch (err: unknown) {
-            toast.error((err instanceof Error ? err.message : String(err)));
+        } catch (err: any) {
+            toast.error(err.message);
         } finally {
             setIsDeleting(false);
         }
@@ -144,8 +144,8 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
 
             toast.success("Documento enviado correctamente");
             setSendModalOpen(false);
-        } catch (err: unknown) {
-            toast.error("Funcionalidad de envío limitada para este tipo de documento o error: " + (err instanceof Error ? err.message : String(err)));
+        } catch (err: any) {
+            toast.error("Funcionalidad de envío limitada para este tipo de documento o error: " + err.message);
         } finally {
             setIsSending(false);
         }
@@ -182,9 +182,9 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
             document.body.removeChild(a);
 
             toast.success("Descarga iniciada", { id: loadingToast });
-        } catch (err: unknown) {
+        } catch (err: any) {
             console.error("Error en descarga:", err);
-            toast.error("Error al descargar: " + (err instanceof Error ? err.message : String(err)), { id: loadingToast });
+            toast.error("Error al descargar: " + err.message, { id: loadingToast });
         }
     };
 
