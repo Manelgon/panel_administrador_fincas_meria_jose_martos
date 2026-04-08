@@ -550,14 +550,14 @@ export async function POST(req: Request) {
                     if (!communityFilter) {
                         drawTR(page, [
                             fmtDate(inc.created_at as string | null | undefined), comName,
-                            truncate(inc.nombre_cliente||'-',16), truncate(inc.urgencia||'-',9),
-                            truncate(estado,10), gestor, truncate(inc.mensaje||'-',5)
+                            truncate(String(inc.nombre_cliente||'-'),16), truncate(String(inc.urgencia||'-'),9),
+                            truncate(estado as string,10), gestor, truncate(String(inc.mensaje||'-'),5)
                         ], incCols, i, [null,'bold',null,urgColor,estadoColor,null,null]);
                     } else {
                         drawTR(page, [
-                            fmtDate(inc.created_at as string | null | undefined), truncate(inc.nombre_cliente||'-',22),
-                            truncate(inc.urgencia||'-',10), truncate(estado,11),
-                            gestor, truncate(inc.mensaje||'-',10)
+                            fmtDate(inc.created_at as string | null | undefined), truncate(String(inc.nombre_cliente||'-'),22),
+                            truncate(String(inc.urgencia||'-'),10), truncate(estado as string,11),
+                            gestor, truncate(String(inc.mensaje||'-'),10)
                         ], incCols, i, [null,null,urgColor,estadoColor,null,null]);
                     }
                 }
@@ -587,24 +587,24 @@ export async function POST(req: Request) {
                 for (let i=0; i<detailDeudas.length; i++) {
                     if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; drawTH(page, deudaCols); }
                     const d = detailDeudas[i];
-                    const isPagado = (d.estado||'').toLowerCase()==='pagado';
+                    const isPagado = (String(d.estado||'')).toLowerCase()==='pagado';
                     const stColor = isPagado ? 'green' : 'yellow';
-                    const deudorName = truncate(`${d.nombre_deudor||''} ${d.apellidos||''}`.trim()||'-', 20);
+                    const deudorName = truncate(`${String(d.nombre_deudor||'')} ${String(d.apellidos||'')}`.trim()||'-', 20);
                     const comName = truncate((d.comunidades as any)?.nombre_cdad||'-', 16);
 
                     if (!communityFilter) {
                         drawTR(page, [
-                            fmtDate(d.created_at), comName, deudorName,
-                            `${(d.importe||0).toLocaleString('es-ES')} EUR`,
-                            truncate(d.estado||'-',10), fmtDate(d.fecha_notificacion),
-                            truncate(d.titulo_documento||'-',4)
+                            fmtDate(d.created_at as string | null | undefined), comName, deudorName,
+                            `${((d.importe as number)||0).toLocaleString('es-ES')} EUR`,
+                            truncate(String(d.estado||'-'),10), fmtDate(d.fecha_notificacion as string | null | undefined),
+                            truncate(String(d.titulo_documento||'-'),4)
                         ], deudaCols, i, [null,'bold',null,'bold',stColor,null,null]);
                     } else {
                         drawTR(page, [
-                            fmtDate(d.created_at), deudorName,
-                            `${(d.importe||0).toLocaleString('es-ES')} EUR`,
-                            truncate(d.estado||'-',11), fmtDate(d.fecha_notificacion),
-                            truncate(d.titulo_documento||'-',8)
+                            fmtDate(d.created_at as string | null | undefined), deudorName,
+                            `${((d.importe as number)||0).toLocaleString('es-ES')} EUR`,
+                            truncate(String(d.estado||'-'),11), fmtDate(d.fecha_notificacion as string | null | undefined),
+                            truncate(String(d.titulo_documento||'-'),8)
                         ], deudaCols, i, [null,null,'bold',stColor,null,null]);
                     }
                 }
@@ -638,19 +638,19 @@ export async function POST(req: Request) {
 
                     if (!communityFilter) {
                         drawTR(page, [
-                            fmtDate(t.start_at), comName,
+                            fmtDate(t.start_at as string | null | undefined), comName,
                             truncate((prof as any)?.nombre||'-',14),
-                            truncate(t.tipo_tarea||'Otros',14),
-                            formatDuration(t.duration_seconds||0),
-                            truncate(t.nota||'-',13)
+                            truncate(String(t.tipo_tarea||'Otros'),14),
+                            formatDuration((t.duration_seconds as number)||0),
+                            truncate(String(t.nota||'-'),13)
                         ], tCols, i, [null,'bold',null,null,null,null]);
                     } else {
                         drawTR(page, [
-                            fmtDate(t.start_at),
+                            fmtDate(t.start_at as string | null | undefined),
                             truncate((prof as any)?.nombre||'-',19),
-                            truncate(t.tipo_tarea||'Otros',17),
-                            formatDuration(t.duration_seconds||0),
-                            truncate(t.nota||'-',20)
+                            truncate(String(t.tipo_tarea||'Otros'),17),
+                            formatDuration((t.duration_seconds as number)||0),
+                            truncate(String(t.nota||'-'),20)
                         ], tCols, i, [null,null,null,null,null]);
                     }
                 }
