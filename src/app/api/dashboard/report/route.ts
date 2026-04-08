@@ -100,6 +100,7 @@ export async function POST(req: Request) {
 
     const { stats, period, communityName, charts, userPerformance, cronoStats,
             sections = ['incidencias', 'rendimiento', 'deudas', 'cronometraje'],
+            includeTimeline = false,
             selectedCommunityId, dateFrom, dateTo } = body;
 
     const formatDuration = (totalSeconds: number) => {
@@ -134,6 +135,8 @@ export async function POST(req: Request) {
     let detailIncidencias: any[] = [];
     let detailDeudas: any[] = [];
     let detailTareas: any[] = [];
+    // Map: incidencia id → messages[]
+    let timelineByIncidencia: Map<number, { content: string; autor: string; created_at: string }[]> = new Map();
 
     if (sections.includes('incidencias')) {
         let q = supabaseAdmin
@@ -147,6 +150,26 @@ export async function POST(req: Request) {
         if (error) console.error('[Report] incidencias error:', error.message);
         detailIncidencias = data || [];
         console.log(`[Report] incidencias fetched: ${detailIncidencias.length}`);
+
+        // Fetch timeline messages for these incidencias if requested
+        if (includeTimeline && detailIncidencias.length > 0) {
+            const incIds = detailIncidencias.map((i: any) => i.id);
+            const { data: msgs, error: msgsErr } = await supabaseAdmin
+                .from('record_messages')
+                .select('entity_id, content, created_at, profiles:user_id(nombre)')
+                .eq('entity_type', 'incidencia')
+                .in('entity_id', incIds)
+                .order('created_at', { ascending: true });
+            if (msgsErr) console.error('[Report] timeline error:', msgsErr.message);
+            for (const msg of (msgs || [])) {
+                const prof = Array.isArray(msg.profiles) ? msg.profiles[0] : msg.profiles;
+                const entry = { content: msg.content || '', autor: (prof as any)?.nombre || 'Sistema', created_at: msg.created_at };
+                const list = timelineByIncidencia.get(msg.entity_id) || [];
+                list.push(entry);
+                timelineByIncidencia.set(msg.entity_id, list);
+            }
+            console.log(`[Report] timeline messages loaded for ${timelineByIncidencia.size} incidencias`);
+        }
     }
 
     if (sections.includes('deudas')) {
@@ -560,6 +583,54 @@ export async function POST(req: Request) {
                             gestor, truncate(inc.mensaje||'-',10)
                         ], incCols, i, [null,null,urgColor,estadoColor,null,null]);
                     }
+                }
+            }
+
+            // ===== TIMELINE DE MENSAJES =====
+            if (includeTimeline && timelineByIncidencia.size > 0) {
+                page = pdfDoc.addPage([A4.w, A4.h]);
+                currentY = A4.h - 50;
+
+                // Section header
+                page.drawRectangle({ x: marginX, y: currentY - 30, width: contentW, height: 30, color: rgb(0.09, 0.09, 0.11) });
+                page.drawRectangle({ x: marginX, y: currentY - 30, width: 4, height: 30, color: YELLOW });
+                page.drawText("MENSAJES DEL TIMELINE — INCIDENCIAS", { x: marginX + 14, y: currentY - 20, size: 11, font: bold, color: rgb(1,1,1) });
+                currentY -= 50;
+
+                for (const inc of detailIncidencias) {
+                    const msgs = timelineByIncidencia.get(inc.id);
+                    if (!msgs || msgs.length === 0) continue;
+
+                    // Incidencia header
+                    if (currentY < 100) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                    const incTitle = truncate(inc.nombre_cliente || `Incidencia #${inc.id}`, 50);
+                    const comLabel = (inc.comunidades as any)?.nombre_cdad ? ` — ${truncate((inc.comunidades as any).nombre_cdad, 25)}` : '';
+                    page.drawRectangle({ x: marginX, y: currentY - 18, width: contentW, height: 18, color: rgb(0.95, 0.95, 0.95) });
+                    page.drawRectangle({ x: marginX, y: currentY - 18, width: 3, height: 18, color: YELLOW });
+                    page.drawText(`${incTitle}${comLabel}  (${msgs.length} mensaje${msgs.length !== 1 ? 's' : ''})`, { x: marginX + 8, y: currentY - 13, size: 8, font: bold, color: rgb(0.2, 0.2, 0.2) });
+                    currentY -= 22;
+
+                    for (const msg of msgs) {
+                        if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                        // Mensaje: fecha + autor en negrita, luego contenido
+                        const msgHeader = `${fmtDate(msg.created_at)}  ${sanitize(msg.autor)}:`;
+                        page.drawText(msgHeader, { x: marginX + 10, y: currentY, size: 7.5, font: bold, color: rgb(0.4, 0.4, 0.4) });
+                        currentY -= 11;
+
+                        // Wrap long messages into multiple lines (max ~90 chars per line at this font size)
+                        const msgText = sanitize(msg.content);
+                        const maxChars = 88;
+                        let remaining = msgText;
+                        while (remaining.length > 0) {
+                            if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                            const line = remaining.length > maxChars ? remaining.slice(0, maxChars) : remaining;
+                            remaining = remaining.slice(line.length);
+                            page.drawText(line, { x: marginX + 14, y: currentY, size: 7.5, font, color: rgb(0.2, 0.2, 0.2) });
+                            currentY -= 11;
+                        }
+                        currentY -= 3; // pequeño espacio entre mensajes
+                    }
+                    currentY -= 8; // espacio entre incidencias
                 }
             }
         }
