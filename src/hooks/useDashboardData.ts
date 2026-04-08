@@ -512,11 +512,15 @@ export function useDashboardData() {
         }
     }, [period, selectedCommunity]);
 
-    // Subscribe to realtime changes
+    // Fetch on mount and when filters change
     useEffect(() => {
         if (!isInitialized) return;
-
         fetchDashboardData();
+    }, [isInitialized, period, selectedCommunity]);
+
+    // Subscribe to realtime changes (separate effect, no filter deps)
+    useEffect(() => {
+        if (!isInitialized) return;
 
         const channel = supabase
             .channel('dashboard-realtime')
@@ -528,7 +532,7 @@ export function useDashboardData() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [isInitialized, fetchDashboardData]);
+    }, [isInitialized]);
 
     return {
         stats,

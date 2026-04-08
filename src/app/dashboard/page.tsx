@@ -38,12 +38,18 @@ function Section({
     children: React.ReactNode;
 }) {
     const [open, setOpen] = useState(defaultOpen);
+    const [everOpened, setEverOpened] = useState(defaultOpen);
     const isOpen = forceOpen || open;
+
+    const handleToggle = () => {
+        setOpen(o => !o);
+        setEverOpened(true);
+    };
 
     return (
         <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
             <button
-                onClick={() => setOpen(o => !o)}
+                onClick={handleToggle}
                 className="w-full flex items-center justify-between px-5 py-4 hover:bg-neutral-50 transition-colors"
                 aria-expanded={isOpen}
                 aria-controls={`section-${id}`}
@@ -58,8 +64,12 @@ function Section({
                 />
             </button>
 
-            {isOpen && (
-                <div id={`section-${id}`} className="border-t border-neutral-100 p-4 md:p-6">
+            {everOpened && (
+                <div
+                    id={`section-${id}`}
+                    className="border-t border-neutral-100 p-4 md:p-6"
+                    style={{ display: isOpen ? undefined : 'none' }}
+                >
                     {children}
                 </div>
             )}

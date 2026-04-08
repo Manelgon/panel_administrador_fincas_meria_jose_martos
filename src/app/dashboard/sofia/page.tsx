@@ -185,7 +185,6 @@ export default function SofiaPage() {
         const currentComunidades = passedComunidades || comunidades;
         const currentProfiles = passedProfiles || profiles;
 
-        console.log('Fetching incidencias from secondary...', (supabase as any).supabaseUrl);
         // Fetch from secondary Supabase
         const { data, error } = await supabase
             .from('incidencias_serincobot')
@@ -195,9 +194,7 @@ export default function SofiaPage() {
             toast.error('Error cargando datos de Sofia');
             console.error('Sofia fetch error:', error);
         } else {
-            if (data && data.length > 0) {
-                console.log('Sofia schema sample keys:', Object.keys(data[0]));
-            }
+            if (data && data.length > 0) { /* data loaded */ }
             // Sort in memory if created_at is missing or use a fallback
             const dataToSort = data || [];
             // Many tables use 'id' or another numeric field if created_at is missing
@@ -303,7 +300,7 @@ export default function SofiaPage() {
                 });
 
                 toast.success('Archivos añadidos', { id: loadingToast });
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error(error);
                 toast.error('Error al subir archivos', { id: loadingToast });
             } finally {
@@ -351,7 +348,7 @@ export default function SofiaPage() {
                 });
 
                 toast.success('Archivo eliminado', { id: loadingToast });
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error(error);
                 toast.error('Error al eliminar archivo', { id: loadingToast });
             } finally {
@@ -417,9 +414,9 @@ export default function SofiaPage() {
                 });
 
                 setShowDetailModal(false);
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error('Error toggling resuelto:', error);
-                toast.error(`Error al actualizar estado: ${error.message || 'Error desconocido'}`);
+                toast.error(`Error al actualizar estado: ${(error instanceof Error ? error.message : String(error)) || 'Error desconocido'}`);
             } finally {
                 setIsUpdatingStatus(null);
             }
@@ -492,7 +489,7 @@ export default function SofiaPage() {
                 setAplazarDate('');
 
                 toast.success(`Ticket aplazado hasta ${fechaFormateada}`, { id: loadingToast });
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error('Error aplazando ticket:', error);
                 toast.error('Error al aplazar ticket', { id: loadingToast });
             }
@@ -607,8 +604,8 @@ export default function SofiaPage() {
                     details: { id: itemToDelete, deleted_by_admin: email }
                 });
 
-            } catch (error: any) {
-                toast.error(error.message);
+            } catch (error: unknown) {
+                toast.error((error instanceof Error ? error.message : String(error)));
             } finally {
                 setIsDeleting(false);
             }
@@ -652,9 +649,9 @@ export default function SofiaPage() {
                 setNewGestorId('');
                 setNewComunidadId('');
 
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error('Error transferring ticket:', error);
-                const errorMessage = error.message || 'Error al reasignar gestor';
+                const errorMessage = (error instanceof Error ? error.message : String(error)) || 'Error al reasignar gestor';
                 toast.error(errorMessage, { id: loadingToast });
                 if (error.details) {
                     console.error('Detailed DB Error:', error.details);

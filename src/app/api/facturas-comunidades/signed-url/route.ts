@@ -21,7 +21,6 @@ export async function GET(req: Request) {
 
         const fileName = filePath.split('/').pop() || 'archivo.pdf';
 
-        console.log("Generating signed URL for bucket 'FACTURAS':", { filePath, download, fileName });
 
         const { data, error } = await supabaseAdmin.storage
             .from("FACTURAS")
@@ -33,8 +32,6 @@ export async function GET(req: Request) {
             console.error("Supabase createSignedUrl Error:", error);
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
-
-        console.log("Signed URL generated successfully:", data?.signedUrl);
 
         if (!data?.signedUrl) {
             return NextResponse.json({ error: "No se pudo generar la URL firmada" }, { status: 500 });
