@@ -60,7 +60,7 @@ export const incidenciaFormSchema = z.object({
   recibido_por: z.string().optional().default(''),
   gestor_asignado: z.string().optional().default(''),
   proveedor: z.string().optional().default(''),
-  source: z.string().optional().default(''),
+  source: z.enum(['visita comunidad', 'whatsapp', 'llamada', 'email', 'tratar proxima junta']).optional(),
 });
 
 export type IncidenciaFormData = z.infer<typeof incidenciaFormSchema>;
@@ -94,9 +94,9 @@ export interface Incidencia {
   resuelto_por?: string;
   resolver?: { nombre: string };
   adjuntos?: string[];
-  aviso?: string | boolean;
+  aviso?: number; // 0=sin aviso, 1=whatsapp, 2=email, 3=email+whatsapp
   id_email_gestion?: string;
-  source?: string;
+  source?: 'visita comunidad' | 'whatsapp' | 'llamada' | 'email' | 'tratar proxima junta';
 }
 
 // ============================================
