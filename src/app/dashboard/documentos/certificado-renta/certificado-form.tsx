@@ -147,7 +147,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
             toast.success("PDF generado correctamente ✅");
         } catch (e: unknown) {
             setStatus("error");
-            toast.error(e?.message || "Error inesperado");
+            toast.error((e instanceof Error ? e.message : null) || "Error inesperado");
         }
     };
 
