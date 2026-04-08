@@ -67,8 +67,8 @@ export async function GET(request: Request) {
             closed_count: sessions.length,
             closed_sessions: sessions,
         });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('Cron error:', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

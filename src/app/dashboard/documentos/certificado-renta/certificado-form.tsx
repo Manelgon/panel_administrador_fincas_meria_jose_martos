@@ -145,7 +145,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
             setSubmissionId(data.submissionId);
             setStatus("ready");
             toast.success("PDF generado correctamente ✅");
-        } catch (e: any) {
+        } catch (e: unknown) {
             setStatus("error");
             toast.error(e?.message || "Error inesperado");
         }
@@ -178,7 +178,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
 
             setStatus("ready");
             toast.success("Email enviado correctamente ✅");
-        } catch (e: any) {
+        } catch (e: unknown) {
             setStatus("ready");
             toast.error(e?.message || "Error enviando");
         }

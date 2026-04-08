@@ -169,9 +169,9 @@ export default function InformesComunidadPage() {
             fetchHistory();
             setShowGenerator(false);
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error);
-            toast.error(error.message || 'Error en el proceso');
+            toast.error((error instanceof Error ? error.message : String(error)) || 'Error en el proceso');
         } finally {
             setIsGenerating(false);
         }
@@ -234,8 +234,8 @@ export default function InformesComunidadPage() {
                 setShowDeleteModal(false);
                 setReportToDelete(null);
                 fetchHistory();
-            } catch (error: any) {
-                toast.error(error.message);
+            } catch (error: unknown) {
+                toast.error((error instanceof Error ? error.message : String(error)));
             } finally {
                 setIsDeleting(false);
             }

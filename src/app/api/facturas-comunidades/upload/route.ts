@@ -49,8 +49,8 @@ export async function POST(req: Request) {
             message: "Archivo subido correctamente",
             url: viewUrl
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error uploading file:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
     }
 }

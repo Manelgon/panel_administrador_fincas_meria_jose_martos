@@ -53,7 +53,7 @@ export async function GET(req: Request) {
 
         return NextResponse.json({ ok: true, settings, urls });
     } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Error desconocido";
+        const msg = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Error desconocido";
         return NextResponse.json({ error: msg }, { status: 500 });
     }
 }
@@ -142,7 +142,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ ok: true });
     } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Error desconocido";
+        const msg = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Error desconocido";
         return NextResponse.json({ error: msg }, { status: 500 });
     }
 }

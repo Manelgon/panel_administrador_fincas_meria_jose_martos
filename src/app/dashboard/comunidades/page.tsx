@@ -84,7 +84,7 @@ export default function ComunidadesPage() {
             if (error) throw error;
             setComunidades(data || []);
         } catch (error: unknown) {
-            const msg = error instanceof Error ? error.message : 'Error cargando comunidades';
+            const msg = error instanceof Error ? (error instanceof Error ? error.message : String(error)) : 'Error cargando comunidades';
             toast.error(msg);
         } finally {
             setLoading(false);
@@ -155,7 +155,7 @@ export default function ComunidadesPage() {
                     fetchComunidades();
                 } catch (error: unknown) {
                     console.error('Error al actualizar comunidad:', error);
-                    const msg = error instanceof Error ? error.message : (error as { message?: string })?.message || 'Error al actualizar';
+                    const msg = error instanceof Error ? (error instanceof Error ? error.message : String(error)) : (error as { message?: string })?.message || 'Error al actualizar';
                     toast.error('Error al actualizar: ' + msg);
                 }
             } else {
@@ -238,7 +238,7 @@ export default function ComunidadesPage() {
                     details: { codigo: deleted?.codigo, deleted_by_admin: email }
                 });
             } catch (error: unknown) {
-                const msg = error instanceof Error ? error.message : 'Error al eliminar';
+                const msg = error instanceof Error ? (error instanceof Error ? error.message : String(error)) : 'Error al eliminar';
                 toast.error(msg);
             } finally {
                 setIsDeleting(false);
@@ -269,7 +269,7 @@ export default function ComunidadesPage() {
                     details: { activo: !currentStatus }
                 });
             } catch (error: unknown) {
-                const msg = error instanceof Error ? error.message : 'Error al actualizar estado';
+                const msg = error instanceof Error ? (error instanceof Error ? error.message : String(error)) : 'Error al actualizar estado';
                 toast.error(msg);
             }
         }, currentStatus ? 'Desactivando comunidad...' : 'Activando comunidad...');

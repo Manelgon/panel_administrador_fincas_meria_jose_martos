@@ -78,8 +78,8 @@ export default function StartTaskModal({ onClose, onStarted }: StartTaskModalPro
             window.dispatchEvent(new Event('taskTimerChanged'));
             onStarted();
             onClose();
-        } catch (error: any) {
-            toast.error(error.message || 'Error al iniciar tarea');
+        } catch (error: unknown) {
+            toast.error((error instanceof Error ? error.message : String(error)) || 'Error al iniciar tarea');
         } finally {
             setLoading(false);
         }

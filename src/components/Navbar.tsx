@@ -126,7 +126,7 @@ export default function Navbar() {
             window.dispatchEvent(new Event('taskTimerChanged'));
             await fetchActiveTask();
         } catch (error: unknown) {
-            const msg = error instanceof Error ? error.message : 'Error al parar la tarea';
+            const msg = error instanceof Error ? (error instanceof Error ? error.message : String(error)) : 'Error al parar la tarea';
             toast.error(msg);
         } finally {
             setStopping(false);
@@ -149,7 +149,7 @@ export default function Navbar() {
             window.dispatchEvent(new Event('fichajeChanged'));
             await fetchActiveFichaje();
         } catch (error: unknown) {
-            const msg = error instanceof Error ? error.message : 'Error al fichar entrada';
+            const msg = error instanceof Error ? (error instanceof Error ? error.message : String(error)) : 'Error al fichar entrada';
             toast.error(msg);
         } finally {
             setFichajeLoading(false);
@@ -182,7 +182,7 @@ export default function Navbar() {
             window.dispatchEvent(new Event('fichajeChanged'));
             await fetchActiveFichaje();
         } catch (error: unknown) {
-            const msg = error instanceof Error ? error.message : 'Error al fichar salida';
+            const msg = error instanceof Error ? (error instanceof Error ? error.message : String(error)) : 'Error al fichar salida';
             toast.error(msg);
         } finally {
             setFichajeLoading(false);

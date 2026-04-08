@@ -30,7 +30,7 @@ export async function GET(req: Request) {
 
         return NextResponse.json({ ok: true, settings });
 
-    } catch (err: any) {
-        return NextResponse.json({ error: "Error interno: " + err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: "Error interno: " + (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

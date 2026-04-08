@@ -39,8 +39,8 @@ async function downloadAssetPng(path: string): Promise<Uint8Array> {
             .download(path);
         if (error || !data) throw new Error(error?.message || "Sin datos");
         return new Uint8Array(await data.arrayBuffer());
-    } catch (e: any) {
-        throw new Error(`Error descargando asset [${path}]: ${e.message}`);
+    } catch (e: unknown) {
+        throw new Error(`Error descargando asset [${path}]: ${e instanceof Error ? e.message : String(e)}`);
     }
 }
 
@@ -251,11 +251,11 @@ export async function POST(req: Request) {
             reportId: reportRecord.id
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("PDF generation error:", error);
         return NextResponse.json({
-            error: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            error: (error instanceof Error ? error.message : String(error)),
+            stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined
         }, { status: 500 });
     }
 }

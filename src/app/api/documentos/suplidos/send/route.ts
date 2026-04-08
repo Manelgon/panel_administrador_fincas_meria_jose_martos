@@ -81,8 +81,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error sending email:", error);
-    return NextResponse.json({ error: error.message || "Error enviando email" }, { status: 500 });
+    return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || "Error enviando email" }, { status: 500 });
   }
 }

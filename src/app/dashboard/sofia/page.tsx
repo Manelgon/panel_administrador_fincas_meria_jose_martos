@@ -653,8 +653,8 @@ export default function SofiaPage() {
                 console.error('Error transferring ticket:', error);
                 const errorMessage = (error instanceof Error ? error.message : String(error)) || 'Error al reasignar gestor';
                 toast.error(errorMessage, { id: loadingToast });
-                if (error.details) {
-                    console.error('Detailed DB Error:', error.details);
+                if (error instanceof Error && 'details' in error) {
+                    console.error('Detailed DB Error:', (error as Error & { details: unknown }).details);
                 }
             } finally {
                 setIsUpdatingGestor(false);

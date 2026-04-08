@@ -151,7 +151,7 @@ export default function ImportComunidadesModal({ onClose, onImported }: ImportCo
                             else errCount++;
                         });
                 }
-            } catch (err: any) {
+            } catch (err: unknown) {
                 for (let i = start; i < start + batch.length; i++) {
                     updated[i] = { ...updated[i], status: 'error', message: err?.message || 'Error de red' };
                     errCount++;

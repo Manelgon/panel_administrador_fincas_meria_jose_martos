@@ -38,8 +38,8 @@ export async function GET(req: Request) {
         // Redirect to the signed URL
         return NextResponse.redirect(data.signedUrl);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[Storage Proxy] Internal Error:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
     }
 }

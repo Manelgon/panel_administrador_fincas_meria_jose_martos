@@ -100,9 +100,9 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ ok: true });
 
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error("Send Error:", e);
-        return NextResponse.json({ error: e.message }, { status: 500 });
+        return NextResponse.json({ error: (e instanceof Error ? e.message : String(e)) }, { status: 500 });
     }
 }
 

@@ -80,8 +80,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error processing request:", error);
-    return NextResponse.json({ error: error.message || "Error procesando solicitud" }, { status: 500 });
+    return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || "Error procesando solicitud" }, { status: 500 });
   }
 }

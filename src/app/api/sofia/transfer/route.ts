@@ -101,8 +101,8 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, newId: newIncident.id });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Transfer API error:', error);
-        return NextResponse.json({ error: error.message || 'Error interno en la transferencia' }, { status: 500 });
+        return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || 'Error interno en la transferencia' }, { status: 500 });
     }
 }

@@ -119,7 +119,7 @@ export default function PropietariosSofiaPage() {
                 const statusLabel = newValue === true ? 'Activada' : (newValue === false ? 'Desactivada' : 'Pendiente');
                 toast.success(`Estado actualizado a ${statusLabel}`);
                 setPropietarios(prev => prev.map(p => p.id === id ? { ...p, contestacion: newValue } : p));
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error('Error updating status:', error);
                 toast.error('Error al actualizar estado');
             } finally {
@@ -262,9 +262,9 @@ export default function PropietariosSofiaPage() {
                     contestacion: 'Activada'
                 });
                 fetchPropietarios();
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error('Error saving propietario:', error);
-                toast.error('Error al guardar: ' + error.message);
+                toast.error('Error al guardar: ' + (error instanceof Error ? error.message : String(error)));
             } finally {
                 setIsSubmitting(false);
             }

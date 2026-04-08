@@ -91,7 +91,7 @@ export default function ProveedoresPage() {
 
             if (error) throw error;
             setProveedores(data || []);
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error('Error cargando proveedores');
         } finally {
             setLoading(false);
@@ -121,8 +121,8 @@ export default function ProveedoresPage() {
                     setShowForm(false); setFormErrors({}); setEditingId(null);
                     setFormData({ nombre: '', telefono: '', email: '', cif: '', direccion: '', cp: '', ciudad: '', provincia: '' });
                     fetchProveedores();
-                } catch (error: any) {
-                    toast.error('Error al actualizar: ' + error.message);
+                } catch (error: unknown) {
+                    toast.error('Error al actualizar: ' + (error instanceof Error ? error.message : String(error)));
                 }
             } else {
                 try {
@@ -133,8 +133,8 @@ export default function ProveedoresPage() {
                     setShowForm(false); setFormErrors({});
                     setFormData({ nombre: '', telefono: '', email: '', cif: '', direccion: '', cp: '', ciudad: '', provincia: '' });
                     fetchProveedores();
-                } catch (error: any) {
-                    toast.error('Error al crear: ' + (error.message || 'Error desconocido'));
+                } catch (error: unknown) {
+                    toast.error('Error al crear: ' + ((error instanceof Error ? error.message : String(error)) || 'Error desconocido'));
                 }
             }
         }, label);
@@ -166,8 +166,8 @@ export default function ProveedoresPage() {
                 await logActivity({ action: 'delete', entityType: 'proveedor', entityId: deleteId, entityName: deleted?.nombre, details: { deleted_by_admin: email } });
                 setShowDeleteModal(false);
                 setDeleteId(null);
-            } catch (error: any) {
-                toast.error(error.message);
+            } catch (error: unknown) {
+                toast.error((error instanceof Error ? error.message : String(error)));
             } finally {
                 setIsDeleting(false);
             }
@@ -183,7 +183,7 @@ export default function ProveedoresPage() {
                 setProveedores(prev => prev.map(p => p.id === id ? { ...p, activo: !currentStatus } : p));
                 const proveedor = proveedores.find(p => p.id === id);
                 await logActivity({ action: 'toggle_active', entityType: 'proveedor', entityId: id, entityName: proveedor?.nombre, details: { activo: !currentStatus } });
-            } catch (error: any) {
+            } catch (error: unknown) {
                 toast.error('Error al actualizar estado');
             }
         }, currentStatus ? 'Desactivando proveedor...' : 'Activando proveedor...');

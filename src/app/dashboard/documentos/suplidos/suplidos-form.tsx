@@ -220,7 +220,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
             setSubmissionId(data.submissionId);
             setStatus("ready");
             toast.success("PDF generado ✅");
-        } catch (e: any) {
+        } catch (e: unknown) {
             setStatus("error");
             toast.error(e?.message || "Error inesperado");
         }
@@ -247,7 +247,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
             if (!res.ok) throw new Error("Error enviando email");
             setStatus("ready");
             toast.success("Email enviado correctamente ✅");
-        } catch (e: any) {
+        } catch (e: unknown) {
             setStatus("ready");
             toast.error(e?.message || "Error enviando");
         }

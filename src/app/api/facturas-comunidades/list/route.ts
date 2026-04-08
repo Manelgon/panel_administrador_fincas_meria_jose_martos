@@ -62,8 +62,8 @@ export async function GET(req: Request) {
 
         console.log("Bucket items found:", itemsWithCounts?.length || 0);
         return NextResponse.json({ items: itemsWithCounts });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error listing bucket contents:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
     }
 }
