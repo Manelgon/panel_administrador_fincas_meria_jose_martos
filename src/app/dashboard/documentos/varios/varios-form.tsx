@@ -190,7 +190,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
             toast.success("Email enviado correctamente ✅");
         } catch (e: unknown) {
             setStatus("ready");
-            toast.error(e?.message || "Error enviando");
+            toast.error((e instanceof Error ? e.message : null) || "Error enviando");
         }
     };
 

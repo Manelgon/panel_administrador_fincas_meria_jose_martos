@@ -180,7 +180,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
             toast.success("Email enviado correctamente ✅");
         } catch (e: unknown) {
             setStatus("ready");
-            toast.error(e?.message || "Error enviando");
+            toast.error((e instanceof Error ? e.message : null) || "Error enviando");
         }
     };
 

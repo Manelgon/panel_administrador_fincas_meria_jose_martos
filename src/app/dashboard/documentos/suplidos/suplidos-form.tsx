@@ -222,7 +222,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
             toast.success("PDF generado ✅");
         } catch (e: unknown) {
             setStatus("error");
-            toast.error(e?.message || "Error inesperado");
+            toast.error((e instanceof Error ? e.message : null) || "Error inesperado");
         }
     };
 
@@ -249,7 +249,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
             toast.success("Email enviado correctamente ✅");
         } catch (e: unknown) {
             setStatus("ready");
-            toast.error(e?.message || "Error enviando");
+            toast.error((e instanceof Error ? e.message : null) || "Error enviando");
         }
     };
 
