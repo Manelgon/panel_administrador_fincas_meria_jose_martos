@@ -75,7 +75,8 @@ export default function PropietariosSofiaPage() {
             const { data, error } = await supabase
                 .from('comunidades')
                 .select('id, nombre_cdad, codigo')
-                .eq('activo', true);
+                .eq('activo', true)
+                .order('codigo', { ascending: true });
 
             if (error) throw error;
             setComunidades(data || []);

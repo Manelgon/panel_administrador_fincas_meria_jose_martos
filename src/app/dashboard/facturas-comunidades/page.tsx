@@ -65,7 +65,8 @@ export default function FacturasComunidadesPage() {
         try {
             const { data, error } = await supabase
                 .from('comunidades')
-                .select('codigo, nombre_cdad');
+                .select('codigo, nombre_cdad')
+                .order('codigo', { ascending: true });
 
             if (error) throw error;
             setComunidades(data || []);

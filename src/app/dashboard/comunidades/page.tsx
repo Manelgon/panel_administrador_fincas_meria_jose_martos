@@ -79,7 +79,7 @@ export default function ComunidadesPage() {
             const { data, error } = await supabase
                 .from('comunidades')
                 .select('*')
-                .order('id', { ascending: true });
+                .order('codigo', { ascending: true });
 
             if (error) throw error;
             setComunidades(data || []);

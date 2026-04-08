@@ -173,7 +173,7 @@ export default function SofiaPage() {
     };
 
     const fetchComunidades = async () => {
-        const { data } = await supabase.from('comunidades').select('id, nombre_cdad, codigo').eq('activo', true);
+        const { data } = await supabase.from('comunidades').select('id, nombre_cdad, codigo').eq('activo', true).order('codigo', { ascending: true });
         if (data) {
             setComunidades(data);
             return data;
