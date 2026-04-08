@@ -549,13 +549,13 @@ export async function POST(req: Request) {
 
                     if (!communityFilter) {
                         drawTR(page, [
-                            fmtDate(inc.created_at), comName,
+                            fmtDate(inc.created_at as string | null | undefined), comName,
                             truncate(inc.nombre_cliente||'-',16), truncate(inc.urgencia||'-',9),
                             truncate(estado,10), gestor, truncate(inc.mensaje||'-',5)
                         ], incCols, i, [null,'bold',null,urgColor,estadoColor,null,null]);
                     } else {
                         drawTR(page, [
-                            fmtDate(inc.created_at), truncate(inc.nombre_cliente||'-',22),
+                            fmtDate(inc.created_at as string | null | undefined), truncate(inc.nombre_cliente||'-',22),
                             truncate(inc.urgencia||'-',10), truncate(estado,11),
                             gestor, truncate(inc.mensaje||'-',10)
                         ], incCols, i, [null,null,urgColor,estadoColor,null,null]);
