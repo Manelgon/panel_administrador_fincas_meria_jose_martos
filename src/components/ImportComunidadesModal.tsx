@@ -153,7 +153,7 @@ export default function ImportComunidadesModal({ onClose, onImported }: ImportCo
                 }
             } catch (err: unknown) {
                 for (let i = start; i < start + batch.length; i++) {
-                    updated[i] = { ...updated[i], status: 'error', message: err?.message || 'Error de red' };
+                    updated[i] = { ...updated[i], status: 'error', message: (err instanceof Error ? err.message : null) || 'Error de red' };
                     errCount++;
                 }
             }

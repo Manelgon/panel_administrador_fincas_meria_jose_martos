@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import pdfParse from 'pdf-parse'
 
 const SOURCE_MAP: Record<string, string> = {
   'whatsapp': 'Whatsapp',
@@ -252,9 +253,8 @@ export async function POST(req: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer())
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const [pdfData, { data: comunidades, error: comunidadesError }] = await Promise.all([
-      require('pdf-parse/lib/pdf-parse.js')(buffer),
+      pdfParse(buffer),
       supabaseAdmin.from('comunidades').select('id, nombre_cdad, codigo').eq('activo', true),
     ])
 
