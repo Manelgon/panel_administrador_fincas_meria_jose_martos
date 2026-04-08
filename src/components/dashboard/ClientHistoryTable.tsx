@@ -155,32 +155,13 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
         const loadingToast = toast.loading("Preparando descarga...");
         try {
             const res = await fetch(`/api/documentos/${type}/signed-url?id=${doc.id}`);
+            const data = await res.json();
 
             if (!res.ok) {
-                const data = await res.json();
                 throw new Error(data.error || "Error obteniendo URL de descarga");
             }
 
-            const contentType = res.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                const data = await res.json();
-                throw new Error(data.error || "Se esperaba un PDF");
-            }
-
-            const blob = await res.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-
-            const date = new Date(doc.created_at).toISOString().split('T')[0];
-            const title = (doc.payload?.["Nombre Cliente"] || doc.payload?.["Nombre Comunidad"] || doc.payload?.nombre_comunidad || doc.title || "documento").replace(/[^a-z0-9]/gi, '_');
-            a.download = `${date}_${type}_${title}.pdf`;
-
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-
+            window.open(data.url, "_blank");
             toast.success("Descarga iniciada", { id: loadingToast });
         } catch (err: any) {
             console.error("Error en descarga:", err);

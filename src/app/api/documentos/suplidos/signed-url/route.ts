@@ -39,8 +39,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: signed.error.message }, { status: 500 });
         }
 
-        // Redirect directly to the PDF
-        return NextResponse.redirect(signed.data.signedUrl);
+        return NextResponse.json({ url: signed.data.signedUrl });
     } catch (error: any) {
         console.error("Error getting signed URL:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
