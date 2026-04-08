@@ -105,7 +105,7 @@ export default function DashboardPage() {
                     selectedCommunity: pdfCommunity,
                     communities,
                     includeCharts: pdfMode !== 'data',
-                    sections: pdfSections,
+                    sections: pdfMode !== 'charts' ? pdfSections : [],
                     includeTimeline: pdfIncludeTimeline,
                     dateFrom: pdfDateFrom || undefined,
                     dateTo: pdfDateTo || undefined,
@@ -473,8 +473,8 @@ export default function DashboardPage() {
                                 </div>
                             </div>
 
-                            {/* Secciones */}
-                            <div>
+                            {/* Secciones — solo visible si hay datos */}
+                            <div className={pdfMode === 'charts' ? 'opacity-40 pointer-events-none' : ''}>
                                 <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50] block">Estadísticas a incluir</label>
                                 <div className="grid grid-cols-5 gap-2">
                                     {[
@@ -503,8 +503,8 @@ export default function DashboardPage() {
                                 </div>
                             </div>
 
-                            {/* Timeline — solo cuando se incluyen incidencias */}
-                            {pdfSections.includes('incidencias') && (
+                            {/* Timeline — solo cuando hay datos de incidencias o deudas */}
+                            {pdfMode !== 'charts' && (pdfSections.includes('incidencias') || pdfSections.includes('deudas')) && (
                                 <div>
                                     <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50] block">Opciones adicionales</label>
                                     <button
@@ -514,7 +514,7 @@ export default function DashboardPage() {
                                         <span className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition ${pdfIncludeTimeline ? 'bg-[#bf4b50] border-[#bf4b50]' : 'border-neutral-300'}`}>
                                             {pdfIncludeTimeline && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                                         </span>
-                                        <span>Incluir mensajes del timeline en incidencias</span>
+                                        <span>Incluir mensajes del timeline en incidencias y deudas</span>
                                     </button>
                                 </div>
                             )}

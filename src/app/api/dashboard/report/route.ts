@@ -135,8 +135,9 @@ export async function POST(req: Request) {
     let detailIncidencias: any[] = [];
     let detailDeudas: any[] = [];
     let detailTareas: any[] = [];
-    // Map: incidencia id → messages[]
+    // Map: entity id → messages[]
     let timelineByIncidencia: Map<number, { content: string; autor: string; created_at: string }[]> = new Map();
+    let timelineByDeuda: Map<number, { content: string; autor: string; created_at: string }[]> = new Map();
 
     if (sections.includes('incidencias')) {
         let q = supabaseAdmin
@@ -175,7 +176,7 @@ export async function POST(req: Request) {
     if (sections.includes('deudas')) {
         let q = supabaseAdmin
             .from('morosidad')
-            .select('nombre_deudor, apellidos, titulo_documento, importe, estado, created_at, fecha_notificacion, comunidades(nombre_cdad)')
+            .select('id, nombre_deudor, apellidos, titulo_documento, importe, estado, created_at, fecha_notificacion, comunidades(nombre_cdad)')
             .order('created_at', { ascending: false });
         if (communityFilter) q = q.eq('comunidad_id', communityFilter);
         if (startIso) q = q.gte('created_at', startIso);
@@ -184,6 +185,26 @@ export async function POST(req: Request) {
         if (error) console.error('[Report] morosidad error:', error.message);
         detailDeudas = data || [];
         console.log(`[Report] deudas fetched: ${detailDeudas.length}`);
+
+        // Fetch timeline messages for deudas if requested
+        if (includeTimeline && detailDeudas.length > 0) {
+            const deudaIds = detailDeudas.map((d: any) => d.id);
+            const { data: msgs, error: msgsErr } = await supabaseAdmin
+                .from('record_messages')
+                .select('entity_id, content, created_at, profiles:user_id(nombre)')
+                .eq('entity_type', 'morosidad')
+                .in('entity_id', deudaIds)
+                .order('created_at', { ascending: true });
+            if (msgsErr) console.error('[Report] timeline deudas error:', msgsErr.message);
+            for (const msg of (msgs || [])) {
+                const prof = Array.isArray(msg.profiles) ? msg.profiles[0] : msg.profiles;
+                const entry = { content: msg.content || '', autor: (prof as any)?.nombre || 'Sistema', created_at: msg.created_at };
+                const list = timelineByDeuda.get(msg.entity_id) || [];
+                list.push(entry);
+                timelineByDeuda.set(msg.entity_id, list);
+            }
+            console.log(`[Report] timeline messages loaded for ${timelineByDeuda.size} deudas`);
+        }
     }
 
     if (sections.includes('cronometraje')) {
@@ -678,6 +699,50 @@ export async function POST(req: Request) {
                             truncate(d.titulo_documento||'-',8)
                         ], deudaCols, i, [null,null,'bold',stColor,null,null]);
                     }
+                }
+            }
+
+            // ===== TIMELINE DE MENSAJES DE DEUDAS =====
+            if (includeTimeline && timelineByDeuda.size > 0) {
+                page = pdfDoc.addPage([A4.w, A4.h]);
+                currentY = A4.h - 50;
+
+                page.drawRectangle({ x: marginX, y: currentY - 30, width: contentW, height: 30, color: rgb(0.09, 0.09, 0.11) });
+                page.drawRectangle({ x: marginX, y: currentY - 30, width: 4, height: 30, color: YELLOW });
+                page.drawText("MENSAJES DEL TIMELINE — DEUDAS / MOROSIDAD", { x: marginX + 14, y: currentY - 20, size: 11, font: bold, color: rgb(1,1,1) });
+                currentY -= 50;
+
+                for (const d of detailDeudas) {
+                    const msgs = timelineByDeuda.get(d.id);
+                    if (!msgs || msgs.length === 0) continue;
+
+                    if (currentY < 100) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                    const deudorLabel = truncate(`${d.nombre_deudor||''} ${d.apellidos||''}`.trim() || `Deuda #${d.id}`, 50);
+                    const comLabel = (d.comunidades as any)?.nombre_cdad ? ` — ${truncate((d.comunidades as any).nombre_cdad, 25)}` : '';
+                    page.drawRectangle({ x: marginX, y: currentY - 18, width: contentW, height: 18, color: rgb(0.95, 0.95, 0.95) });
+                    page.drawRectangle({ x: marginX, y: currentY - 18, width: 3, height: 18, color: YELLOW });
+                    page.drawText(`${deudorLabel}${comLabel}  (${msgs.length} mensaje${msgs.length !== 1 ? 's' : ''})`, { x: marginX + 8, y: currentY - 13, size: 8, font: bold, color: rgb(0.2, 0.2, 0.2) });
+                    currentY -= 22;
+
+                    for (const msg of msgs) {
+                        if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                        const msgHeader = `${fmtDate(msg.created_at)}  ${sanitize(msg.autor)}:`;
+                        page.drawText(msgHeader, { x: marginX + 10, y: currentY, size: 7.5, font: bold, color: rgb(0.4, 0.4, 0.4) });
+                        currentY -= 11;
+
+                        const msgText = sanitize(msg.content);
+                        const maxChars = 88;
+                        let remaining = msgText;
+                        while (remaining.length > 0) {
+                            if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                            const line = remaining.length > maxChars ? remaining.slice(0, maxChars) : remaining;
+                            remaining = remaining.slice(line.length);
+                            page.drawText(line, { x: marginX + 14, y: currentY, size: 7.5, font, color: rgb(0.2, 0.2, 0.2) });
+                            currentY -= 11;
+                        }
+                        currentY -= 3;
+                    }
+                    currentY -= 8;
                 }
             }
         }
