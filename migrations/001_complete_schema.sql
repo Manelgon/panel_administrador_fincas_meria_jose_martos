@@ -947,7 +947,7 @@ drop policy if exists "incidencias: insert by comunidad" on public.incidencias;
 create policy "incidencias: insert by comunidad"
 on public.incidencias for insert
 to authenticated
-with check (public.is_active_employee() and public.has_comunidad(comunidad_id));
+with check (public.is_active_employee());
 
 drop policy if exists "incidencias: update by comunidad" on public.incidencias;
 create policy "incidencias: update by comunidad"

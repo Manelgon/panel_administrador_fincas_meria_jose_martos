@@ -89,6 +89,44 @@ async function drawImage(pdfDoc: any, page: any, base64: string, x: number, yTop
     }
 }
 
+// ---- Card-style helpers (community-report style) ----
+const BRAND_DARK_MJ = rgb(0.09, 0.09, 0.11);
+const BRAND_ACCENT_MJ = rgb(0.75, 0.29, 0.31);       // #bf4b50 — color de marca MJ
+const BRAND_ACCENT_LIGHT_MJ = rgb(0.98, 0.93, 0.93); // versión clara para KPI bg
+const BORDER_CARD_MJ = rgb(0.90, 0.90, 0.90);
+const GRAY_TEXT_MJ = rgb(0.3, 0.3, 0.3);
+const LIGHT_GRAY_TEXT_MJ = rgb(0.5, 0.5, 0.5);
+const WHITE_MJ = rgb(1, 1, 1);
+const ACCENT_TEXT_MJ = rgb(0.55, 0.18, 0.20);        // burdeos oscuro para subtítulos
+
+function sanitizeMJ(text: string): string {
+    return (text || '')
+        .replace(/\r\n|\n|\r/g, ' ')
+        .split('').map(c => { const code = c.charCodeAt(0); return (code >= 0x20 && code <= 0xff) ? c : (code < 0x20 ? '' : ' '); }).join('')
+        .replace(/\s{2,}/g, ' ').trim();
+}
+
+function drawWrappedMJ(
+    page: any, text: string, x: number, y: number, maxWidth: number,
+    font: any, size: number, lineHeight: number, color: any, pdfDoc: any
+): { y: number; page: any } {
+    const words = sanitizeMJ(text).split(' ');
+    let line = '';
+    let currentY = y;
+    let currentPage = page;
+    for (const word of words) {
+        const testLine = line + word + ' ';
+        if (font.widthOfTextAtSize(testLine, size) > maxWidth && line.length > 0) {
+            currentPage.drawText(line.trim(), { x, y: currentY, size, font, color });
+            currentY -= lineHeight;
+            line = word + ' ';
+            if (currentY < 60) { currentPage = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+        } else { line = testLine; }
+    }
+    if (line.trim()) { currentPage.drawText(line.trim(), { x, y: currentY, size, font, color }); currentY -= lineHeight; }
+    return { y: currentY, page: currentPage };
+}
+
 export async function POST(req: Request) {
     console.log("[Report] Starting PDF generation...");
     const supabase = await supabaseRouteClient();
@@ -117,6 +155,7 @@ export async function POST(req: Request) {
 
     const truncate = (text: string, max: number) => { const t = sanitize(text); return t.length > max ? t.slice(0, max - 3) + '...' : t || '-'; };
     const fmtDate = (d: string | null | undefined) => { if (!d) return '-'; try { const dt = new Date(d); if (isNaN(dt.getTime())) return d; return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`; } catch { return d; } };
+    const fmtDateTime = (d: string | null | undefined) => { if (!d) return '-'; try { const dt = new Date(d); if (isNaN(dt.getTime())) return d; return `${fmtDate(d)} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`; } catch { return d; } };
 
     // Build date range for DB queries
     // If no explicit dates, fall back to period (30/90 days) or no filter ('all')
@@ -560,7 +599,7 @@ export async function POST(req: Request) {
             currentY -= rowH;
         };
 
-        // ===== DETALLE: INCIDENCIAS =====
+        // ===== DETALLE: INCIDENCIAS — estilo cards =====
         if (sections.includes('incidencias')) {
             page = pdfDoc.addPage([A4.w, A4.h]);
             currentY = A4.h - 50;
@@ -573,90 +612,97 @@ export async function POST(req: Request) {
             );
 
             if (detailIncidencias.length === 0) {
-                page.drawText('No se encontraron incidencias en el periodo seleccionado.', { x: marginX+5, y: currentY, size: 9, font, color: rgb(0.5,0.5,0.5) });
+                page.drawText('No se encontraron incidencias en el periodo seleccionado.', { x: marginX+5, y: currentY, size: 9, font, color: LIGHT_GRAY_TEXT_MJ });
             } else {
-                // Columns — include Comunidad if "Todas"
-                const incCols = !communityFilter
-                    ? [{ label:'Fecha',w:58},{label:'Comunidad',w:110},{label:'Nombre',w:100},{label:'Urgencia',w:58},{label:'Estado',w:62},{label:'Gestor',w:75},{label:'Descripcion',w:32}]
-                    : [{ label:'Fecha',w:65},{label:'Nombre',w:140},{label:'Urgencia',w:65},{label:'Estado',w:70},{label:'Gestor',w:90},{label:'Descripcion',w:65}];
-                drawTH(page, incCols);
-
-                for (let i=0; i<detailIncidencias.length; i++) {
-                    if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; drawTH(page, incCols); }
-                    const inc = detailIncidencias[i];
-                    const prof = Array.isArray(inc.profiles) ? inc.profiles[0] : inc.profiles;
-                    const gestor = truncate((prof as any)?.nombre||'-', 14);
-                    const estado = inc.resuelto ? 'Resuelta' : (inc.estado||'Pendiente');
-                    const urgColor = inc.urgencia==='Alta' ? 'red' : inc.urgencia==='Media' ? 'yellow' : 'green';
-                    const estadoColor = inc.resuelto ? 'green' : 'yellow';
-                    const comName = truncate((inc.comunidades as any)?.nombre_cdad||'-', 17);
-
-                    if (!communityFilter) {
-                        drawTR(page, [
-                            fmtDate(inc.created_at), comName,
-                            truncate(inc.nombre_cliente||'-',16), truncate(inc.urgencia||'-',9),
-                            truncate(estado,10), gestor, truncate(inc.mensaje||'-',5)
-                        ], incCols, i, [null,'bold',null,urgColor,estadoColor,null,null]);
-                    } else {
-                        drawTR(page, [
-                            fmtDate(inc.created_at), truncate(inc.nombre_cliente||'-',22),
-                            truncate(inc.urgencia||'-',10), truncate(estado,11),
-                            gestor, truncate(inc.mensaje||'-',10)
-                        ], incCols, i, [null,null,urgColor,estadoColor,null,null]);
-                    }
-                }
-            }
-
-            // ===== TIMELINE DE MENSAJES =====
-            if (includeTimeline && timelineByIncidencia.size > 0) {
-                page = pdfDoc.addPage([A4.w, A4.h]);
-                currentY = A4.h - 50;
-
-                // Section header
-                page.drawRectangle({ x: marginX, y: currentY - 30, width: contentW, height: 30, color: rgb(0.09, 0.09, 0.11) });
-                page.drawRectangle({ x: marginX, y: currentY - 30, width: 4, height: 30, color: YELLOW });
-                page.drawText("MENSAJES DEL TIMELINE — INCIDENCIAS", { x: marginX + 14, y: currentY - 20, size: 11, font: bold, color: rgb(1,1,1) });
-                currentY -= 50;
+                const statsText = `Total: ${detailIncidencias.length}  |  Resueltas: ${incRes}  |  Pendientes: ${incPend}`;
+                page.drawText(statsText, { x: marginX+5, y: currentY, size: 8.5, font: bold, color: ACCENT_TEXT_MJ });
+                currentY -= 22;
 
                 for (const inc of detailIncidencias) {
-                    const msgs = timelineByIncidencia.get(inc.id);
-                    if (!msgs || msgs.length === 0) continue;
+                    const prof = Array.isArray(inc.profiles) ? inc.profiles[0] : inc.profiles;
+                    const gestorName = sanitizeMJ((prof as any)?.nombre || '-');
+                    const messages = includeTimeline ? (timelineByIncidencia.get(inc.id) || []) : [];
+                    const comName = sanitizeMJ((inc.comunidades as any)?.nombre_cdad || '-');
 
-                    // Incidencia header
-                    if (currentY < 100) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
-                    const incTitle = truncate(inc.nombre_cliente || `Incidencia #${inc.id}`, 50);
-                    const comLabel = (inc.comunidades as any)?.nombre_cdad ? ` — ${truncate((inc.comunidades as any).nombre_cdad, 25)}` : '';
-                    page.drawRectangle({ x: marginX, y: currentY - 18, width: contentW, height: 18, color: rgb(0.95, 0.95, 0.95) });
-                    page.drawRectangle({ x: marginX, y: currentY - 18, width: 3, height: 18, color: YELLOW });
-                    page.drawText(`${incTitle}${comLabel}  (${msgs.length} mensaje${msgs.length !== 1 ? 's' : ''})`, { x: marginX + 8, y: currentY - 13, size: 8, font: bold, color: rgb(0.2, 0.2, 0.2) });
-                    currentY -= 22;
+                    const descLines = Math.ceil(sanitizeMJ(inc.mensaje || '').length / 90) + 1;
+                    const msgLines = messages.reduce((acc: number, m: any) => acc + Math.ceil(sanitizeMJ(m.content || '').length / 90) + 1, 0);
+                    const estimatedH = 100 + (descLines * 13) + (messages.length > 0 ? 24 + msgLines * 13 : 0);
+                    if (currentY - estimatedH < 60) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
 
-                    for (const msg of msgs) {
-                        if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
-                        // Mensaje: fecha + autor en negrita, luego contenido
-                        const msgHeader = `${fmtDate(msg.created_at)}  ${sanitize(msg.autor)}:`;
-                        page.drawText(msgHeader, { x: marginX + 10, y: currentY, size: 7.5, font: bold, color: rgb(0.4, 0.4, 0.4) });
-                        currentY -= 11;
+                    const cardX = marginX;
+                    const cardW = contentW;
+                    const urgColor = inc.urgencia === 'Alta' ? rgb(1, 0.5, 0.26) : inc.urgencia === 'Media' ? BRAND_ACCENT_MJ : rgb(0, 0.77, 0.62);
 
-                        // Wrap long messages into multiple lines (max ~90 chars per line at this font size)
-                        const msgText = sanitize(msg.content);
-                        const maxChars = 88;
-                        let remaining = msgText;
-                        while (remaining.length > 0) {
-                            if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
-                            const line = remaining.length > maxChars ? remaining.slice(0, maxChars) : remaining;
-                            remaining = remaining.slice(line.length);
-                            page.drawText(line, { x: marginX + 14, y: currentY, size: 7.5, font, color: rgb(0.2, 0.2, 0.2) });
-                            currentY -= 11;
-                        }
-                        currentY -= 3; // pequeño espacio entre mensajes
+                    // — Header bar —
+                    const headerH = 28;
+                    page.drawRectangle({ x: cardX, y: currentY - headerH, width: cardW, height: headerH, color: BRAND_DARK_MJ });
+                    page.drawRectangle({ x: cardX, y: currentY - headerH, width: 5, height: headerH, color: urgColor });
+                    page.drawText(`#${inc.id}  ${sanitizeMJ(inc.nombre_cliente || 'Sin nombre')}`, { x: cardX + 14, y: currentY - 19, size: 10, font: bold, color: WHITE_MJ });
+                    const estadoText = inc.resuelto ? 'RESUELTO' : (inc.estado || 'PENDIENTE');
+                    const estadoColor = inc.resuelto ? rgb(0, 0.77, 0.62) : rgb(1, 0.5, 0.26);
+                    page.drawText(estadoText, { x: cardX + cardW - 68, y: currentY - 19, size: 8, font: bold, color: estadoColor });
+                    currentY -= headerH + 10;
+
+                    // — Meta info —
+                    const pad = 10;
+                    const col1X = cardX + pad;
+                    const col2X = cardX + cardW * 0.35;
+                    const col3X = cardX + cardW * 0.66;
+                    const metaSize = 8.5;
+                    const metaGap = 15;
+
+                    page.drawText("Apertura:", { x: col1X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                    page.drawText(fmtDate(inc.created_at), { x: col1X + 50, y: currentY, size: metaSize, font, color: BRAND_DARK_MJ });
+                    page.drawText("Urgencia:", { x: col2X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                    page.drawText(sanitizeMJ(inc.urgencia || '-'), { x: col2X + 50, y: currentY, size: metaSize, font: bold, color: urgColor });
+                    if (!communityFilter) {
+                        page.drawText("Comunidad:", { x: col3X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                        page.drawText(truncate(comName, 22), { x: col3X + 58, y: currentY, size: metaSize, font, color: BRAND_DARK_MJ });
                     }
-                    currentY -= 8; // espacio entre incidencias
+                    currentY -= metaGap;
+
+                    page.drawText("Gestor:", { x: col1X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                    page.drawText(truncate(gestorName, 24), { x: col1X + 40, y: currentY, size: metaSize, font, color: BRAND_DARK_MJ });
+                    if (inc.dia_resuelto && inc.resuelto) {
+                        page.drawText("Resuelto:", { x: col2X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                        page.drawText(fmtDate(inc.dia_resuelto), { x: col2X + 50, y: currentY, size: metaSize, font, color: rgb(0, 0.77, 0.62) });
+                    }
+                    currentY -= metaGap + 4;
+
+                    // — Separador + Descripción —
+                    page.drawLine({ start:{x: cardX+pad, y: currentY}, end:{x: cardX+cardW-pad, y: currentY}, thickness: 0.5, color: BORDER_CARD_MJ });
+                    currentY -= 12;
+                    page.drawText("Descripcion:", { x: col1X, y: currentY, size: 9, font: bold, color: BRAND_DARK_MJ });
+                    currentY -= 13;
+                    const descResult = drawWrappedMJ(page, inc.mensaje || '-', col1X + 6, currentY, cardW - 24, font, 8.5, 13, GRAY_TEXT_MJ, pdfDoc);
+                    page = descResult.page; currentY = descResult.y;
+                    currentY -= 8;
+
+                    // — Timeline —
+                    if (messages.length > 0) {
+                        page.drawLine({ start:{x: cardX+pad, y: currentY}, end:{x: cardX+cardW-pad, y: currentY}, thickness: 0.5, color: BORDER_CARD_MJ });
+                        currentY -= 12;
+                        page.drawText(`TIMELINE (${messages.length} mensaje${messages.length !== 1 ? 's' : ''})`, { x: col1X, y: currentY, size: 9, font: bold, color: BRAND_DARK_MJ });
+                        currentY -= 14;
+                        for (const msg of messages) {
+                            if (currentY < 60) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                            page.drawCircle({ x: col1X + 5, y: currentY - 2, size: 4, color: BRAND_ACCENT_MJ });
+                            page.drawText(`${sanitizeMJ(msg.autor || 'Sistema')}  -  ${fmtDateTime(msg.created_at)}`, { x: col1X + 14, y: currentY, size: 8.5, font: bold, color: BRAND_DARK_MJ });
+                            currentY -= 13;
+                            const res = drawWrappedMJ(page, msg.content || '', col1X + 14, currentY, cardW - 30, font, 8.5, 13, GRAY_TEXT_MJ, pdfDoc);
+                            page = res.page; currentY = res.y;
+                            currentY -= 6;
+                        }
+                    }
+
+                    currentY -= 8;
+                    page.drawLine({ start:{x: cardX, y: currentY}, end:{x: cardX+cardW, y: currentY}, thickness: 0.6, color: BORDER_CARD_MJ });
+                    currentY -= 14;
                 }
             }
         }
 
-        // ===== DETALLE: DEUDAS =====
+        // ===== DETALLE: DEUDAS — estilo cards =====
         if (sections.includes('deudas')) {
             page = pdfDoc.addPage([A4.w, A4.h]);
             currentY = A4.h - 50;
@@ -669,126 +715,172 @@ export async function POST(req: Request) {
             );
 
             if (detailDeudas.length === 0) {
-                page.drawText('No se encontraron deudas en el periodo seleccionado.', { x: marginX+5, y: currentY, size: 9, font, color: rgb(0.5,0.5,0.5) });
+                page.drawText('No se encontraron deudas en el periodo seleccionado.', { x: marginX+5, y: currentY, size: 9, font, color: LIGHT_GRAY_TEXT_MJ });
             } else {
-                const deudaCols = !communityFilter
-                    ? [{label:'Fecha',w:58},{label:'Comunidad',w:100},{label:'Deudor',w:115},{label:'Importe',w:72},{label:'Estado',w:60},{label:'F.Notif.',w:65},{label:'Concepto',w:25}]
-                    : [{label:'Fecha',w:65},{label:'Deudor',w:150},{label:'Importe',w:80},{label:'Estado',w:70},{label:'F.Notificacion',w:85},{label:'Concepto',w:45}];
-                drawTH(page, deudaCols);
-
-                for (let i=0; i<detailDeudas.length; i++) {
-                    if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; drawTH(page, deudaCols); }
-                    const d = detailDeudas[i];
-                    const isPagado = (d.estado||'').toLowerCase()==='pagado';
-                    const stColor = isPagado ? 'green' : 'yellow';
-                    const deudorName = truncate(`${d.nombre_deudor||''} ${d.apellidos||''}`.trim()||'-', 20);
-                    const comName = truncate((d.comunidades as any)?.nombre_cdad||'-', 16);
-
-                    if (!communityFilter) {
-                        drawTR(page, [
-                            fmtDate(d.created_at), comName, deudorName,
-                            `${(d.importe||0).toLocaleString('es-ES')} EUR`,
-                            truncate(d.estado||'-',10), fmtDate(d.fecha_notificacion),
-                            truncate(d.titulo_documento||'-',4)
-                        ], deudaCols, i, [null,'bold',null,'bold',stColor,null,null]);
-                    } else {
-                        drawTR(page, [
-                            fmtDate(d.created_at), deudorName,
-                            `${(d.importe||0).toLocaleString('es-ES')} EUR`,
-                            truncate(d.estado||'-',11), fmtDate(d.fecha_notificacion),
-                            truncate(d.titulo_documento||'-',8)
-                        ], deudaCols, i, [null,null,'bold',stColor,null,null]);
-                    }
-                }
-            }
-
-            // ===== TIMELINE DE MENSAJES DE DEUDAS =====
-            if (includeTimeline && timelineByDeuda.size > 0) {
-                page = pdfDoc.addPage([A4.w, A4.h]);
-                currentY = A4.h - 50;
-
-                page.drawRectangle({ x: marginX, y: currentY - 30, width: contentW, height: 30, color: rgb(0.09, 0.09, 0.11) });
-                page.drawRectangle({ x: marginX, y: currentY - 30, width: 4, height: 30, color: YELLOW });
-                page.drawText("MENSAJES DEL TIMELINE — DEUDAS / MOROSIDAD", { x: marginX + 14, y: currentY - 20, size: 11, font: bold, color: rgb(1,1,1) });
-                currentY -= 50;
+                const statsText = `Registros: ${detailDeudas.length}  |  Pendientes: ${pendCount}  |  Importe total: ${totalImporte.toLocaleString('es-ES')} EUR`;
+                page.drawText(statsText, { x: marginX+5, y: currentY, size: 8.5, font: bold, color: ACCENT_TEXT_MJ });
+                currentY -= 22;
 
                 for (const d of detailDeudas) {
-                    const msgs = timelineByDeuda.get(d.id);
-                    if (!msgs || msgs.length === 0) continue;
+                    const messages = includeTimeline ? (timelineByDeuda.get(d.id) || []) : [];
+                    const deudorFull = sanitizeMJ(`${d.nombre_deudor||''} ${d.apellidos||''}`.trim() || '-');
+                    const comName = sanitizeMJ((d.comunidades as any)?.nombre_cdad || '-');
+                    const isPagado = (d.estado || '').toLowerCase() === 'pagado';
+                    const estadoColor = isPagado ? rgb(0, 0.77, 0.62) : rgb(1, 0.5, 0.26);
 
-                    if (currentY < 100) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
-                    const deudorLabel = truncate(`${d.nombre_deudor||''} ${d.apellidos||''}`.trim() || `Deuda #${d.id}`, 50);
-                    const comLabel = (d.comunidades as any)?.nombre_cdad ? ` — ${truncate((d.comunidades as any).nombre_cdad, 25)}` : '';
-                    page.drawRectangle({ x: marginX, y: currentY - 18, width: contentW, height: 18, color: rgb(0.95, 0.95, 0.95) });
-                    page.drawRectangle({ x: marginX, y: currentY - 18, width: 3, height: 18, color: YELLOW });
-                    page.drawText(`${deudorLabel}${comLabel}  (${msgs.length} mensaje${msgs.length !== 1 ? 's' : ''})`, { x: marginX + 8, y: currentY - 13, size: 8, font: bold, color: rgb(0.2, 0.2, 0.2) });
-                    currentY -= 22;
+                    const msgLines = messages.reduce((acc: number, m: any) => acc + Math.ceil(sanitizeMJ(m.content || '').length / 90) + 1, 0);
+                    const estimatedH = 90 + (messages.length > 0 ? 24 + msgLines * 13 : 0);
+                    if (currentY - estimatedH < 60) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
 
-                    for (const msg of msgs) {
-                        if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
-                        const msgHeader = `${fmtDate(msg.created_at)}  ${sanitize(msg.autor)}:`;
-                        page.drawText(msgHeader, { x: marginX + 10, y: currentY, size: 7.5, font: bold, color: rgb(0.4, 0.4, 0.4) });
-                        currentY -= 11;
+                    const cardX = marginX;
+                    const cardW = contentW;
 
-                        const msgText = sanitize(msg.content);
-                        const maxChars = 88;
-                        let remaining = msgText;
-                        while (remaining.length > 0) {
-                            if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
-                            const line = remaining.length > maxChars ? remaining.slice(0, maxChars) : remaining;
-                            remaining = remaining.slice(line.length);
-                            page.drawText(line, { x: marginX + 14, y: currentY, size: 7.5, font, color: rgb(0.2, 0.2, 0.2) });
-                            currentY -= 11;
-                        }
-                        currentY -= 3;
+                    // — Header bar —
+                    const headerH = 28;
+                    page.drawRectangle({ x: cardX, y: currentY - headerH, width: cardW, height: headerH, color: BRAND_DARK_MJ });
+                    page.drawRectangle({ x: cardX, y: currentY - headerH, width: 5, height: headerH, color: BRAND_ACCENT_MJ });
+                    page.drawText(deudorFull, { x: cardX + 14, y: currentY - 19, size: 10, font: bold, color: WHITE_MJ });
+                    page.drawText(sanitizeMJ(d.estado || 'Pendiente'), { x: cardX + cardW - 68, y: currentY - 19, size: 8, font: bold, color: estadoColor });
+                    currentY -= headerH + 10;
+
+                    // — Meta info —
+                    const pad = 10;
+                    const col1X = cardX + pad;
+                    const col2X = cardX + cardW * 0.35;
+                    const col3X = cardX + cardW * 0.66;
+                    const metaSize = 8.5;
+                    const metaGap = 15;
+
+                    page.drawText("Fecha:", { x: col1X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                    page.drawText(fmtDate(d.created_at), { x: col1X + 36, y: currentY, size: metaSize, font, color: BRAND_DARK_MJ });
+                    page.drawText("Importe:", { x: col2X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                    page.drawText(`${(d.importe||0).toLocaleString('es-ES')} EUR`, { x: col2X + 46, y: currentY, size: metaSize, font: bold, color: BRAND_DARK_MJ });
+                    if (!communityFilter) {
+                        page.drawText("Comunidad:", { x: col3X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                        page.drawText(truncate(comName, 22), { x: col3X + 58, y: currentY, size: metaSize, font, color: BRAND_DARK_MJ });
                     }
+                    currentY -= metaGap;
+
+                    page.drawText("F.Notif.:", { x: col1X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                    page.drawText(fmtDate(d.fecha_notificacion), { x: col1X + 48, y: currentY, size: metaSize, font, color: BRAND_DARK_MJ });
+                    page.drawText("Concepto:", { x: col2X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                    page.drawText(truncate(d.titulo_documento || '-', 30), { x: col2X + 52, y: currentY, size: metaSize, font, color: BRAND_DARK_MJ });
+                    currentY -= metaGap + 4;
+
+                    // — Timeline —
+                    if (messages.length > 0) {
+                        page.drawLine({ start:{x: cardX+pad, y: currentY}, end:{x: cardX+cardW-pad, y: currentY}, thickness: 0.5, color: BORDER_CARD_MJ });
+                        currentY -= 12;
+                        page.drawText(`TIMELINE (${messages.length} mensaje${messages.length !== 1 ? 's' : ''})`, { x: col1X, y: currentY, size: 9, font: bold, color: BRAND_DARK_MJ });
+                        currentY -= 14;
+                        for (const msg of messages) {
+                            if (currentY < 60) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+                            page.drawCircle({ x: col1X + 5, y: currentY - 2, size: 4, color: BRAND_ACCENT_MJ });
+                            page.drawText(`${sanitizeMJ(msg.autor || 'Sistema')}  -  ${fmtDateTime(msg.created_at)}`, { x: col1X + 14, y: currentY, size: 8.5, font: bold, color: BRAND_DARK_MJ });
+                            currentY -= 13;
+                            const res = drawWrappedMJ(page, msg.content || '', col1X + 14, currentY, cardW - 30, font, 8.5, 13, GRAY_TEXT_MJ, pdfDoc);
+                            page = res.page; currentY = res.y;
+                            currentY -= 6;
+                        }
+                    }
+
                     currentY -= 8;
+                    page.drawLine({ start:{x: cardX, y: currentY}, end:{x: cardX+cardW, y: currentY}, thickness: 0.6, color: BORDER_CARD_MJ });
+                    currentY -= 14;
                 }
             }
         }
 
-        // ===== DETALLE: CRONOMETRAJE =====
+        // ===== DETALLE: CRONOMETRAJE — estilo cards =====
         if (sections.includes('cronometraje')) {
             page = pdfDoc.addPage([A4.w, A4.h]);
             currentY = A4.h - 50;
 
             const totalSecs = detailTareas.reduce((s: number, t: any) => s + (t.duration_seconds||0), 0);
+            const avgSecs = detailTareas.length > 0 ? Math.round(totalSecs / detailTareas.length) : 0;
             drawDetailHeader(page,
                 `DETALLE DE TAREAS / CRONOMETRAJE (${detailTareas.length})`,
                 `Tareas: ${detailTareas.length}  |  Tiempo total: ${formatDuration(totalSecs)}`
             );
 
             if (detailTareas.length === 0) {
-                page.drawText('No se encontraron tareas en el periodo seleccionado.', { x: marginX+5, y: currentY, size: 9, font, color: rgb(0.5,0.5,0.5) });
+                page.drawText('No se encontraron tareas en el periodo seleccionado.', { x: marginX+5, y: currentY, size: 9, font, color: LIGHT_GRAY_TEXT_MJ });
             } else {
-                const tCols = !communityFilter
-                    ? [{label:'Fecha',w:58},{label:'Comunidad',w:110},{label:'Gestor',w:90},{label:'Tipo',w:90},{label:'Duracion',w:65},{label:'Nota',w:82}]
-                    : [{label:'Fecha',w:65},{label:'Gestor',w:120},{label:'Tipo',w:110},{label:'Duracion',w:75},{label:'Nota',w:125}];
-                drawTH(page, tCols);
+                // — KPIs —
+                const kpiW = (contentW - 20) / 3;
+                const kpiH = 46;
+                const kpiY = currentY;
 
-                for (let i=0; i<detailTareas.length; i++) {
-                    if (currentY < 50) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; drawTH(page, tCols); }
+                page.drawRectangle({ x: marginX, y: kpiY - kpiH, width: kpiW, height: kpiH, color: BRAND_ACCENT_LIGHT_MJ, borderColor: BORDER_CARD_MJ, borderWidth: 1 });
+                page.drawText("TOTAL HORAS", { x: marginX + 10, y: kpiY - 16, size: 7, font: bold, color: ACCENT_TEXT_MJ });
+                page.drawText(formatDuration(totalSecs), { x: marginX + 10, y: kpiY - 32, size: 12, font: bold, color: BRAND_DARK_MJ });
+
+                const kpi2X = marginX + kpiW + 10;
+                page.drawRectangle({ x: kpi2X, y: kpiY - kpiH, width: kpiW, height: kpiH, color: BRAND_ACCENT_LIGHT_MJ, borderColor: BORDER_CARD_MJ, borderWidth: 1 });
+                page.drawText("TAREAS REALIZADAS", { x: kpi2X + 10, y: kpiY - 16, size: 7, font: bold, color: ACCENT_TEXT_MJ });
+                page.drawText(`${detailTareas.length} Tareas`, { x: kpi2X + 10, y: kpiY - 32, size: 12, font: bold, color: BRAND_DARK_MJ });
+
+                const kpi3X = marginX + (kpiW + 10) * 2;
+                page.drawRectangle({ x: kpi3X, y: kpiY - kpiH, width: kpiW, height: kpiH, color: BRAND_ACCENT_LIGHT_MJ, borderColor: BORDER_CARD_MJ, borderWidth: 1 });
+                page.drawText("MEDIA POR TAREA", { x: kpi3X + 10, y: kpiY - 16, size: 7, font: bold, color: ACCENT_TEXT_MJ });
+                page.drawText(`${formatDuration(avgSecs)} / Tarea`, { x: kpi3X + 10, y: kpiY - 32, size: 12, font: bold, color: BRAND_DARK_MJ });
+
+                currentY = kpiY - kpiH - 24;
+
+                // — Cards por tarea —
+                const cardColors = [BRAND_ACCENT_MJ, rgb(0, 0.77, 0.62), rgb(1, 0.5, 0.26), rgb(0.2, 0.6, 1), GRAY_TEXT_MJ];
+
+                for (let i = 0; i < detailTareas.length; i++) {
                     const t = detailTareas[i];
                     const prof = Array.isArray(t.profiles) ? t.profiles[0] : t.profiles;
-                    const comName = truncate((t.comunidades as any)?.nombre_cdad||'-', 18);
+                    const gestorName = sanitizeMJ((prof as any)?.nombre || '-');
+                    const comName = sanitizeMJ((t.comunidades as any)?.nombre_cdad || '-');
+                    const durStr = formatDuration(t.duration_seconds || 0);
+                    const accentColor = cardColors[i % cardColors.length];
 
+                    const estimatedH = 90 + Math.ceil(sanitizeMJ(t.nota || '').length / 90) * 13;
+                    if (currentY - estimatedH < 60) { page = pdfDoc.addPage([A4.w, A4.h]); currentY = A4.h - 50; }
+
+                    const cardX = marginX;
+                    const cardW = contentW;
+
+                    // — Header bar —
+                    const headerH = 28;
+                    page.drawRectangle({ x: cardX, y: currentY - headerH, width: cardW, height: headerH, color: BRAND_DARK_MJ });
+                    page.drawRectangle({ x: cardX, y: currentY - headerH, width: 5, height: headerH, color: accentColor });
+                    page.drawText(sanitizeMJ(t.tipo_tarea || 'Tarea'), { x: cardX + 14, y: currentY - 19, size: 10, font: bold, color: WHITE_MJ });
+                    page.drawText(durStr, { x: cardX + cardW - 60, y: currentY - 19, size: 10, font: bold, color: BRAND_ACCENT_MJ });
+                    currentY -= headerH + 10;
+
+                    // — Meta info —
+                    const pad = 10;
+                    const col1X = cardX + pad;
+                    const col2X = cardX + cardW * 0.35;
+                    const col3X = cardX + cardW * 0.66;
+                    const metaSize = 8.5;
+                    const metaGap = 15;
+
+                    page.drawText("Fecha:", { x: col1X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                    page.drawText(fmtDate(t.start_at), { x: col1X + 36, y: currentY, size: metaSize, font, color: BRAND_DARK_MJ });
+                    page.drawText("Gestor:", { x: col2X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                    page.drawText(truncate(gestorName, 24), { x: col2X + 42, y: currentY, size: metaSize, font, color: BRAND_DARK_MJ });
                     if (!communityFilter) {
-                        drawTR(page, [
-                            fmtDate(t.start_at), comName,
-                            truncate((prof as any)?.nombre||'-',14),
-                            truncate(t.tipo_tarea||'Otros',14),
-                            formatDuration(t.duration_seconds||0),
-                            truncate(t.nota||'-',13)
-                        ], tCols, i, [null,'bold',null,null,null,null]);
-                    } else {
-                        drawTR(page, [
-                            fmtDate(t.start_at),
-                            truncate((prof as any)?.nombre||'-',19),
-                            truncate(t.tipo_tarea||'Otros',17),
-                            formatDuration(t.duration_seconds||0),
-                            truncate(t.nota||'-',20)
-                        ], tCols, i, [null,null,null,null,null]);
+                        page.drawText("Comunidad:", { x: col3X, y: currentY, size: metaSize, font: bold, color: LIGHT_GRAY_TEXT_MJ });
+                        page.drawText(truncate(comName, 20), { x: col3X + 58, y: currentY, size: metaSize, font, color: BRAND_DARK_MJ });
                     }
+                    currentY -= metaGap + 4;
+
+                    // — Separador + Nota —
+                    page.drawLine({ start:{x: cardX+pad, y: currentY}, end:{x: cardX+cardW-pad, y: currentY}, thickness: 0.5, color: BORDER_CARD_MJ });
+                    currentY -= 12;
+                    page.drawText("Nota:", { x: col1X, y: currentY, size: 9, font: bold, color: BRAND_DARK_MJ });
+                    currentY -= 13;
+                    const noteResult = drawWrappedMJ(page, t.nota || '-', col1X + 6, currentY, cardW - 24, font, 8.5, 13, GRAY_TEXT_MJ, pdfDoc);
+                    page = noteResult.page; currentY = noteResult.y;
+
+                    currentY -= 8;
+                    page.drawLine({ start:{x: cardX, y: currentY}, end:{x: cardX+cardW, y: currentY}, thickness: 0.6, color: BORDER_CARD_MJ });
+                    currentY -= 14;
                 }
             }
         }
