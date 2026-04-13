@@ -3,10 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { X, Upload, FileSpreadsheet, CheckCircle, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-// TODO: xlsx tiene CVEs conocidos (GHSA-4r6h-8v6p-xvw6, GHSA-5pgg-2g8v-p4x9).
-// Riesgo acotado: solo procesa archivos que el propio admin sube, sin datos externos.
-// Migrar a exceljs cuando haya una ventana de refactor.
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import ModalPortal from '@/components/ModalPortal';
 
 interface ImportRow {
@@ -30,69 +27,69 @@ export default function ImportComunidadesModal({ onClose, onImported }: ImportCo
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const parseFile = useCallback((file: File) => {
+    const parseFile = useCallback(async (file: File) => {
         setFileName(file.name);
         setRows([]);
         setDone(false);
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = e.target?.result;
-                const wb = XLSX.read(data, { type: 'array' });
-                const ws = wb.Sheets[wb.SheetNames[0]];
-                // Convert to array of arrays
-                const raw: string[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+        try {
+            const data = await file.arrayBuffer();
 
-                if (raw.length < 2) {
-                    toast.error('El fichero está vacío o no tiene filas de datos.');
-                    return;
-                }
+            const normalizeCode = (val: string): string => {
+                const s = String(val).trim();
+                return /^\d+$/.test(s) ? String(Number(s)) : s;
+            };
 
-                // Detect header row – look for Código/Codigo in first row
-                // Support flexible column order: try to find by header name
-                const headers = raw[0].map((h: any) => String(h).trim().toLowerCase()
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-                );
+            let raw: string[][] = [];
 
-                const codigoIdx = headers.findIndex(h => h === 'codigo' || h === 'cod' || h === 'code');
-                const nombreIdx = headers.findIndex(h => h.includes('nombre') || h === 'name');
-                const cifIdx = headers.findIndex(h => h === 'cif' || h === 'nif' || h.includes('fiscal'));
-
-                // If headers not found, assume positional: col0=Código, col1=Nombre, col2=NIF
-                const ci = codigoIdx >= 0 ? codigoIdx : 0;
-                const ni = nombreIdx >= 0 ? nombreIdx : 1;
-                const fi = cifIdx >= 0 ? cifIdx : 2;
-
-                // Helper: strip leading zeros only from purely numeric codes
-                // e.g. "000011" → "11",  "A001" → "A001"
-                const normalizeCode = (raw: string): string => {
-                    const s = String(raw).trim();
-                    return /^\d+$/.test(s) ? String(Number(s)) : s;
-                };
-
-                const parsed: ImportRow[] = raw
-                    .slice(1) // skip header
-                    .map((row: any[]) => ({
-                        codigo: normalizeCode(String(row[ci] ?? '')),
-                        nombre_cdad: String(row[ni] ?? '').trim(),
-                        cif: String(row[fi] ?? '').trim(),
-                        status: 'pending' as const,
-                    }))
-                    .filter(r => r.codigo && r.nombre_cdad); // skip empty rows
-
-                if (parsed.length === 0) {
-                    toast.error('No se encontraron filas válidas. Revisa el formato.');
-                    return;
-                }
-
-                setRows(parsed);
-                toast.success(`${parsed.length} comunidades detectadas. Revisa antes de importar.`);
-            } catch {
-                toast.error('Error al leer el fichero. Asegúrate de que es CSV o Excel válido.');
+            if (file.name.endsWith('.csv')) {
+                const text = new TextDecoder().decode(data);
+                raw = text.split('\n').map(line => line.split(',').map(c => c.trim().replace(/^"|"$/g, '')));
+            } else {
+                const wb = new ExcelJS.Workbook();
+                await wb.xlsx.load(data);
+                const ws = wb.worksheets[0];
+                ws.eachRow((row) => {
+                    raw.push((row.values as ExcelJS.CellValue[]).slice(1).map(v => String(v ?? '').trim()));
+                });
             }
-        };
-        reader.readAsArrayBuffer(file);
+
+            if (raw.length < 2) {
+                toast.error('El fichero está vacío o no tiene filas de datos.');
+                return;
+            }
+
+            const headers = raw[0].map(h => String(h).trim().toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+
+            const codigoIdx = headers.findIndex(h => h === 'codigo' || h === 'cod' || h === 'code');
+            const nombreIdx = headers.findIndex(h => h.includes('nombre') || h === 'name');
+            const cifIdx = headers.findIndex(h => h === 'cif' || h === 'nif' || h.includes('fiscal'));
+
+            const ci = codigoIdx >= 0 ? codigoIdx : 0;
+            const ni = nombreIdx >= 0 ? nombreIdx : 1;
+            const fi = cifIdx >= 0 ? cifIdx : 2;
+
+            const parsed: ImportRow[] = raw
+                .slice(1)
+                .map((row) => ({
+                    codigo: normalizeCode(row[ci] ?? ''),
+                    nombre_cdad: (row[ni] ?? '').trim(),
+                    cif: (row[fi] ?? '').trim(),
+                    status: 'pending' as const,
+                }))
+                .filter(r => r.codigo && r.nombre_cdad);
+
+            if (parsed.length === 0) {
+                toast.error('No se encontraron filas válidas. Revisa el formato.');
+                return;
+            }
+
+            setRows(parsed);
+            toast.success(`${parsed.length} comunidades detectadas. Revisa antes de importar.`);
+        } catch {
+            toast.error('Error al leer el fichero. Asegúrate de que es CSV o Excel válido.');
+        }
     }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

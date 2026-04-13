@@ -192,31 +192,69 @@ No das opciones tecnicas. Ejecutas el stack perfeccionado:
 
 ---
 
-## Arquitectura Feature-First
+## Arquitectura Real del Proyecto
 
-Todo el contexto de una feature en un solo lugar:
+Este proyecto NO usa la estructura feature-first del template. La arquitectura real es:
 
 ```
 src/
 ├── app/                      # Next.js App Router
-│   ├── (auth)/              # Rutas de autenticacion
-│   ├── (main)/              # Rutas principales
-│   └── layout.tsx
+│   ├── auth/                # Login
+│   ├── dashboard/           # Todas las paginas del panel
+│   │   ├── incidencias/     # Modales extraidos en la misma carpeta (page.tsx + *.tsx)
+│   │   ├── deudas/
+│   │   ├── comunidades/
+│   │   └── ...
+│   └── api/                 # API Routes (53 rutas)
 │
-├── features/                 # Organizadas por funcionalidad
-│   └── [feature]/
-│       ├── components/      # UI de la feature
-│       ├── hooks/           # Logica
-│       ├── services/        # API calls
-│       ├── types/           # Tipos
-│       └── store/           # Estado
+├── components/               # Componentes compartidos Y logica de features
+│   ├── Sidebar.tsx, Navbar.tsx, DataTable.tsx, etc.
+│   ├── cronometraje/        # Modales de cronometraje
+│   ├── fichaje/             # Componentes de fichaje
+│   ├── vacations/           # Componentes de vacaciones
+│   └── ui/                  # Badge, Dialog
 │
-└── shared/                   # Codigo reutilizable
-    ├── components/
-    ├── hooks/
-    ├── lib/
-    └── types/
+├── hooks/                    # React hooks globales (useDashboardData, etc.)
+├── lib/                      # Utilidades, clientes Supabase, generadores PDF, schemas
+│   ├── supabaseClient.ts    # UNICO cliente browser (createBrowserClient) — usar este
+│   ├── supabase/
+│   │   ├── admin.ts         # UNICO cliente admin (service_role) — solo en API routes
+│   │   ├── server.ts        # Cliente server-side (RSC / Server Actions)
+│   │   └── route.ts         # Cliente para API Route handlers
+│   ├── schemas.ts           # Todos los schemas Zod y tipos TypeScript
+│   ├── pdf/                 # Generadores PDF (jsPDF)
+│   └── logActivity.ts       # Helper de log de actividad
+│
+├── store/                    # Zustand stores
+└── types/                    # TypeScript types globales
 ```
+
+### Convencion de clientes Supabase
+
+| Contexto | Importar desde |
+|----------|---------------|
+| Componente cliente ('use client') | `@/lib/supabaseClient` → `{ supabase }` |
+| API Route handler | `@/lib/supabase/route` → `{ supabaseRouteClient }` |
+| API Route con service_role (bypass RLS) | `@/lib/supabase/admin` → `{ supabaseAdmin }` |
+| Server Component / RSC | `@/lib/supabase/server` → `createClient()` |
+
+**NUNCA** crear nuevos archivos de cliente Supabase. Los 4 de arriba son los unicos.
+
+### Convencion de archivos
+
+- Componentes: `PascalCase.tsx`
+- Paginas y API routes: `kebab-case/page.tsx` o `route.ts` (Next.js App Router)
+- Hooks: `camelCase.ts` con prefijo `use`
+- Tipos y schemas: en `lib/schemas.ts` (centralizado)
+
+### Webhooks n8n
+
+Los workflows de n8n se disparan directamente desde **Supabase Database Webhooks** (insert/update en tablas). La app NO tiene rutas intermedias para webhooks — no crearlas.
+
+Los webhooks de n8n que llaman a la app van a:
+- `EMAIL_WEBHOOK_URL` — envio de documentos por email
+- `COMMUNITY_REPORT_EMAIL_WEBHOOK` — informes de comunidad
+- `ONEDRIVE_FOLDERS_WEBHOOK` — listado carpetas OneDrive
 
 ---
 
@@ -323,12 +361,35 @@ npm run lint         # ESLint
 
 ---
 
+## Comandos de calidad
+
+```bash
+npm run dev          # Servidor de desarrollo
+npm run build        # Build produccion
+npm run typecheck    # Verificar tipos TypeScript
+npm run lint         # ESLint
+npm test             # Tests unitarios (Vitest)
+npm run test:watch   # Tests en modo watch
+```
+
+---
+
 ## Aprendizajes (Auto-Blindaje Activo)
 
 ### 2025-01-09: Usar npm run dev, no next dev
 - **Error**: Puerto hardcodeado causa conflictos
 - **Fix**: Siempre usar `npm run dev` (auto-detecta puerto)
 - **Aplicar en**: Todos los proyectos
+
+### 2026-04-13: No crear rutas /api/webhooks/ intermedias
+- **Contexto**: Los webhooks hacia n8n los dispara Supabase directamente via Database Webhooks
+- **Fix**: Las rutas `/api/webhooks/*` eran codigo muerto — eliminadas
+- **Aplicar en**: Si se necesita notificar n8n, configurarlo en Supabase Dashboard > Database > Webhooks
+
+### 2026-04-13: xlsx tiene CVEs sin fix — usar exceljs
+- **Error**: `xlsx` v0.18.5 tiene 2 CVEs High (Prototype Pollution + ReDoS) sin parche disponible
+- **Fix**: Migrar a `exceljs` para lectura y escritura de .xlsx/.xls
+- **Aplicar en**: Cualquier feature nueva que genere o lea Excel
 
 ---
 
