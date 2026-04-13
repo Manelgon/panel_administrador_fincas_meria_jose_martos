@@ -365,7 +365,9 @@ create table if not exists public.incidencias_serincobot (
   estado                  text default 'Pendiente' check (estado in ('Pendiente','Resuelto','Aplazado','Cancelado')),
   fecha_recordatorio      timestamptz,
   comunidad               text,
-  codigo                  text
+  codigo                  text,
+  source                  text check (source in ('visita comunidad','whatsapp','llamada','email','tratar proxima junta')),
+  motivo_ticket           text
 );
 
 create index if not exists incidencias_serincobot_resuelto_idx    on public.incidencias_serincobot(resuelto);
