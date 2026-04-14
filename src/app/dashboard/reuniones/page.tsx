@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'react-hot-toast';
-import { Plus, Pencil, Trash2, Check, X, FileCheck, UserCheck } from 'lucide-react';
+import { Plus, Pencil, Trash2, Check, X, FileCheck, UserCheck, Upload } from 'lucide-react';
 import DataTable, { Column, RowAction } from '@/components/DataTable';
 import SearchableSelect from '@/components/SearchableSelect';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { logActivity } from '@/lib/logActivity';
 import { Reunion, ComunidadOption } from '@/lib/schemas';
 import ReunionFormModal from './ReunionFormModal';
+import ImportReunionesModal from '@/components/ImportReunionesModal';
 
 const TIPO_LABELS: Record<string, { label: string; cls: string }> = {
     JGO: { label: 'JGO', cls: 'bg-blue-100 text-blue-700' },
@@ -41,6 +42,7 @@ export default function ReunionesPage() {
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [showImportModal, setShowImportModal] = useState(false);
 
     // Filtros
     const [filterTipo, setFilterTipo] = useState('all');
@@ -266,13 +268,23 @@ export default function ReunionesPage() {
                         Administración de juntas y reuniones
                     </p>
                 </div>
-                <button
-                    onClick={() => { setEditingId(null); setShowForm(true); }}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg text-xs font-bold transition shadow-sm"
-                >
-                    <Plus className="w-4 h-4" />
-                    Nueva Reunión
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setShowImportModal(true)}
+                        className="border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 px-3 py-2 rounded-lg flex items-center gap-1.5 transition font-semibold text-xs shadow-sm"
+                    >
+                        <Upload className="w-4 h-4 flex-shrink-0" />
+                        <span className="hidden sm:inline">Importar Excel</span>
+                        <span className="sm:hidden">Importar</span>
+                    </button>
+                    <button
+                        onClick={() => { setEditingId(null); setShowForm(true); }}
+                        className="flex items-center gap-2 px-4 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg text-xs font-bold transition shadow-sm"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Nueva Reunión
+                    </button>
+                </div>
             </div>
 
             {/* Tabla */}
@@ -297,6 +309,15 @@ export default function ReunionesPage() {
                     comunidades={comunidades}
                     onClose={() => { setShowForm(false); setEditingId(null); }}
                     onSaved={fetchReuniones}
+                />
+            )}
+
+            {/* Modal Importar */}
+            {showImportModal && (
+                <ImportReunionesModal
+                    comunidades={comunidades}
+                    onClose={() => setShowImportModal(false)}
+                    onImported={() => { fetchReuniones(); setShowImportModal(false); }}
                 />
             )}
 
