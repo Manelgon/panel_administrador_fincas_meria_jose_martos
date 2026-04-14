@@ -60,7 +60,7 @@ export const incidenciaFormSchema = z.object({
   recibido_por: z.string().optional().default(''),
   gestor_asignado: z.string().optional().default(''),
   proveedor: z.string().optional().default(''),
-  source: z.enum(['visita comunidad', 'whatsapp', 'llamada', 'email', 'tratar proxima junta']).optional(),
+  source: z.enum(['Llamada', 'Presencial', 'Email', 'Whatsapp', 'WhatsApp', 'App 360', 'Acuerdo Junta', 'Gestión Interna']).optional(),
 });
 
 export type IncidenciaFormData = z.infer<typeof incidenciaFormSchema>;
@@ -96,7 +96,7 @@ export interface Incidencia {
   adjuntos?: string[];
   aviso?: number; // 0=sin aviso, 1=whatsapp, 2=email, 3=email+whatsapp
   id_email_gestion?: string;
-  source?: 'visita comunidad' | 'whatsapp' | 'llamada' | 'email' | 'tratar proxima junta';
+  source?: 'Llamada' | 'Presencial' | 'Email' | 'Whatsapp' | 'WhatsApp' | 'App 360' | 'Acuerdo Junta' | 'Gestión Interna';
 }
 
 // ============================================
@@ -171,6 +171,7 @@ export const reunionFormSchema = z.object({
   acta_email: z.boolean().default(false),
   acta_carta: z.boolean().default(false),
   pasar_acuerdos: z.boolean().default(false),
+  enviado: z.boolean().default(false),
   notas: z.string().optional(),
 });
 
@@ -194,6 +195,7 @@ export interface Reunion {
   acta_email: boolean;
   acta_carta: boolean;
   pasar_acuerdos: boolean;
+  enviado: boolean;
   resuelto: boolean;
   notas?: string;
   created_by?: string;
