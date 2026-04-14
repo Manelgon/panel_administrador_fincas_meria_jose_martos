@@ -11,6 +11,7 @@ import { logActivity } from '@/lib/logActivity';
 import { Reunion, ComunidadOption } from '@/lib/schemas';
 import ReunionFormModal from './ReunionFormModal';
 import ImportReunionesModal from '@/components/ImportReunionesModal';
+import SelectFilter from '@/components/SelectFilter';
 
 const TIPO_LABELS: Record<string, { label: string; cls: string }> = {
     JGO: { label: 'JGO', cls: 'bg-blue-100 text-blue-700' },
@@ -226,37 +227,36 @@ export default function ReunionesPage() {
 
     const extraFilters = (
         <div className="flex flex-wrap gap-2">
-            <select
+            <SelectFilter
                 value={filterTipo}
-                onChange={e => setFilterTipo(e.target.value)}
-                className="text-xs border border-neutral-200 rounded-lg px-3 py-1.5 bg-white text-neutral-700 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30"
-            >
-                <option value="all">Todos los tipos</option>
-                <option value="JGO">JGO — Junta General Ordinaria</option>
-                <option value="JGE">JGE — Junta General Extraordinaria</option>
-                <option value="JV">JV — Junta de Vocales</option>
-                <option value="JD">JD — Junta Directiva</option>
-            </select>
-            <select
+                onChange={setFilterTipo}
+                options={[
+                    { value: 'all', label: 'Todos los tipos' },
+                    { value: 'JGO', label: 'JGO — Junta General Ordinaria' },
+                    { value: 'JGE', label: 'JGE — Junta General Extraordinaria' },
+                    { value: 'JV',  label: 'JV — Junta de Vocales' },
+                    { value: 'JD',  label: 'JD — Junta Directiva' },
+                ]}
+            />
+            <SelectFilter
                 value={filterComunidad}
-                onChange={e => setFilterComunidad(e.target.value)}
-                className="text-xs border border-neutral-200 rounded-lg px-3 py-1.5 bg-white text-neutral-700 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30"
-            >
-                <option value="all">Todas las comunidades</option>
-                {comunidades.map(c => (
-                    <option key={c.id} value={String(c.id)}>
-                        {c.codigo ? `${c.codigo} - ` : ''}{c.nombre_cdad}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setFilterComunidad}
+                options={[
+                    { value: 'all', label: 'Todas las comunidades' },
+                    ...comunidades.map(c => ({
+                        value: String(c.id),
+                        label: c.codigo ? `${c.codigo} - ${c.nombre_cdad}` : c.nombre_cdad,
+                    })),
+                ]}
+            />
+            <SelectFilter
                 value={filterAnio}
-                onChange={e => setFilterAnio(e.target.value)}
-                className="text-xs border border-neutral-200 rounded-lg px-3 py-1.5 bg-white text-neutral-700 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/30"
-            >
-                <option value="all">Todos los años</option>
-                {anios.map(a => <option key={a} value={a}>{a}</option>)}
-            </select>
+                onChange={setFilterAnio}
+                options={[
+                    { value: 'all', label: 'Todos los años' },
+                    ...anios.map(a => ({ value: a, label: a })),
+                ]}
+            />
         </div>
     );
 

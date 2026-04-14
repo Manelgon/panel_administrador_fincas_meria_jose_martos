@@ -5,6 +5,7 @@ import { X, Upload, FileSpreadsheet, CheckCircle, AlertCircle, Loader2, RefreshC
 import { toast } from 'react-hot-toast';
 import ExcelJS from 'exceljs';
 import ModalPortal from '@/components/ModalPortal';
+import SelectFilter from '@/components/SelectFilter';
 
 interface ImportRow {
     comunidad_raw: string;
@@ -478,10 +479,9 @@ export default function ImportReunionesModal({ onClose, onImported, comunidades 
                                                                     {sinComunidad ? (
                                                                         <div className="space-y-1">
                                                                             <span className="block text-[10px] text-amber-700 font-bold truncate" title={row.comunidad_raw}>{row.comunidad_raw}</span>
-                                                                            <select
-                                                                                value={overrides[idx] ?? ''}
-                                                                                onChange={e => {
-                                                                                    const val = e.target.value;
+                                                                            <SelectFilter
+                                                                                value={String(overrides[idx] ?? '')}
+                                                                                onChange={val => {
                                                                                     setOverrides(prev => {
                                                                                         const next = { ...prev };
                                                                                         if (val) next[idx] = Number(val);
@@ -489,13 +489,13 @@ export default function ImportReunionesModal({ onClose, onImported, comunidades 
                                                                                         return next;
                                                                                     });
                                                                                 }}
-                                                                                className="w-full text-[10px] border border-amber-300 rounded px-1.5 py-1 bg-white text-neutral-700 focus:border-[#bf4b50] outline-none"
-                                                                            >
-                                                                                <option value="">— Asignar comunidad —</option>
-                                                                                {comunidades.map(c => (
-                                                                                    <option key={c.id} value={c.id}>{c.codigo ? `${c.codigo} - ` : ''}{c.nombre_cdad}</option>
-                                                                                ))}
-                                                                            </select>
+                                                                                className="w-full"
+                                                                                placeholder="— Asignar comunidad —"
+                                                                                options={comunidades.map(c => ({
+                                                                                    value: String(c.id),
+                                                                                    label: c.codigo ? `${c.codigo} - ${c.nombre_cdad}` : c.nombre_cdad,
+                                                                                }))}
+                                                                            />
                                                                         </div>
                                                                     ) : (
                                                                         <span className="font-medium text-neutral-800 truncate block" title={row.comunidad_raw}>

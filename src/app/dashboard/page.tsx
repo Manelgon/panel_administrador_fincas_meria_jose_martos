@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useGlobalLoading } from '@/lib/globalLoading';
 import KPICard from '@/components/KPICard';
 import SearchableSelect from '@/components/SearchableSelect';
+import SelectFilter from '@/components/SelectFilter';
 import {
     Building, AlertCircle, FileText, CheckCircle, TrendingUp,
     Pause, Filter, ChevronDown, Users, Timer, FileDown, X
@@ -415,16 +416,16 @@ export default function DashboardPage() {
                             {/* Comunidad */}
                             <div>
                                 <label className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50] block">Comunidad</label>
-                                <select
+                                <SelectFilter
                                     value={pdfCommunity}
-                                    onChange={e => setPdfCommunity(e.target.value)}
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
-                                >
-                                    <option value="all">Todas las comunidades</option>
-                                    {communities.map(c => (
-                                        <option key={c.id} value={String(c.id)}>{c.codigo} — {c.nombre_cdad}</option>
-                                    ))}
-                                </select>
+                                    onChange={setPdfCommunity}
+                                    size="md"
+                                    className="w-full"
+                                    options={[
+                                        { value: 'all', label: 'Todas las comunidades' },
+                                        ...communities.map(c => ({ value: String(c.id), label: `${c.codigo} — ${c.nombre_cdad}` })),
+                                    ]}
+                                />
                             </div>
 
                             {/* Rango de fechas */}

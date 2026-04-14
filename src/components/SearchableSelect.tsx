@@ -184,8 +184,8 @@ export default function SearchableSelect({
 
     const dropdown = isOpen ? (
         <div
-            style={dropdownStyle}
-            className="bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-hidden flex flex-col"
+            style={{ ...dropdownStyle, color: "#404040", fontFamily: "inherit" }}
+            className="bg-white border border-neutral-200 rounded-lg shadow-xl max-h-60 overflow-hidden flex flex-col"
         >
             <div
                 ref={listRef}
@@ -195,28 +195,40 @@ export default function SearchableSelect({
                 aria-label={label || placeholder}
             >
                 {filteredOptions.length === 0 ? (
-                    <div className="px-3 py-2 text-sm text-gray-500 text-center" role="option" aria-disabled="true" aria-selected={false}>
+                    <div className="px-3 py-2 text-sm text-neutral-400 text-center" role="option" aria-disabled="true" aria-selected={false}>
                         No se encontraron resultados
                     </div>
                 ) : (
-                    filteredOptions.map((opt, idx) => (
-                        <div
-                            key={opt.value}
-                            data-idx={idx}
-                            className={`px-3 py-2 text-sm cursor-pointer flex items-center justify-between ${
-                                String(opt.value) === String(value) ? "bg-[#bf4b50]/10 text-[#bf4b50] font-medium" : "text-gray-700"
-                            } ${idx === activeIdx ? "bg-[#bf4b50]/10 ring-1 ring-inset ring-[#bf4b50]/30" : "hover:bg-[#bf4b50]/10 hover:text-[#bf4b50]"}`}
-                            role="option"
-                            aria-selected={String(opt.value) === String(value)}
-                            onMouseDown={(e) => {
-                                e.preventDefault(); // Prevent input blur
-                                handleSelectOption(opt.value);
-                            }}
-                        >
-                            <span>{opt.label}</span>
-                            {String(opt.value) === String(value) && <Check className="w-4 h-4 text-[#bf4b50]" aria-hidden="true" />}
-                        </div>
-                    ))
+                    filteredOptions.map((opt, idx) => {
+                        const isSelected = String(opt.value) === String(value);
+                        const isActive = idx === activeIdx;
+                        const highlighted = isSelected || isActive;
+                        return (
+                            <div
+                                key={opt.value}
+                                data-idx={idx}
+                                className={`px-3 py-2 text-sm cursor-pointer flex items-center justify-between ${isSelected ? "font-medium" : "text-neutral-700"}`}
+                                style={highlighted ? { backgroundColor: "rgba(191,75,80,0.1)", color: "#bf4b50" } : undefined}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.backgroundColor = "rgba(191,75,80,0.1)";
+                                    e.currentTarget.style.color = "#bf4b50";
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.style.backgroundColor = highlighted ? "rgba(191,75,80,0.1)" : "";
+                                    e.currentTarget.style.color = highlighted ? "#bf4b50" : "";
+                                }}
+                                role="option"
+                                aria-selected={isSelected}
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    handleSelectOption(opt.value);
+                                }}
+                            >
+                                <span>{opt.label}</span>
+                                {isSelected && <Check className="w-3.5 h-3.5 ml-3 flex-shrink-0" style={{ color: "#bf4b50" }} aria-hidden="true" />}
+                            </div>
+                        );
+                    })
                 )}
             </div>
         </div>
@@ -224,14 +236,20 @@ export default function SearchableSelect({
 
     return (
         <div
-            className={`relative ${className} ${disabled ? "opacity-60" : ""}`}
+            className={`relative ${className}`}
             ref={wrapperRef}
         >
             {label && (
                 <label id={`${selectId}-label`} className="sr-only" htmlFor={selectId}>{label}</label>
             )}
             <div
-                className={`w-full rounded-lg border border-neutral-200 bg-white flex items-center justify-between focus-within:ring-2 focus-within:ring-[#bf4b50] focus-within:border-[#bf4b50] overflow-hidden ${disabled ? "bg-slate-50 cursor-not-allowed pointer-events-none" : "cursor-text"}`}
+                className={`w-full rounded-lg border bg-white flex items-center justify-between overflow-hidden transition-colors
+                    ${disabled
+                        ? "bg-neutral-100 border-neutral-200 cursor-not-allowed pointer-events-none opacity-60"
+                        : isOpen
+                            ? "border-[#bf4b50] ring-2 ring-[#bf4b50]/30 cursor-text"
+                            : "border-neutral-200 hover:border-[#bf4b50]/50 cursor-text"
+                    }`}
                 onClick={() => {
                     if (disabled) return;
                     inputRef.current?.focus();
@@ -242,8 +260,8 @@ export default function SearchableSelect({
                     id={selectId}
                     type="text"
                     disabled={disabled}
-                    className={`w-full px-3 py-2.5 text-sm bg-transparent outline-none truncate ${
-                        !selectedOption && !search && !isOpen ? "text-gray-500" : "text-neutral-900"
+                    className={`w-full px-3 py-2 text-sm bg-transparent outline-none truncate ${
+                        !selectedOption && !search && !isOpen ? "text-neutral-400" : "text-neutral-900"
                     }`}
                     placeholder={placeholder}
                     value={search}
@@ -271,7 +289,7 @@ export default function SearchableSelect({
                     {selectedOption && !disabled && (
                         <button
                             type="button"
-                            className="p-1 hover:bg-gray-100 rounded-full"
+                            className="p-1 hover:bg-[#bf4b50]/10 rounded-full"
                             aria-label="Limpiar selección"
                             onMouseDown={(e) => {
                                 e.preventDefault();
@@ -282,12 +300,12 @@ export default function SearchableSelect({
                                 setIsOpen(true);
                             }}
                         >
-                            <X className="w-3 h-3 text-gray-400" aria-hidden="true" />
+                            <X className="w-3 h-3 text-neutral-400" aria-hidden="true" />
                         </button>
                     )}
                     <button
                         type="button"
-                        className="p-1 hover:bg-gray-100 rounded-full focus:outline-none"
+                        className="p-1 hover:bg-[#bf4b50]/10 rounded-full focus:outline-none"
                         tabIndex={-1}
                         onMouseDown={(e) => {
                             e.preventDefault(); // Keep focus on input if already there
@@ -301,7 +319,7 @@ export default function SearchableSelect({
                             }
                         }}
                     >
-                         <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+                        <ChevronDown className={`w-3.5 h-3.5 text-neutral-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
                     </button>
                 </div>
             </div>

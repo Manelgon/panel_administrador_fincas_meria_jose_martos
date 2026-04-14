@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Settings2, Search, Loader2, InboxIcon, Eye } from 'lucide-react';
+import SelectFilter from '@/components/SelectFilter';
 
 export interface RowAction<T> {
     label: string;
@@ -262,7 +263,7 @@ export default function DataTable<T extends Record<string, any>>({
             {onRowClick && (
                 <button
                     onClick={() => { onRowClick(activeRow.row); setActiveRow(null); }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-[#bf4b50]/10 hover:text-[#bf4b50] transition-colors"
                 >
                     <Eye className="w-4 h-4 text-neutral-400 flex-shrink-0" />
                     <span>Ver detalle</span>
@@ -287,7 +288,7 @@ export default function DataTable<T extends Record<string, any>>({
                                 ${action.variant === 'danger' ? 'text-red-600 hover:bg-red-50' :
                                   action.variant === 'warning' ? 'text-amber-600 hover:bg-amber-50' :
                                   action.variant === 'success' ? 'text-green-600 hover:bg-green-50' :
-                                  'text-neutral-700 hover:bg-neutral-50'}`}
+                                  'text-neutral-700 hover:bg-[#bf4b50]/10 hover:text-[#bf4b50]'}`}
                         >
                             {action.icon && (
                                 <span className="w-4 h-4 flex-shrink-0 flex items-center justify-center">
@@ -344,7 +345,7 @@ export default function DataTable<T extends Record<string, any>>({
                 <div className="relative">
                     <button
                         onClick={() => setShowColumnSelector(!showColumnSelector)}
-                        className="flex items-center gap-1.5 px-3 py-2 border border-neutral-200 rounded-lg bg-white hover:bg-neutral-50 transition text-sm text-neutral-600 font-medium"
+                        className="flex items-center gap-1.5 px-3 py-2 border border-neutral-200 rounded-lg bg-white hover:bg-[#bf4b50]/10 hover:text-[#bf4b50] hover:border-[#bf4b50]/30 transition text-sm text-neutral-600 font-medium"
                     >
                         <Settings2 className="w-3.5 h-3.5" />
                         Columnas
@@ -353,7 +354,7 @@ export default function DataTable<T extends Record<string, any>>({
                         <div className="absolute right-0 mt-1.5 w-52 bg-white border border-neutral-200 rounded-xl shadow-lg z-20 p-2">
                             <p className="text-[10px] font-bold text-neutral-400 mb-1.5 px-2 uppercase tracking-wider">Mostrar columnas</p>
                             {columns.map((col) => (
-                                <label key={col.key} className="flex items-center gap-2 px-2 py-1.5 hover:bg-neutral-50 rounded-lg cursor-pointer text-sm">
+                                <label key={col.key} className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#bf4b50]/10 rounded-lg cursor-pointer text-sm">
                                     <input
                                         type="checkbox"
                                         checked={visibleColumns.has(col.key)}
@@ -477,16 +478,16 @@ export default function DataTable<T extends Record<string, any>>({
                 <div className="flex items-center justify-between text-sm flex-wrap gap-3 px-1">
                     <div className="flex items-center gap-2">
                         <span className="text-neutral-500 text-xs">Filas:</span>
-                        <select
-                            value={pageSize}
-                            onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-                            className="px-2 py-1.5 border border-neutral-200 rounded-lg bg-white text-neutral-700 text-xs focus:ring-2 focus:ring-[#bf4b50] focus:border-[#bf4b50] outline-none"
-                        >
-                            <option value={10}>10</option>
-                            <option value={20}>20</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                        </select>
+                        <SelectFilter
+                            value={String(pageSize)}
+                            onChange={v => { setPageSize(Number(v)); setCurrentPage(1); }}
+                            options={[
+                                { value: '10', label: '10' },
+                                { value: '20', label: '20' },
+                                { value: '50', label: '50' },
+                                { value: '100', label: '100' },
+                            ]}
+                        />
                     </div>
 
                     <span className="text-xs text-neutral-400">
@@ -497,7 +498,7 @@ export default function DataTable<T extends Record<string, any>>({
                         <button
                             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                             disabled={currentPage === 1}
-                            className="p-1.5 border border-neutral-200 rounded-lg hover:bg-neutral-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                            className="p-1.5 border border-neutral-200 rounded-lg hover:bg-[#bf4b50]/10 hover:border-[#bf4b50]/30 disabled:opacity-40 disabled:cursor-not-allowed transition"
                         >
                             <ChevronLeft className="w-4 h-4 text-neutral-600" />
                         </button>
@@ -507,7 +508,7 @@ export default function DataTable<T extends Record<string, any>>({
                         <button
                             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                             disabled={currentPage === totalPages}
-                            className="p-1.5 border border-neutral-200 rounded-lg hover:bg-neutral-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                            className="p-1.5 border border-neutral-200 rounded-lg hover:bg-[#bf4b50]/10 hover:border-[#bf4b50]/30 disabled:opacity-40 disabled:cursor-not-allowed transition"
                         >
                             <ChevronRight className="w-4 h-4 text-neutral-600" />
                         </button>

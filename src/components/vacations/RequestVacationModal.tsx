@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Calendar, AlertCircle } from "lucide-react";
 import { toast } from "react-hot-toast";
 import ModalPortal from '@/components/ModalPortal';
+import SelectFilter from '@/components/SelectFilter';
 
 interface BalanceInfo {
     total: number;
@@ -128,15 +129,17 @@ export default function RequestVacationModal({ isOpen, onClose, onSuccess, userI
                     <div className="flex justify-between items-end gap-4">
                         <div className="flex-grow space-y-1">
                             <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Tipo de Solicitud</label>
-                            <select
+                            <SelectFilter
                                 value={type}
-                                onChange={(e) => setType(e.target.value)}
-                                className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white transition"
-                            >
-                                <option value="VACACIONES">Vacaciones Anuales</option>
-                                <option value="RETRIBUIDO">Días Retribuidos (Propios)</option>
-                                <option value="NO_RETRIBUIDO">Días No Retribuidos</option>
-                            </select>
+                                onChange={setType}
+                                size="md"
+                                className="w-full"
+                                options={[
+                                    { value: 'VACACIONES', label: 'Vacaciones Anuales' },
+                                    { value: 'RETRIBUIDO', label: 'Días Retribuidos (Propios)' },
+                                    { value: 'NO_RETRIBUIDO', label: 'Días No Retribuidos' },
+                                ]}
+                            />
                         </div>
                         <div className="shrink-0 text-right pb-1">
                             <p className="text-[10px] font-bold text-neutral-400 uppercase">Disponible</p>

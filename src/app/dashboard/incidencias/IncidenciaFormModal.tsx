@@ -3,6 +3,7 @@
 import { createPortal } from 'react-dom';
 import { X, AlertCircle, Loader2, Plus, Paperclip } from 'lucide-react';
 import SearchableSelect from '@/components/SearchableSelect';
+import SelectFilter from '@/components/SelectFilter';
 import { Profile, ComunidadOption } from '@/lib/schemas';
 
 interface FormData {
@@ -407,14 +408,14 @@ export default function IncidenciaFormModal({
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">
                                     Enviar email a Proveedor
                                 </label>
-                                <select
+                                <SelectFilter
                                     disabled
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-100 px-3 py-2 text-sm text-neutral-400 outline-none cursor-not-allowed"
                                     value={formData.proveedor}
-                                    onChange={e => onChange('proveedor', e.target.value)}
-                                >
-                                    <option value="">Próximamente disponible...</option>
-                                </select>
+                                    onChange={v => onChange('proveedor', v)}
+                                    size="md"
+                                    className="w-full"
+                                    options={[{ value: '', label: 'Próximamente disponible...' }]}
+                                />
                             </div>
                         </div>
                     </form>

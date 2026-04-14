@@ -242,3 +242,21 @@ textarea {
   border-bottom-width: 2px !important;
   border-bottom-color: #000000 !important; /* Black */
 }
+
+/* ─── Select nativo: acento de color de la app ──────────────────────────── */
+select {
+  accent-color: #bf4b50;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: #bf4b50 !important;
+  box-shadow: 0 0 0 2px rgba(191, 75, 80, 0.25) !important;
+}
+
+select option:checked {
+  background-color: #bf4b50;
+  color: #ffffff;
+}
+

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useGlobalLoading } from '@/lib/globalLoading';
 import { createPortal } from 'react-dom';
 import { Plus, Mail, Building, FileText, Loader2, Download, ExternalLink, CheckCircle2, AlertCircle, Trash2, ChevronUp, ChevronDown, Filter, CreditCard, TicketCheck, Eye, Clock, X, BarChart2, ChevronRight } from 'lucide-react';
+import SelectFilter from '@/components/SelectFilter';
 import DataTable, { Column, RowAction } from '@/components/DataTable';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { toast } from 'react-hot-toast';
@@ -270,14 +271,14 @@ export default function InformesComunidadPage() {
                 storageKey="informes-comunidad"
                 emptyMessage="No hay informes globales generados aún."
                 extraFilters={
-                    <select
+                    <SelectFilter
                         value={filterCommunity}
-                        onChange={(e) => setFilterCommunity(e.target.value)}
-                        className="bg-neutral-50 border border-neutral-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#bf4b50]"
-                    >
-                        <option value="all">Todas las comunidades</option>
-                        {communitiesList.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                        onChange={setFilterCommunity}
+                        options={[
+                            { value: 'all', label: 'Todas las comunidades' },
+                            ...communitiesList.map(c => ({ value: c, label: c })),
+                        ]}
+                    />
                 }
                 columns={[
                     {
@@ -362,15 +363,16 @@ export default function InformesComunidadPage() {
                         <div className="grid grid-cols-1 gap-4">
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-neutral-700">Comunidad (Carpeta de Outlook)</label>
-                                <select
+                                <SelectFilter
                                     value={selectedFolder}
-                                    onChange={(e) => { setSelectedFolder(e.target.value); setFormErrors(prev => ({ ...prev, config: '' })); }}
+                                    onChange={v => { setSelectedFolder(v); setFormErrors(prev => ({ ...prev, config: '' })); }}
                                     disabled={loadingFolders}
-                                    className={`w-full bg-neutral-50 border rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#bf4b50] disabled:opacity-60 ${formErrors.config ? 'border-red-400' : 'border-neutral-200'}`}
-                                >
-                                    <option value="">{loadingFolders ? 'Cargando comunidades...' : 'Selecciona una comunidad...'}</option>
-                                    {folders.map(f => <option key={f.id} value={f.id}>{f.displayName || f.name}</option>)}
-                                </select>
+                                    error={!!formErrors.config}
+                                    size="md"
+                                    className="w-full"
+                                    placeholder={loadingFolders ? 'Cargando comunidades...' : 'Selecciona una comunidad...'}
+                                    options={folders.map(f => ({ value: f.id, label: f.displayName || f.name || f.id }))}
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-2">

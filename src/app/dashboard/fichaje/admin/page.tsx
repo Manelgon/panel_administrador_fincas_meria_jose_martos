@@ -10,6 +10,7 @@ import { logActivity } from '@/lib/logActivity';
 import EmployeeResume from '@/components/fichaje/EmployeeResume';
 import VacationManager from './VacationManager';
 import ModalPortal from '@/components/ModalPortal';
+import SelectFilter from '@/components/SelectFilter';
 
 interface TimeEntryWithProfile {
     id: number;
@@ -433,47 +434,49 @@ export default function FichajeAdminPage() {
                             {/* User filter */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
-                                <select
-                                    className="w-full px-3 py-2 border rounded-lg bg-white text-sm"
+                                <SelectFilter
                                     value={filterUser}
-                                    onChange={(e) => setFilterUser(e.target.value)}
-                                >
-                                    <option value="all">Todos</option>
-                                    {profiles.map(p => (
-                                        <option key={p.user_id} value={p.user_id}>
-                                            {p.nombre} {p.apellido}
-                                        </option>
-                                    ))}
-                                </select>
+                                    onChange={setFilterUser}
+                                    className="w-full"
+                                    size="md"
+                                    options={[
+                                        { value: 'all', label: 'Todos' },
+                                        ...profiles.map(p => ({ value: p.user_id, label: `${p.nombre} ${p.apellido}` })),
+                                    ]}
+                                />
                             </div>
 
                             {/* Rol filter */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Rol</label>
-                                <select
-                                    className="w-full px-3 py-2 border rounded-lg bg-white text-sm"
+                                <SelectFilter
                                     value={filterRol}
-                                    onChange={(e) => setFilterRol(e.target.value)}
-                                >
-                                    <option value="all">Todos</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="gestor">Gestor</option>
-                                    <option value="empleado">Empleado</option>
-                                </select>
+                                    onChange={setFilterRol}
+                                    className="w-full"
+                                    size="md"
+                                    options={[
+                                        { value: 'all', label: 'Todos' },
+                                        { value: 'admin', label: 'Admin' },
+                                        { value: 'gestor', label: 'Gestor' },
+                                        { value: 'empleado', label: 'Empleado' },
+                                    ]}
+                                />
                             </div>
 
                             {/* Status filter */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                                <select
-                                    className="w-full px-3 py-2 border rounded-lg bg-white text-sm"
+                                <SelectFilter
                                     value={filterStatus}
-                                    onChange={(e) => setFilterStatus(e.target.value)}
-                                >
-                                    <option value="all">Todos</option>
-                                    <option value="open">En curso</option>
-                                    <option value="closed">Finalizados</option>
-                                </select>
+                                    onChange={setFilterStatus}
+                                    className="w-full"
+                                    size="md"
+                                    options={[
+                                        { value: 'all', label: 'Todos' },
+                                        { value: 'open', label: 'En curso' },
+                                        { value: 'closed', label: 'Finalizados' },
+                                    ]}
+                                />
                             </div>
 
                             {/* Date from */}

@@ -2,6 +2,7 @@
 
 import { createPortal } from 'react-dom';
 import { X, FileText, Check, AlertCircle, MessageSquare } from 'lucide-react';
+import SelectFilter from '@/components/SelectFilter';
 import { ComunidadOption } from '@/lib/schemas';
 import { ImportPreviewData } from './types';
 
@@ -149,10 +150,9 @@ export default function ImportPreviewModal({
                                                     {rec.status === 'skip' && rec.comunidad_not_found ? (
                                                         <div>
                                                             <span className="block text-[10px] text-amber-700 font-bold truncate mb-1" title={rec.comunidad_name}>{rec.comunidad_name}</span>
-                                                            <select
-                                                                value={importRecordComunidades[idx] ?? ''}
-                                                                onChange={e => {
-                                                                    const val = e.target.value;
+                                                            <SelectFilter
+                                                                value={String(importRecordComunidades[idx] ?? '')}
+                                                                onChange={val => {
                                                                     setImportRecordComunidades(prev => {
                                                                         const next = { ...prev };
                                                                         if (val) next[idx] = Number(val);
@@ -160,13 +160,13 @@ export default function ImportPreviewModal({
                                                                         return next;
                                                                     });
                                                                 }}
-                                                                className="w-full text-[10px] border border-amber-300 rounded px-1.5 py-1 bg-white text-neutral-700 focus:border-[#bf4b50] outline-none"
-                                                            >
-                                                                <option value="">— Asignar comunidad —</option>
-                                                                {comunidades.map(c => (
-                                                                    <option key={c.id} value={c.id}>{c.nombre_cdad}</option>
-                                                                ))}
-                                                            </select>
+                                                                className="w-full"
+                                                                placeholder="— Asignar comunidad —"
+                                                                options={comunidades.map(c => ({
+                                                                    value: String(c.id),
+                                                                    label: c.nombre_cdad,
+                                                                }))}
+                                                            />
                                                         </div>
                                                     ) : (
                                                         <>

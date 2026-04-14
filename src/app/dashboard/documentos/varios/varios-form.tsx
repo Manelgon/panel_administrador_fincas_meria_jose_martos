@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { Download, Loader2, FileText, Plus, AlertCircle } from "lucide-react";
 import SearchableSelect from "@/components/SearchableSelect";
+import SelectFilter from "@/components/SelectFilter";
 import { createBrowserClient } from "@supabase/ssr";
 
 interface Comunidad {
@@ -319,17 +320,19 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                             </div>
                             <div>
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Tipo Inmueble</label>
-                                <select
+                                <SelectFilter
                                     disabled={isDisabled}
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white appearance-none disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.tipo_inmueble || ""}
-                                    onChange={(e) => handleChange("tipo_inmueble", e.target.value)}
-                                >
-                                    <option value="">Seleccionar tipo...</option>
-                                    <option value="Vivienda">Vivienda</option>
-                                    <option value="Trastero">Trastero</option>
-                                    <option value="Aparcamiento">Aparcamiento</option>
-                                </select>
+                                    onChange={v => handleChange("tipo_inmueble", v)}
+                                    size="md"
+                                    className="w-full"
+                                    placeholder="Seleccionar tipo..."
+                                    options={[
+                                        { value: 'Vivienda', label: 'Vivienda' },
+                                        { value: 'Trastero', label: 'Trastero' },
+                                        { value: 'Aparcamiento', label: 'Aparcamiento' },
+                                    ]}
+                                />
                             </div>
                             <div>
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">NIF</label>
