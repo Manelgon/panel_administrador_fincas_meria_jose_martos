@@ -87,7 +87,7 @@ function drawText(page: any, font: any, x: number, y: number, t: string, size = 
 }
 
 // --- HELPER: DRAW CELL (Suplidos Style) ---
-function drawCell(page: any, font: any, bold: any, x: number, y: number, w: number, h: number, txt: string, opts?: { bold?: boolean; align?: "left" | "right" | "center"; bg?: any }) {
+function drawCell(page: any, font: any, bold: any, x: number, y: number, w: number, h: number, txt: string, opts?: { bold?: boolean; align?: "left" | "right" | "center"; bg?: any; borderColor?: any }) {
     page.drawRectangle({
         x,
         y,
@@ -95,7 +95,7 @@ function drawCell(page: any, font: any, bold: any, x: number, y: number, w: numb
         height: h,
         color: opts?.bg ?? rgb(1, 1, 1),
         borderWidth: 1,
-        borderColor: rgb(0.82, 0.82, 0.82),
+        borderColor: opts?.borderColor ?? rgb(0.82, 0.82, 0.82),
     });
 
     const f = opts?.bold ? bold : font;
@@ -163,7 +163,7 @@ function drawYellowBlock(params: {
     const h = paddingY * 2 + textLines.length * lineH;
     const y = yTop - h;
 
-    page.drawRectangle({ x, y, width: w, height: h, color: bg, borderColor: BORDER, borderWidth: 1 });
+    page.drawRectangle({ x, y, width: w, height: h, color: rgb(1, 1, 1), borderColor: bg, borderWidth: 1 });
 
     let ty = yTop - paddingY - size;
     for (const line of textLines) {
@@ -216,7 +216,7 @@ export async function buildFacturaVariosPdf(
     const fechaLabelY = headerBottomY; // Justo debajo del logo
 
     page.drawText("Fecha de emisión", { x: marginX, y: fechaLabelY, size: 10, font: bold, color: BLACK });
-    page.drawRectangle({ x: marginX + 120, y: fechaLabelY - 8, width: 240, height: 18, color: YELLOW });
+    page.drawRectangle({ x: marginX + 120, y: fechaLabelY - 8, width: 240, height: 18, color: rgb(1, 1, 1), borderWidth: 1, borderColor: YELLOW });
     page.drawText(fecha || " ", { x: marginX + 128, y: fechaLabelY - 4, size: 10, font, color: BLACK });
 
     if (invoiceNumber) {
@@ -304,11 +304,11 @@ export async function buildFacturaVariosPdf(
 
     // Header Row
     let x = marginX;
-    drawCell(page, font, bold, x, tableTopY, c.qty, headerH, "CANTIDAD", { bold: true, bg: YELLOW }); x += c.qty;
-    drawCell(page, font, bold, x, tableTopY, c.concept, headerH, "CONCEPTO", { bold: true, bg: YELLOW }); x += c.concept;
-    drawCell(page, font, bold, x, tableTopY, c.base, headerH, "IMPORTE", { bold: true, bg: YELLOW, align: "right" }); x += c.base;
-    drawCell(page, font, bold, x, tableTopY, c.iva, headerH, "IVA", { bold: true, bg: YELLOW, align: "right" }); x += c.iva;
-    drawCell(page, font, bold, x, tableTopY, c.total, headerH, "TOTAL", { bold: true, bg: YELLOW, align: "right" });
+    drawCell(page, font, bold, x, tableTopY, c.qty, headerH, "CANTIDAD", { bold: true, borderColor: YELLOW }); x += c.qty;
+    drawCell(page, font, bold, x, tableTopY, c.concept, headerH, "CONCEPTO", { bold: true, borderColor: YELLOW }); x += c.concept;
+    drawCell(page, font, bold, x, tableTopY, c.base, headerH, "IMPORTE", { bold: true, borderColor: YELLOW, align: "right" }); x += c.base;
+    drawCell(page, font, bold, x, tableTopY, c.iva, headerH, "IVA", { bold: true, borderColor: YELLOW, align: "right" }); x += c.iva;
+    drawCell(page, font, bold, x, tableTopY, c.total, headerH, "TOTAL", { bold: true, borderColor: YELLOW, align: "right" });
 
     // Data Rows
     const lines = [
@@ -373,9 +373,9 @@ export async function buildFacturaVariosPdf(
         y: sumY,
         width: sumBoxW,
         height: sumBoxH,
-        color: YELLOW,
+        color: rgb(1, 1, 1),
         borderWidth: 1,
-        borderColor: rgb(0.82, 0.82, 0.82)
+        borderColor: YELLOW
     });
 
     const totalText = moneyES(sumaFinal);
@@ -484,8 +484,9 @@ function drawJustifiedLine(
 /**
  * assets.logoBytes y assets.selloBytes vienen descargados de tu bucket privado (doc-assets).
  */
-export async function buildPagosAlDiaPdf(payload: any, assets: { logoBytes: Uint8Array; selloBytes: Uint8Array }) {
-    const { nombre: emisorNombre } = await getEmisor();
+export async function buildPagosAlDiaPdf(payload: any, assets: { logoBytes: Uint8Array; selloBytes?: Uint8Array }) {
+    const { nombre: emisorNombre, colegiado: colegiadoNombre } = await getEmisor();
+    const adminName = colegiadoNombre || "Roberto Díaz Rodríguez";
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([A4.w, A4.h]);
 
@@ -547,7 +548,7 @@ export async function buildPagosAlDiaPdf(payload: any, assets: { logoBytes: Uint
     const fecha = formatDateEU(payload["fecha_emision"]);
 
     const p1 =
-        `Roberto Díaz Rodríguez, Administrador de Fincas colegiado en el Ilustre Colegio Territorial de ` +
+        `${adminName}, Administrador de Fincas colegiado en el Ilustre Colegio Territorial de ` +
         `Administradores de Fincas de Málaga, actuando en calidad de Secretario–Administrador de la Comunidad de ` +
         `Propietarios ${comunidad}, sita en ${domicilio}.`;
 
@@ -596,17 +597,19 @@ export async function buildPagosAlDiaPdf(payload: any, assets: { logoBytes: Uint
     drawPara(cierre);
 
     // 5) Sello + firma anclados abajo, SIEMPRE en zona segura
-    try {
-        const sealImg = await pdfDoc.embedPng(assets.selloBytes);
-        const sealW = 150;
-        const sealH = (sealImg.height / sealImg.width) * sealW;
+    if (assets.selloBytes) {
+        try {
+            const sealImg = await pdfDoc.embedPng(assets.selloBytes);
+            const sealW = 150;
+            const sealH = (sealImg.height / sealImg.width) * sealW;
 
-        const sx = marginX;
-        const sy = 155; // fija abajo (no depende del texto)
-        page.drawImage(sealImg, { x: sx, y: sy, width: sealW, height: sealH });
-    } catch { }
+            const sx = marginX;
+            const sy = 155; // fija abajo (no depende del texto)
+            page.drawImage(sealImg, { x: sx, y: sy, width: sealW, height: sealH });
+        } catch { }
+    }
 
-    page.drawText("Roberto Díaz Rodríguez", { x: marginX, y: 110, size: 11, font: bold, color: BLACK });
+    page.drawText(adminName, { x: marginX, y: 110, size: 11, font: bold, color: BLACK });
     page.drawText("Administrador de fincas", { x: marginX, y: 92, size: 11, font, color: BLACK });
 
     // Global Footer
@@ -658,7 +661,20 @@ export async function POST(req: Request) {
         // Header: usa el de company_settings, fallback al header por defecto
         const headerStoragePath = emisorData.headerPath || "certificados/logo-retenciones.png";
         assets.logo = await downloadAssetPng(headerStoragePath);
-        assets.sello = await downloadAssetPng("certificados/sello-retenciones.png");
+
+        // Sello: intentar descargarlo, si falla y no viene skipSello → error especial
+        try {
+            assets.sello = await downloadAssetPng("certificados/sello-retenciones.png");
+        } catch {
+            if (!payload.skipSello) {
+                return NextResponse.json({
+                    error: "MISSING_SELLO",
+                    message: "No se encontró la imagen del sello y firma en el sistema. Suba el sello en Ajustes > Emisor para crear documentos firmados."
+                }, { status: 422 });
+            }
+            // Si skipSello === true, continuar sin sello
+            assets.sello = undefined;
+        }
 
         // 2) Fetch Settings (IBAN)
         assets.iban = "ES37 0081 7442 0600 0119 3630"; // Default hardcoded just in case
@@ -694,7 +710,7 @@ export async function POST(req: Request) {
         }
 
         // --- DOC 2: CERTIFICADO (Official Style using Builder) ---
-        const pdfBytesCertificado = await buildPagosAlDiaPdf(payload, { logoBytes: assets.logo!, selloBytes: assets.sello! });
+        const pdfBytesCertificado = await buildPagosAlDiaPdf(payload, { logoBytes: assets.logo!, selloBytes: assets.sello });
 
         // (Proceed to upload...)
 

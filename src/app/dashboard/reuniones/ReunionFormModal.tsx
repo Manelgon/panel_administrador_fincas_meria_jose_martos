@@ -28,32 +28,36 @@ const DOCS_FIELDS: { key: string; label: string }[] = [
 const SEGUIMIENTO_FIELDS: { key: string; label: string }[] = [
     { key: 'citacion_email', label: 'Citación @' },
     { key: 'citacion_carta', label: 'Cit. Carta' },
-    { key: 'acta_email',     label: 'Acta @' },
-    { key: 'acta_carta',     label: 'Acta Carta' },
 ];
 
 const SEGUIMIENTO2_FIELDS: { key: string; label: string }[] = [
+    { key: 'borrador_acta',  label: 'Borrador Acta' },
     { key: 'redactar_acta',  label: 'Redactar Acta' },
     { key: 'vb_pendiente',   label: 'Vº Bº Pendiente' },
+    { key: 'imprimir_acta',  label: 'Imprimir Acta' },
+    { key: 'acta_email',     label: 'Acta @' },
+    { key: 'acta_carta',     label: 'Acta Carta' },
     { key: 'pasar_acuerdos', label: 'Pasar Acuerdos' },
 ];
 
 const emptyForm = {
-    comunidad_id: '',
-    fecha_reunion: '',
-    tipo: '',
-    estado_cuentas: false,
-    pto_ordinario: false,
-    pto_extra: false,
-    morosos: false,
-    citacion_email: false,
-    citacion_carta: false,
-    redactar_acta: false,
-    vb_pendiente: false,
-    acta_email: false,
-    acta_carta: false,
-    pasar_acuerdos: false,
-    notas: '',
+    comunidad_id: '' as string,
+    fecha_reunion: '' as string,
+    tipo: '' as string,
+    estado_cuentas: null as boolean | null,
+    pto_ordinario: null as boolean | null,
+    pto_extra: null as boolean | null,
+    morosos: null as boolean | null,
+    citacion_email: null as boolean | null,
+    citacion_carta: null as boolean | null,
+    borrador_acta: null as boolean | null,
+    redactar_acta: null as boolean | null,
+    vb_pendiente: null as boolean | null,
+    imprimir_acta: null as boolean | null,
+    acta_email: null as boolean | null,
+    acta_carta: null as boolean | null,
+    pasar_acuerdos: null as boolean | null,
+    notas: '' as string,
 };
 
 export default function ReunionFormModal({ show, editingId, comunidades, onClose, onSaved }: Props) {
@@ -70,17 +74,19 @@ export default function ReunionFormModal({ show, editingId, comunidades, onClose
                         comunidad_id: String(data.comunidad_id),
                         fecha_reunion: data.fecha_reunion || '',
                         tipo: data.tipo || '',
-                        estado_cuentas: data.estado_cuentas ?? false,
-                        pto_ordinario: data.pto_ordinario ?? false,
-                        pto_extra: data.pto_extra ?? false,
-                        morosos: data.morosos ?? false,
-                        citacion_email: data.citacion_email ?? false,
-                        citacion_carta: data.citacion_carta ?? false,
-                        redactar_acta: data.redactar_acta ?? false,
-                        vb_pendiente: data.vb_pendiente ?? false,
-                        acta_email: data.acta_email ?? false,
-                        acta_carta: data.acta_carta ?? false,
-                        pasar_acuerdos: data.pasar_acuerdos ?? false,
+                        estado_cuentas: data.estado_cuentas as boolean | null,
+                        pto_ordinario: data.pto_ordinario as boolean | null,
+                        pto_extra: data.pto_extra as boolean | null,
+                        morosos: data.morosos as boolean | null,
+                        citacion_email: data.citacion_email as boolean | null,
+                        citacion_carta: data.citacion_carta as boolean | null,
+                        borrador_acta: data.borrador_acta as boolean | null,
+                        redactar_acta: data.redactar_acta as boolean | null,
+                        vb_pendiente: data.vb_pendiente as boolean | null,
+                        imprimir_acta: data.imprimir_acta as boolean | null,
+                        acta_email: data.acta_email as boolean | null,
+                        acta_carta: data.acta_carta as boolean | null,
+                        pasar_acuerdos: data.pasar_acuerdos as boolean | null,
                         notas: data.notas || '',
                     });
                 }
@@ -118,8 +124,10 @@ export default function ReunionFormModal({ show, editingId, comunidades, onClose
             morosos: formData.morosos,
             citacion_email: formData.citacion_email,
             citacion_carta: formData.citacion_carta,
+            borrador_acta: formData.borrador_acta,
             redactar_acta: formData.redactar_acta,
             vb_pendiente: formData.vb_pendiente,
+            imprimir_acta: formData.imprimir_acta,
             acta_email: formData.acta_email,
             acta_carta: formData.acta_carta,
             pasar_acuerdos: formData.pasar_acuerdos,
@@ -152,13 +160,17 @@ export default function ReunionFormModal({ show, editingId, comunidades, onClose
     };
 
     const toggle = (key: string) => {
-        setFormData(prev => ({ ...prev, [key]: !prev[key as keyof typeof prev] }));
+        setFormData(prev => {
+            const current = prev[key as keyof typeof prev] as boolean | null;
+            const next = current === null ? false : current === false ? true : null;
+            return { ...prev, [key]: next };
+        });
     };
 
     return createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex justify-center items-end sm:items-center sm:p-6">
             <div
-                className="bg-white w-full max-w-2xl rounded-t-2xl sm:rounded-xl shadow-2xl flex flex-col overflow-hidden max-h-[92dvh] sm:max-h-[90dvh] animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200"
+                className="bg-white w-full max-w-xl rounded-t-2xl sm:rounded-xl shadow-2xl flex flex-col overflow-hidden max-h-[92dvh] sm:max-h-[90dvh] animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
@@ -239,95 +251,7 @@ export default function ReunionFormModal({ show, editingId, comunidades, onClose
                             </div>
                         </div>
 
-                        {/* Documentos a Enviar */}
-                        <div>
-                            <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">
-                                Documentos a Enviar
-                            </h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
-                                {DOCS_FIELDS.map(({ key, label }) => (
-                                    <button
-                                        key={key}
-                                        type="button"
-                                        onClick={() => toggle(key)}
-                                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border text-xs font-semibold transition-all ${
-                                            formData[key as keyof typeof formData]
-                                                ? 'bg-green-50 border-green-300 text-green-700'
-                                                : 'bg-neutral-50 border-neutral-200 text-neutral-500 hover:border-neutral-300'
-                                        }`}
-                                    >
-                                        <span className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${
-                                            formData[key as keyof typeof formData]
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-neutral-200 text-neutral-400'
-                                        }`}>
-                                            {formData[key as keyof typeof formData] ? '✓' : ''}
-                                        </span>
-                                        {label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
 
-                        {/* Método de Envío */}
-                        <div>
-                            <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">
-                                Método de Envío
-                            </h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                {SEGUIMIENTO_FIELDS.map(({ key, label }) => (
-                                    <button
-                                        key={key}
-                                        type="button"
-                                        onClick={() => toggle(key)}
-                                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border text-xs font-semibold transition-all ${
-                                            formData[key as keyof typeof formData]
-                                                ? 'bg-green-50 border-green-300 text-green-700'
-                                                : 'bg-neutral-50 border-neutral-200 text-neutral-500 hover:border-neutral-300'
-                                        }`}
-                                    >
-                                        <span className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${
-                                            formData[key as keyof typeof formData]
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-neutral-200 text-neutral-400'
-                                        }`}>
-                                            {formData[key as keyof typeof formData] ? '✓' : ''}
-                                        </span>
-                                        {label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Seguimiento */}
-                        <div>
-                            <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">
-                                Seguimiento
-                            </h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                {SEGUIMIENTO2_FIELDS.map(({ key, label }) => (
-                                    <button
-                                        key={key}
-                                        type="button"
-                                        onClick={() => toggle(key)}
-                                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border text-xs font-semibold transition-all ${
-                                            formData[key as keyof typeof formData]
-                                                ? 'bg-green-50 border-green-300 text-green-700'
-                                                : 'bg-neutral-50 border-neutral-200 text-neutral-500 hover:border-neutral-300'
-                                        }`}
-                                    >
-                                        <span className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${
-                                            formData[key as keyof typeof formData]
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-neutral-200 text-neutral-400'
-                                        }`}>
-                                            {formData[key as keyof typeof formData] ? '✓' : ''}
-                                        </span>
-                                        {label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
 
                         {/* Notas */}
                         <div>
