@@ -859,6 +859,12 @@ alter table public.company_settings      enable row level security;
 -- 7) RLS POLICIES
 -- =========================================
 
+-- ---------- LIMPIEZA: eliminar policies huérfanas de migraciones anteriores ----------
+drop policy if exists "comunidades: gestor write"      on public.comunidades;
+drop policy if exists "notifications insert system"    on public.notifications;
+drop policy if exists "notifications select own"       on public.notifications;
+drop policy if exists "notifications update own"       on public.notifications;
+
 -- ---------- PROFILES ----------
 -- Todos los autenticados leen todos los perfiles (necesario para selects de gestores/empleados)
 drop policy if exists "profiles: read own or admin"    on public.profiles;
@@ -1293,11 +1299,12 @@ to authenticated
 with check (auth.uid() is not null);
 
 drop policy if exists "incidencias_serincobot: update authenticated" on public.incidencias_serincobot;
-create policy "incidencias_serincobot: update authenticated"
+drop policy if exists "incidencias_serincobot: update admin gestor" on public.incidencias_serincobot;
+create policy "incidencias_serincobot: update admin gestor"
 on public.incidencias_serincobot for update
 to authenticated
-using (true)
-with check (true);
+using (public.is_admin() or public.is_active_employee())
+with check (public.is_admin() or public.is_active_employee());
 
 drop policy if exists "incidencias_serincobot: delete admin" on public.incidencias_serincobot;
 create policy "incidencias_serincobot: delete admin"
@@ -1313,17 +1320,25 @@ to authenticated
 using (true);
 
 drop policy if exists "propietarios: insert authenticated" on public.propietarios;
-create policy "propietarios: insert authenticated"
+drop policy if exists "propietarios: insert admin gestor" on public.propietarios;
+create policy "propietarios: insert admin gestor"
 on public.propietarios for insert
 to authenticated
-with check (auth.uid() is not null);
+with check (
+  (select rol from public.profiles where user_id = auth.uid()) in ('admin','gestor')
+);
 
 drop policy if exists "propietarios: update authenticated" on public.propietarios;
-create policy "propietarios: update authenticated"
+drop policy if exists "propietarios: update admin gestor" on public.propietarios;
+create policy "propietarios: update admin gestor"
 on public.propietarios for update
 to authenticated
-using (true)
-with check (true);
+using (
+  (select rol from public.profiles where user_id = auth.uid()) in ('admin','gestor')
+)
+with check (
+  (select rol from public.profiles where user_id = auth.uid()) in ('admin','gestor')
+);
 
 drop policy if exists "propietarios: delete admin" on public.propietarios;
 create policy "propietarios: delete admin"
