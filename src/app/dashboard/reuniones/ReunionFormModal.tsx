@@ -44,6 +44,7 @@ const emptyForm = {
     comunidad_id: '' as string,
     fecha_reunion: '' as string,
     tipo: '' as string,
+    confirmada: null as boolean | null,
     estado_cuentas: null as boolean | null,
     pto_ordinario: null as boolean | null,
     pto_extra: null as boolean | null,
@@ -74,6 +75,7 @@ export default function ReunionFormModal({ show, editingId, comunidades, onClose
                         comunidad_id: String(data.comunidad_id),
                         fecha_reunion: data.fecha_reunion || '',
                         tipo: data.tipo || '',
+                        confirmada: data.confirmada as boolean,
                         estado_cuentas: data.estado_cuentas as boolean | null,
                         pto_ordinario: data.pto_ordinario as boolean | null,
                         pto_extra: data.pto_extra as boolean | null,
@@ -104,6 +106,7 @@ export default function ReunionFormModal({ show, editingId, comunidades, onClose
         if (!formData.comunidad_id) e.comunidad_id = 'Selecciona una comunidad';
         if (!formData.fecha_reunion) e.fecha_reunion = 'La fecha es obligatoria';
         if (!formData.tipo) e.tipo = 'Selecciona el tipo de junta';
+        if (formData.confirmada === null) e.confirmada = 'Selecciona el estado inicial de la reunión';
         return e;
     };
 
@@ -118,6 +121,7 @@ export default function ReunionFormModal({ show, editingId, comunidades, onClose
             comunidad_id: Number(formData.comunidad_id),
             fecha_reunion: formData.fecha_reunion,
             tipo: formData.tipo,
+            confirmada: formData.confirmada as boolean,
             estado_cuentas: formData.estado_cuentas,
             pto_ordinario: formData.pto_ordinario,
             pto_extra: formData.pto_extra,
@@ -247,6 +251,56 @@ export default function ReunionFormModal({ show, editingId, comunidades, onClose
                                         ]}
                                     />
                                     {errors.tipo && <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-500"><AlertCircle className="w-3 h-3 shrink-0" />{errors.tipo}</p>}
+                                </div>
+
+                                {/* Estado inicial — obligatorio */}
+                                <div className="sm:col-span-2">
+                                    <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">
+                                        Estado de la reunión <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => { setFormData(prev => ({ ...prev, confirmada: false })); setErrors(prev => ({ ...prev, confirmada: '' })); }}
+                                            className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left ${
+                                                formData.confirmada === false
+                                                    ? 'border-amber-400 bg-amber-50'
+                                                    : 'border-neutral-200 bg-neutral-50 hover:border-neutral-300'
+                                            }`}
+                                        >
+                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                                formData.confirmada === false ? 'border-amber-400 bg-amber-400' : 'border-neutral-300'
+                                            }`}>
+                                                {formData.confirmada === false && <div className="w-2 h-2 rounded-full bg-white" />}
+                                            </div>
+                                            <p className={`text-[11px] font-bold leading-tight ${formData.confirmada === false ? 'text-amber-800' : 'text-neutral-600'}`}>
+                                                Pendiente de confirmar
+                                            </p>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => { setFormData(prev => ({ ...prev, confirmada: true })); setErrors(prev => ({ ...prev, confirmada: '' })); }}
+                                            className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left ${
+                                                formData.confirmada === true
+                                                    ? 'border-blue-400 bg-blue-50'
+                                                    : 'border-neutral-200 bg-neutral-50 hover:border-neutral-300'
+                                            }`}
+                                        >
+                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                                formData.confirmada === true ? 'border-blue-400 bg-blue-400' : 'border-neutral-300'
+                                            }`}>
+                                                {formData.confirmada === true && <div className="w-2 h-2 rounded-full bg-white" />}
+                                            </div>
+                                            <p className={`text-[11px] font-bold leading-tight ${formData.confirmada === true ? 'text-blue-800' : 'text-neutral-600'}`}>
+                                                Confirmada
+                                            </p>
+                                        </button>
+                                    </div>
+                                    {errors.confirmada && (
+                                        <p className="mt-1.5 flex items-center gap-1 text-[11px] font-semibold text-red-500">
+                                            <AlertCircle className="w-3 h-3 shrink-0" />{errors.confirmada}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>
