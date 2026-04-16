@@ -6,6 +6,7 @@ import { User, Send, Download, Trash2, X } from "lucide-react";
 import { toast } from "react-hot-toast";
 import DataTable, { Column } from "@/components/DataTable";
 import ModalPortal from '@/components/ModalPortal';
+import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 
 type HistoryType = "varios" | "suplidos" | "certificado-renta" | "all";
 
@@ -85,14 +86,10 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
     // Delete State
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [docToDelete, setDocToDelete] = useState<any>(null);
-    const [adminEmail, setAdminEmail] = useState("");
-    const [adminPass, setAdminPass] = useState("");
     const [isDeleting, setIsDeleting] = useState(false);
 
     // Bulk Delete State
     const [bulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
-    const [bulkAdminEmail, setBulkAdminEmail] = useState("");
-    const [bulkAdminPass, setBulkAdminPass] = useState("");
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
     // Send State
@@ -108,32 +105,21 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
 
     const handleDeleteClick = (doc: any) => {
         setDocToDelete(doc);
-        setAdminEmail("");
-        setAdminPass("");
         setDetailModalOpen(false);
         setDeleteModalOpen(true);
     };
 
-    const confirmDelete = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const confirmDelete = async ({ email, password }: { email: string; password: string }) => {
         if (!docToDelete) return;
-
         setIsDeleting(true);
         try {
             const res = await fetch("/api/admin/universal-delete", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    id: docToDelete.id,
-                    email: isAdminSession ? undefined : adminEmail,
-                    password: isAdminSession ? undefined : adminPass,
-                    type: "document"
-                })
+                body: JSON.stringify({ id: docToDelete.id, email, password, type: "document" })
             });
-
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Error al eliminar");
-
             toast.success("Documento eliminado correctamente");
             setDeleteModalOpen(false);
             window.location.reload();
@@ -144,8 +130,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
         }
     };
 
-    const confirmBulkDelete = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const confirmBulkDelete = async ({ email, password }: { email: string; password: string }) => {
         setIsBulkDeleting(true);
         let deleted = 0;
         let failed = 0;
@@ -154,12 +139,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                 const res = await fetch("/api/admin/universal-delete", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        id,
-                        email: bulkAdminEmail,
-                        password: bulkAdminPass,
-                        type: "document"
-                    })
+                    body: JSON.stringify({ id, email, password, type: "document" })
                 });
                 if (res.ok) deleted++;
                 else failed++;
@@ -531,7 +511,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                             Descargar
                         </button>
                         <button
-                            onClick={() => { setBulkAdminEmail(""); setBulkAdminPass(""); setBulkDeleteModalOpen(true); }}
+                            onClick={() => setBulkDeleteModalOpen(true)}
                             className="bg-white border border-red-200 text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition"
                         >
                             <Trash2 className="w-4 h-4" />
@@ -666,134 +646,26 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
             )}
 
             {/* DELETE MODAL */}
-            {deleteModalOpen && (
-                <ModalPortal>
-                <div
-                    className="fixed inset-0 bg-black/50 flex items-end sm:items-center sm:justify-center z-[9999] backdrop-blur-sm"
-                    onClick={() => setDeleteModalOpen(false)}
-                >
-                    <div
-                        className="bg-white rounded-t-2xl sm:rounded-lg p-6 max-w-md w-full sm:mx-4 shadow-xl max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-200"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <h3 className="text-lg font-bold text-neutral-900 mb-4">Confirmar Eliminación</h3>
-                        <p className="text-neutral-600 mb-4 text-sm">
-                            Estás a punto de eliminar el documento <span className="font-semibold">#{docToDelete?.id}</span>.<br />
-                            Esta acción no se puede deshacer. {isAdminSession ? "¿Estás seguro?" : "Para confirmar, ingresa credenciales de administrador:"}
-                        </p>
-                        <form onSubmit={confirmDelete} className="space-y-4" autoComplete="off">
-                            {!isAdminSession && (
-                                <>
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-700 mb-1">Email Administrador</label>
-                                        <input
-                                            type="email"
-                                            required
-                                            autoComplete="off"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none text-sm"
-                                            value={adminEmail}
-                                            onChange={e => setAdminEmail(e.target.value)}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-700 mb-1">Contraseña Administrador</label>
-                                        <input
-                                            type="password"
-                                            required
-                                            autoComplete="new-password"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none text-sm"
-                                            value={adminPass}
-                                            onChange={e => setAdminPass(e.target.value)}
-                                        />
-                                    </div>
-                                </>
-                            )}
-                            <div className="flex gap-3 justify-end pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setDeleteModalOpen(false)}
-                                    className="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition font-medium text-sm"
-                                >
-                                    Cancelar
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isDeleting}
-                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium shadow-sm disabled:opacity-50 text-sm"
-                                >
-                                    {isDeleting ? 'Eliminando...' : 'Eliminar Registro'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                </ModalPortal>
-            )}
+            <DeleteConfirmationModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={confirmDelete}
+                title="Confirmar Eliminación"
+                description={`Estás a punto de eliminar el documento #${docToDelete?.id}. Esta acción no se puede deshacer.`}
+                itemType="documento"
+                isDeleting={isDeleting}
+            />
 
             {/* BULK DELETE MODAL */}
-            {bulkDeleteModalOpen && (
-                <ModalPortal>
-                <div
-                    className="fixed inset-0 bg-black/50 flex items-end sm:items-center sm:justify-center z-[9999] backdrop-blur-sm"
-                    onClick={() => setBulkDeleteModalOpen(false)}
-                >
-                    <div
-                        className="bg-white rounded-t-2xl sm:rounded-lg p-6 max-w-md w-full sm:mx-4 shadow-xl max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-200"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center shrink-0">
-                                <Trash2 className="w-5 h-5 text-red-600" />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-neutral-900">Eliminar documentos</h3>
-                                <p className="text-sm text-neutral-500">Se eliminarán <span className="font-semibold text-red-600">{selectedIds.size} documento{selectedIds.size !== 1 ? "s" : ""}</span> de forma permanente.</p>
-                            </div>
-                        </div>
-                        <form onSubmit={confirmBulkDelete} className="space-y-4" autoComplete="off">
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1">Email Administrador</label>
-                                <input
-                                    type="email"
-                                    required
-                                    autoComplete="off"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none text-sm"
-                                    value={bulkAdminEmail}
-                                    onChange={e => setBulkAdminEmail(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1">Contraseña Administrador</label>
-                                <input
-                                    type="password"
-                                    required
-                                    autoComplete="new-password"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none text-sm"
-                                    value={bulkAdminPass}
-                                    onChange={e => setBulkAdminPass(e.target.value)}
-                                />
-                            </div>
-                            <div className="flex gap-3 justify-end pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setBulkDeleteModalOpen(false)}
-                                    className="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition font-medium text-sm"
-                                >
-                                    Cancelar
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isBulkDeleting}
-                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium shadow-sm disabled:opacity-50 text-sm"
-                                >
-                                    {isBulkDeleting ? "Eliminando..." : `Eliminar ${selectedIds.size} documento${selectedIds.size !== 1 ? "s" : ""}`}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                </ModalPortal>
-            )}
+            <DeleteConfirmationModal
+                isOpen={bulkDeleteModalOpen}
+                onClose={() => setBulkDeleteModalOpen(false)}
+                onConfirm={confirmBulkDelete}
+                title="Eliminar documentos"
+                description={`Se eliminarán ${selectedIds.size} documento${selectedIds.size !== 1 ? "s" : ""} de forma permanente. Esta acción no se puede deshacer.`}
+                itemType={`${selectedIds.size} documento${selectedIds.size !== 1 ? "s" : ""}`}
+                isDeleting={isBulkDeleting}
+            />
 
             {/* SEND MODAL */}
             {sendModalOpen && (
