@@ -11,6 +11,7 @@ import { logActivity } from '@/lib/logActivity';
 import { Reunion, ComunidadOption } from '@/lib/schemas';
 import ReunionFormModal from './ReunionFormModal';
 import ImportReunionesModal from '@/components/ImportReunionesModal';
+import ConfirmarReunionTicketsModal from './ConfirmarReunionTicketsModal';
 import SelectFilter from '@/components/SelectFilter';
 
 const TIPO_LABELS: Record<string, { label: string; cls: string }> = {
@@ -24,7 +25,7 @@ const BOOL_FIELDS: { key: keyof Reunion; label: string }[] = [
     // Documentos
     { key: 'estado_cuentas', label: 'Est. Cuentas' },
     { key: 'pto_ordinario',  label: 'Pto. Ord.'    },
-    { key: 'pto_extra',      label: 'Pto. Extra'   },
+    { key: 'informe_incidencias', label: 'Inf. Incidencias' },
     { key: 'morosos',        label: 'Morosos'      },
     // Citación
     { key: 'citacion_email', label: 'Cit. @'       },
@@ -52,6 +53,7 @@ export default function ReunionesPage() {
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
+    const [confirmarReunion, setConfirmarReunion] = useState<Reunion | null>(null);
     const [envioConfirm, setEnvioConfirm] = useState<{ reunion: Reunion; noAplica: string[]; realizadas: string[] } | null>(null);
     const [isEnviando, setIsEnviando] = useState(false);
 
@@ -116,20 +118,15 @@ export default function ReunionesPage() {
         }
     };
 
-    const handleConfirmar = async (reunion: Reunion) => {
+    const handleConfirmar = (reunion: Reunion) => {
         if (reunion.confirmada) return;
-        setReuniones(prev => prev.map(r => r.id === reunion.id ? { ...r, confirmada: true } : r));
-        const { error } = await supabase
-            .from('reuniones')
-            .update({ confirmada: true })
-            .eq('id', reunion.id);
-        if (error) {
-            toast.error('Error al confirmar la reunión');
-            setReuniones(prev => prev.map(r => r.id === reunion.id ? { ...r, confirmada: false } : r));
-        } else {
-            toast.success('Reunión confirmada');
-            await logActivity({ action: 'update', entityType: 'reunion', entityId: reunion.id, entityName: `${reunion.tipo} - ${reunion.comunidad}` });
-        }
+        setConfirmarReunion(reunion);
+    };
+
+    const onReunionConfirmada = () => {
+        if (!confirmarReunion) return;
+        setReuniones(prev => prev.map(r => r.id === confirmarReunion.id ? { ...r, confirmada: true } : r));
+        setConfirmarReunion(null);
     };
 
     const handleDelete = async () => {
@@ -319,6 +316,13 @@ export default function ReunionesPage() {
             setReuniones(prev => prev.map(r => r.id === reunion.id ? { ...r, enviado: false, resuelto: false } : r));
         } else {
             toast.success('Acta enviada — reunión marcada como resuelta');
+            await logActivity({
+                action: 'resolve',
+                entityType: 'reunion',
+                entityId: reunion.id,
+                entityName: `${reunion.tipo} - ${reunion.comunidad}`,
+                details: { fecha: reunion.fecha_reunion },
+            });
         }
         setIsEnviando(false);
         setEnvioConfirm(null);
@@ -461,9 +465,19 @@ export default function ReunionesPage() {
                 emptyMessage="No hay reuniones registradas"
                 rowActions={rowActions}
                 extraFilters={extraFilters}
+                headerExtras={leyenda}
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
             />
+
+            {/* Modal Confirmar reunión + crear tickets */}
+            {confirmarReunion && (
+                <ConfirmarReunionTicketsModal
+                    reunion={confirmarReunion}
+                    onClose={() => setConfirmarReunion(null)}
+                    onConfirmed={onReunionConfirmada}
+                />
+            )}
 
             {/* Modal Formulario */}
             {showForm && (
