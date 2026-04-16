@@ -7,7 +7,7 @@ import { toast } from "react-hot-toast";
 import DataTable, { Column } from "@/components/DataTable";
 import ModalPortal from '@/components/ModalPortal';
 
-type HistoryType = "varios" | "suplidos" | "certificado-renta";
+type HistoryType = "varios" | "suplidos" | "certificado-renta" | "all";
 
 interface ClientHistoryTableProps {
     entries: any[];
@@ -15,6 +15,44 @@ interface ClientHistoryTableProps {
 }
 
 export default function ClientHistoryTable({ entries, type }: ClientHistoryTableProps) {
+    const getDocType = (doc: any): Exclude<HistoryType, "all"> => {
+        if (doc?.doc_key === "suplidos") return "suplidos";
+        if (doc?.doc_key === "certificado_renta") return "certificado-renta";
+        return "varios";
+    };
+
+    const getDocTypeMeta = (doc: any) => {
+        const docType = getDocType(doc);
+        if (docType === "suplidos") {
+            return {
+                type: docType,
+                label: "Suplido",
+                badgeClass: "bg-amber-50 text-amber-700 border-amber-100",
+                modalBadgeClass: "bg-amber-100 text-amber-700",
+            };
+        }
+        if (docType === "certificado-renta") {
+            return {
+                type: docType,
+                label: "Certif. Renta",
+                badgeClass: "bg-indigo-50 text-indigo-700 border-indigo-100",
+                modalBadgeClass: "bg-indigo-100 text-indigo-700",
+            };
+        }
+
+        const isFactura = doc?.title?.toLowerCase().includes("factura");
+        return {
+            type: docType,
+            label: isFactura ? "Factura" : "Certificado",
+            badgeClass: isFactura
+                ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                : "bg-blue-50 text-blue-700 border-blue-100",
+            modalBadgeClass: isFactura
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-blue-100 text-blue-700",
+        };
+    };
+
     // Admin Session State
     const [userRole, setUserRole] = useState<string | null>(null);
 
@@ -119,7 +157,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                 toEmail: targetEmail
             };
 
-            switch (type) {
+            switch (type === "all" ? getDocType(docToSend) : type) {
                 case "suplidos":
                     endpoint = "/api/documentos/suplidos/send";
                     break;
@@ -154,7 +192,8 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
     const handleDownload = async (doc: any) => {
         const loadingToast = toast.loading("Preparando descarga...");
         try {
-            const res = await fetch(`/api/documentos/${type}/signed-url?id=${doc.id}`);
+            const downloadType = type === "all" ? getDocType(doc) : type;
+            const res = await fetch(`/api/documentos/${downloadType}/signed-url?id=${doc.id}`);
             const data = await res.json();
 
             if (!res.ok) {
@@ -178,7 +217,9 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
 
     // Helper: obtener campos clave del doc para mostrar en el modal
     const getDocFields = (doc: any) => {
-        if (type === "suplidos") return [
+        const effectiveType = type === "all" ? getDocType(doc) : type;
+
+        if (effectiveType === "suplidos") return [
             { label: "Código", value: doc.payload?.["Código"] || "-" },
             { label: "Nombre Cliente", value: doc.payload?.["Nombre Cliente"] || "-" },
             { label: "NIF", value: doc.payload?.["NIF"] || "-" },
@@ -186,7 +227,7 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
             { label: "Total", value: doc.payload?.["Suma final"] ? parseFloat(doc.payload["Suma final"]).toLocaleString("es-ES", { style: "currency", currency: "EUR" }) : "-" },
             { label: "Fecha Emisión", value: doc.payload?.["Fecha emisión"] ? new Date(doc.payload["Fecha emisión"]).toLocaleDateString("es-ES") : new Date(doc.created_at).toLocaleDateString("es-ES") },
         ];
-        if (type === "certificado-renta") return [
+        if (effectiveType === "certificado-renta") return [
             { label: "Código", value: doc.payload?.["Código"] || doc.payload?.codigo || "-" },
             { label: "Comunidad", value: doc.payload?.["Nombre Comunidad"] || doc.payload?.nombre_comunidad || "-" },
             { label: "Declarante", value: `${doc.payload?.Apellidos || ""} ${doc.payload?.Nombre || ""}`.trim() || "-" },
@@ -220,23 +261,8 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
             sortable: true,
             width: "120px",
             render: (r) => {
-                let label = type === "suplidos" ? "Suplido" : type === "certificado-renta" ? "Certif. Renta" : "Varios";
-                let bgColor = type === "suplidos" ? "bg-amber-50 text-amber-700 border-amber-100" : type === "certificado-renta" ? "bg-indigo-50 text-indigo-700 border-indigo-100" : "bg-blue-50 text-blue-700 border-blue-100";
-
-                if (type === "varios") {
-                    const isFactura = r.title?.toLowerCase().includes("factura");
-                    const isCertif = r.title?.toLowerCase().includes("certificado");
-
-                    if (isFactura) {
-                        label = "Factura";
-                        bgColor = "bg-emerald-50 text-emerald-700 border-emerald-100";
-                    } else if (isCertif) {
-                        label = "Certificado";
-                        bgColor = "bg-blue-50 text-blue-700 border-blue-100";
-                    }
-                }
-
-                return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${bgColor}`}>{label}</span>;
+                const meta = getDocTypeMeta(r);
+                return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${meta.badgeClass}`}>{meta.label}</span>;
             }
         };
 
@@ -374,6 +400,45 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                 },
                 creadoPorCol
             ];
+        } else if (type === "all") {
+            typeCols = [
+                {
+                    key: "codigo",
+                    label: "Código",
+                    sortable: true,
+                    render: (r) => r.payload?.["Código"] || r.payload?.codigo || "-",
+                },
+                {
+                    key: "nombre_comunidad",
+                    label: "Comunidad",
+                    sortable: true,
+                    render: (r) => r.payload?.["Nombre Comunidad"] || r.payload?.nombre_comunidad || r.payload?.["Nombre Cliente"] || "-",
+                },
+                {
+                    key: "cliente",
+                    label: "Cliente / Declarante",
+                    sortable: true,
+                    render: (r) =>
+                        r.payload?.cliente ||
+                        r.payload?.nombre_apellidos ||
+                        `${r.payload?.Apellidos || ""} ${r.payload?.Nombre || ""}`.trim() ||
+                        r.payload?.["Nombre Cliente"] ||
+                        "-",
+                },
+                {
+                    key: "nif",
+                    label: "NIF",
+                    sortable: true,
+                    render: (r) => r.payload?.nif || r.payload?.Nif || r.payload?.NIF || "-",
+                },
+                {
+                    key: "created_at",
+                    label: "Fecha",
+                    sortable: true,
+                    render: (r) => new Date(r.created_at).toLocaleDateString("es-ES"),
+                },
+                creadoPorCol
+            ];
         }
 
         return [idCol, tipoCol, ...typeCols];
@@ -385,7 +450,19 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
         <div className="space-y-6">
             {/* Filtros de tipo + acciones de selección */}
             <div className="flex flex-col gap-3">
-                <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+                    <Link
+                        href="/dashboard/documentos"
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'all' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
+                    >
+                        Todos
+                    </Link>
+                    <Link
+                        href="/dashboard/documentos"
+                        className="px-3 py-1 rounded-full text-sm font-medium transition text-center bg-neutral-200 text-neutral-700 hover:bg-neutral-300"
+                    >
+                        General
+                    </Link>
                     <Link
                         href="/dashboard/documentos/suplidos/historial"
                         className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'suplidos' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
@@ -483,14 +560,8 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                                     <div className="mt-2">
                                         {/* Badge tipo */}
                                         {(() => {
-                                            let label = type === "suplidos" ? "Suplido" : type === "certificado-renta" ? "Certif. Renta" : "Varios";
-                                            let cls = type === "suplidos" ? "bg-amber-100 text-amber-700" : type === "certificado-renta" ? "bg-indigo-100 text-indigo-700" : "bg-blue-100 text-blue-700";
-                                            if (type === "varios") {
-                                                const isFactura = selectedDoc.title?.toLowerCase().includes("factura");
-                                                if (isFactura) { label = "Factura"; cls = "bg-emerald-100 text-emerald-700"; }
-                                                else { label = "Certificado"; }
-                                            }
-                                            return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${cls}`}>{label}</span>;
+                                            const meta = getDocTypeMeta(selectedDoc);
+                                            return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${meta.modalBadgeClass}`}>{meta.label}</span>;
                                         })()}
                                     </div>
                                 </div>
