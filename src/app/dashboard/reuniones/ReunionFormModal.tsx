@@ -9,6 +9,7 @@ import SearchableSelect from '@/components/SearchableSelect';
 import SelectFilter from '@/components/SelectFilter';
 import { logActivity } from '@/lib/logActivity';
 import { ComunidadOption } from '@/lib/schemas';
+import { useGlobalLoading } from '@/lib/globalLoading';
 
 interface Props {
     show: boolean;
@@ -65,6 +66,7 @@ export default function ReunionFormModal({ show, editingId, comunidades, onClose
     const [formData, setFormData] = useState<typeof emptyForm>({ ...emptyForm });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { withLoading } = useGlobalLoading();
 
     useEffect(() => {
         if (!show) return;
@@ -138,28 +140,30 @@ export default function ReunionFormModal({ show, editingId, comunidades, onClose
             notas: formData.notas || null,
         };
 
-        if (editingId) {
-            const { error } = await supabase.from('reuniones').update(payload).eq('id', editingId);
-            if (error) {
-                toast.error('Error al guardar la reunión');
+        await withLoading(async () => {
+            if (editingId) {
+                const { error } = await supabase.from('reuniones').update(payload).eq('id', editingId);
+                if (error) {
+                    toast.error('Error al guardar la reunión');
+                } else {
+                    toast.success('Reunión actualizada');
+                    await logActivity({ action: 'update', entityType: 'reunion', entityId: editingId, entityName: `${payload.tipo} - ${payload.fecha_reunion}` });
+                    onSaved();
+                    onClose();
+                }
             } else {
-                toast.success('Reunión actualizada');
-                await logActivity({ action: 'update', entityType: 'reunion', entityId: editingId, entityName: `${payload.tipo} - ${payload.fecha_reunion}` });
-                onSaved();
-                onClose();
+                const { data: { user } } = await supabase.auth.getUser();
+                const { error } = await supabase.from('reuniones').insert([{ ...payload, created_by: user?.id }]);
+                if (error) {
+                    toast.error('Error al crear la reunión');
+                } else {
+                    toast.success('Reunión creada');
+                    await logActivity({ action: 'create', entityType: 'reunion', entityName: `${payload.tipo} - ${payload.fecha_reunion}` });
+                    onSaved();
+                    onClose();
+                }
             }
-        } else {
-            const { data: { user } } = await supabase.auth.getUser();
-            const { error } = await supabase.from('reuniones').insert([{ ...payload, created_by: user?.id }]);
-            if (error) {
-                toast.error('Error al crear la reunión');
-            } else {
-                toast.success('Reunión creada');
-                await logActivity({ action: 'create', entityType: 'reunion', entityName: `${payload.tipo} - ${payload.fecha_reunion}` });
-                onSaved();
-                onClose();
-            }
-        }
+        }, editingId ? 'Guardando reunión...' : 'Creando reunión...');
         setIsSubmitting(false);
     };
 

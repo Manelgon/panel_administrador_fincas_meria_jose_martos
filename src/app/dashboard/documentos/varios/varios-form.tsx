@@ -6,6 +6,7 @@ import { Download, Loader2, FileText, Plus, AlertCircle, Trash2 } from "lucide-r
 import SearchableSelect from "@/components/SearchableSelect";
 import SelectFilter from "@/components/SelectFilter";
 import { createBrowserClient } from "@supabase/ssr";
+import { useGlobalLoading } from "@/lib/globalLoading";
 
 interface Comunidad {
     id: number;
@@ -34,6 +35,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [communities, setCommunities] = useState<Comunidad[]>([]);
     const [showSelloConfirm, setShowSelloConfirm] = useState(false);
+    const { showLoading, hideLoading } = useGlobalLoading();
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -154,6 +156,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
         setStatus("generating");
         setSubmissionIds(null);
         setPdfUrls(null);
+        showLoading("Generando documentos...");
 
         try {
             const body = skipSello
@@ -190,6 +193,8 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
             console.error(error);
             setStatus("error");
             toast.error(error instanceof Error ? error.message : "Error generando PDF");
+        } finally {
+            hideLoading();
         }
     };
 
@@ -211,6 +216,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
         setFormErrors(prev => ({ ...prev, toEmail: '' }));
 
         setStatus("sending");
+        showLoading("Enviando por email...");
 
         try {
             const res = await fetch("/api/documentos/varios/send", {
@@ -230,6 +236,8 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
         } catch (e: any) {
             setStatus("ready");
             toast.error(e?.message || "Error enviando");
+        } finally {
+            hideLoading();
         }
     };
 

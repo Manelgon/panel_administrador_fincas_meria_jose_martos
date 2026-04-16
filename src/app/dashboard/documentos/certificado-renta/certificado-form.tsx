@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { Download, Loader2, FileText, Plus, AlertCircle } from "lucide-react";
 import SearchableSelect from "@/components/SearchableSelect";
 import { createBrowserClient } from "@supabase/ssr";
+import { useGlobalLoading } from "@/lib/globalLoading";
 
 interface Comunidad {
     id: number;
@@ -72,6 +73,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [communities, setCommunities] = useState<Comunidad[]>([]);
     const [selectedCode, setSelectedCode] = useState("");
+    const { showLoading, hideLoading } = useGlobalLoading();
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -131,6 +133,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
         setStatus("generating");
         setPdfUrl("");
         setSubmissionId(null);
+        showLoading("Generando PDF...");
 
         try {
             const res = await fetch("/api/documentos/certificado-renta/generate", {
@@ -148,6 +151,8 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
         } catch (e: any) {
             setStatus("error");
             toast.error(e?.message || "Error inesperado");
+        } finally {
+            hideLoading();
         }
     };
 
@@ -165,6 +170,7 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
         }
         setFormErrors(prev => ({ ...prev, toEmail: '' }));
 
+        showLoading("Enviando por email...");
         setStatus("sending");
 
         try {
@@ -181,6 +187,8 @@ export default function CertificadoForm({ onSuccess, onCancel }: { onSuccess?: (
         } catch (e: any) {
             setStatus("ready");
             toast.error(e?.message || "Error enviando");
+        } finally {
+            hideLoading();
         }
     };
 

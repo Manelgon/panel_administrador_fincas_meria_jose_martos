@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'react-hot-toast';
 import { logActivity } from '@/lib/logActivity';
 import { Reunion, Profile } from '@/lib/schemas';
+import { useGlobalLoading } from '@/lib/globalLoading';
 
 const TICKET_TYPES = [
     { value: 'Estado de cuentas',               label: '1 · Estado de cuentas' },
@@ -37,6 +38,7 @@ export default function ConfirmarReunionTicketsModal({ reunion, onClose, onConfi
     const [tickets, setTickets] = useState<TicketRow[]>([{ id: nextId++, tipo: '', gestor_id: '' }]);
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { withLoading } = useGlobalLoading();
 
     useEffect(() => {
         supabase
@@ -60,6 +62,7 @@ export default function ConfirmarReunionTicketsModal({ reunion, onClose, onConfi
 
     const handleConfirmar = async (crearTickets: boolean) => {
         setIsSubmitting(true);
+        await withLoading(async () => {
         try {
             const { error: errReunion } = await supabase
                 .from('reuniones')
@@ -154,9 +157,9 @@ export default function ConfirmarReunionTicketsModal({ reunion, onClose, onConfi
             onConfirmed();
         } catch {
             toast.error('Error al confirmar la reunión');
-        } finally {
-            setIsSubmitting(false);
         }
+        }, crearTickets ? 'Confirmando y creando tickets...' : 'Confirmando reunión...');
+        setIsSubmitting(false);
     };
 
     return createPortal(

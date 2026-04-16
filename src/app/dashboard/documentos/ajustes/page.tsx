@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { Save, Loader2, DollarSign, ArrowLeft } from "lucide-react";
 import { createBrowserClient } from "@supabase/ssr";
+import { useGlobalLoading } from "@/lib/globalLoading";
 
 type SettingsType = {
     precio_1: number;
@@ -17,6 +18,7 @@ type SettingsType = {
 
 export default function AjustesSuplidosPage() {
     const router = useRouter();
+    const { withLoading } = useGlobalLoading();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState<SettingsType>({
@@ -65,33 +67,21 @@ export default function AjustesSuplidosPage() {
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
-
-        try {
-            // Prepare upsert data
+        await withLoading(async () => {
             const upsertData = Object.entries(settings).map(([key, value]) => ({
                 doc_key: 'suplidos',
                 setting_key: key,
                 setting_value: value
             }));
-
             const { error } = await supabase
                 .from("document_settings")
                 .upsert(upsertData, { onConflict: 'doc_key, setting_key' });
-
             if (error) throw error;
-
             toast.success("Precios actualizados correctamente");
-
-            // Redirect back to documents dashboard after a short delay or immediately
             router.push("/dashboard/documentos");
             router.refresh();
-
-        } catch (error: any) {
-            console.error(error);
-            toast.error(error.message || "Error al guardar");
-        } finally {
-            setSaving(false);
-        }
+        }, 'Guardando ajustes...');
+        setSaving(false);
     };
 
     const handleChange = (key: keyof SettingsType, val: string) => {

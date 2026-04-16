@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { Download, Send, Loader2, Plus, AlertCircle } from "lucide-react";
 import SearchableSelect from "@/components/SearchableSelect";
 import { createBrowserClient } from "@supabase/ssr";
+import { useGlobalLoading } from "@/lib/globalLoading";
 
 type Status = "idle" | "generating" | "ready" | "sending" | "error";
 
@@ -107,6 +108,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
     const [toEmail, setToEmail] = useState("");
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [communities, setCommunities] = useState<Comunidad[]>([]);
+    const { showLoading, hideLoading } = useGlobalLoading();
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -202,6 +204,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
 
     const generate = async () => {
         setStatus("generating");
+        showLoading("Generando PDF...");
         try {
             const rawPayload = { ...values, ...compute(values) };
             const payload = Object.fromEntries(
@@ -223,6 +226,8 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
         } catch (e: any) {
             setStatus("error");
             toast.error(e?.message || "Error inesperado");
+        } finally {
+            hideLoading();
         }
     };
 
@@ -238,6 +243,7 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
         setFormErrors(prev => ({ ...prev, toEmail: '' }));
 
         setStatus("sending");
+        showLoading("Enviando por email...");
         try {
             const res = await fetch("/api/documentos/suplidos/send", {
                 method: "POST",
@@ -250,6 +256,8 @@ export default function SuplidosForm({ onSuccess, onCancel }: { onSuccess?: () =
         } catch (e: any) {
             setStatus("ready");
             toast.error(e?.message || "Error enviando");
+        } finally {
+            hideLoading();
         }
     };
 

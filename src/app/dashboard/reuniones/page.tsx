@@ -9,6 +9,7 @@ import DataTable, { Column, RowAction } from '@/components/DataTable';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { logActivity } from '@/lib/logActivity';
 import { Reunion, ComunidadOption } from '@/lib/schemas';
+import { useGlobalLoading } from '@/lib/globalLoading';
 import ReunionFormModal from './ReunionFormModal';
 import ImportReunionesModal from '@/components/ImportReunionesModal';
 import ConfirmarReunionTicketsModal from './ConfirmarReunionTicketsModal';
@@ -56,6 +57,7 @@ export default function ReunionesPage() {
     const [confirmarReunion, setConfirmarReunion] = useState<Reunion | null>(null);
     const [envioConfirm, setEnvioConfirm] = useState<{ reunion: Reunion; noAplica: string[]; realizadas: string[] } | null>(null);
     const [isEnviando, setIsEnviando] = useState(false);
+    const { withLoading } = useGlobalLoading();
 
     // Filtros
     const [filterResuelto, setFilterResuelto] = useState<'confirmadas' | 'pendiente' | 'resuelto' | 'all'>('confirmadas');
@@ -133,14 +135,16 @@ export default function ReunionesPage() {
         if (!deleteId) return;
         setIsDeleting(true);
         const target = reuniones.find(r => r.id === deleteId);
-        const { error } = await supabase.from('reuniones').delete().eq('id', deleteId);
-        if (error) {
-            toast.error('Error al eliminar la reunión');
-        } else {
-            toast.success('Reunión eliminada');
-            await logActivity({ action: 'delete', entityType: 'reunion', entityId: deleteId, entityName: `${target?.tipo} - ${target?.comunidad}` });
-            setReuniones(prev => prev.filter(r => r.id !== deleteId));
-        }
+        await withLoading(async () => {
+            const { error } = await supabase.from('reuniones').delete().eq('id', deleteId);
+            if (error) {
+                toast.error('Error al eliminar la reunión');
+            } else {
+                toast.success('Reunión eliminada');
+                await logActivity({ action: 'delete', entityType: 'reunion', entityId: deleteId, entityName: `${target?.tipo} - ${target?.comunidad}` });
+                setReuniones(prev => prev.filter(r => r.id !== deleteId));
+            }
+        }, 'Eliminando reunión...');
         setIsDeleting(false);
         setShowDeleteModal(false);
         setDeleteId(null);
@@ -297,33 +301,28 @@ export default function ReunionesPage() {
         const { reunion } = envioConfirm;
         const update: Record<string, boolean | null> = { enviado: true, resuelto: true };
 
-        // Todas las que estén pendientes (null) las marcamos como No Aplica (false) por defecto
         BOOL_FIELDS.forEach(f => {
-            if (reunion[f.key] === null) {
-                update[f.key] = false;
-            }
+            if (reunion[f.key] === null) update[f.key] = false;
         });
-
-        // Redactar Acta, Vº Bº Presi y Acuerdos se marcan como obligatorias en true
-        MANDATORY_KEYS.forEach(key => {
-            update[key] = true;
-        });
+        MANDATORY_KEYS.forEach(key => { update[key] = true; });
 
         setReuniones(prev => prev.map(r => r.id === reunion.id ? { ...r, ...update } : r));
-        const { error } = await supabase.from('reuniones').update(update).eq('id', reunion.id);
-        if (error) {
-            toast.error('Error al actualizar');
-            setReuniones(prev => prev.map(r => r.id === reunion.id ? { ...r, enviado: false, resuelto: false } : r));
-        } else {
-            toast.success('Acta enviada — reunión marcada como resuelta');
-            await logActivity({
-                action: 'resolve',
-                entityType: 'reunion',
-                entityId: reunion.id,
-                entityName: `${reunion.tipo} - ${reunion.comunidad}`,
-                details: { fecha: reunion.fecha_reunion },
-            });
-        }
+        await withLoading(async () => {
+            const { error } = await supabase.from('reuniones').update(update).eq('id', reunion.id);
+            if (error) {
+                toast.error('Error al actualizar');
+                setReuniones(prev => prev.map(r => r.id === reunion.id ? { ...r, enviado: false, resuelto: false } : r));
+            } else {
+                toast.success('Acta enviada — reunión marcada como resuelta');
+                await logActivity({
+                    action: 'resolve',
+                    entityType: 'reunion',
+                    entityId: reunion.id,
+                    entityName: `${reunion.tipo} - ${reunion.comunidad}`,
+                    details: { fecha: reunion.fecha_reunion },
+                });
+            }
+        }, 'Enviando acta...');
         setIsEnviando(false);
         setEnvioConfirm(null);
     };

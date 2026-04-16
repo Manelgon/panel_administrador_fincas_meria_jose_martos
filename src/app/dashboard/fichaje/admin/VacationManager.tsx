@@ -9,6 +9,7 @@ import AdminSettingsPanel from "./AdminSettingsPanel";
 import UserBalancesPanel from "./UserBalancesPanel";
 import { ListChecks, Users, Sliders } from "lucide-react";
 import ModalPortal from '@/components/ModalPortal';
+import { useGlobalLoading } from '@/lib/globalLoading';
 
 interface ExtendedVacationRequest {
     id: string;
@@ -28,6 +29,7 @@ interface ExtendedVacationRequest {
 }
 
 export default function VacationManager() {
+    const { withLoading } = useGlobalLoading();
     const [requests, setRequests] = useState<ExtendedVacationRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
@@ -66,6 +68,7 @@ export default function VacationManager() {
 
     const handleAction = async (requestId: string, status: 'APROBADA' | 'RECHAZADA') => {
         setProcessingId(requestId);
+        await withLoading(async () => {
         try {
             const res = await fetch("/api/admin/vacations/requests", {
                 method: "POST",
@@ -89,9 +92,9 @@ export default function VacationManager() {
             }
         } catch (error) {
             toast.error("Error de red");
-        } finally {
-            setProcessingId(null);
         }
+        }, status === 'APROBADA' ? 'Aprobando solicitud...' : 'Rechazando solicitud...');
+        setProcessingId(null);
     };
 
     const columns: Column<ExtendedVacationRequest>[] = [
