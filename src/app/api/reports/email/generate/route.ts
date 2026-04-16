@@ -121,7 +121,7 @@ export async function POST(req: Request) {
             const headerBoxH = 30;
             page.drawRectangle({
                 x: marginX, y: currentY - headerBoxH, width: contentW, height: headerBoxH,
-                color: YELLOW, borderColor: BORDER, borderWidth: 0.5
+                color: rgb(1, 1, 1), borderColor: YELLOW, borderWidth: 1
             });
 
             const displayName = group.name.toLowerCase() === group.email.toLowerCase()

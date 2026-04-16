@@ -41,6 +41,7 @@ interface DataTableProps<T> {
     onRowClick?: (row: T) => void;
     rowActions?: (row: T) => RowAction<T>[];
     extraFilters?: React.ReactNode;
+    headerExtras?: React.ReactNode;
     searchTerm?: string;
     onSearchChange?: (term: string) => void;
 }
