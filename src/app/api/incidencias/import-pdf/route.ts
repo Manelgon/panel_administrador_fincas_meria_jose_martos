@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { PDFParse } from 'pdf-parse'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 const SOURCE_MAP: Record<string, string> = {
@@ -252,11 +253,14 @@ export async function POST(req: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer())
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const parser = new PDFParse({ data: buffer })
+
     const [pdfData, { data: comunidades, error: comunidadesError }] = await Promise.all([
-      require('pdf-parse/lib/pdf-parse.js')(buffer),
+      parser.getText(),
       supabaseAdmin.from('comunidades').select('id, nombre_cdad, codigo').eq('activo', true),
     ])
+
+    await parser.destroy()
 
     if (comunidadesError) {
       return NextResponse.json({ error: 'Error al obtener comunidades' }, { status: 500 })
