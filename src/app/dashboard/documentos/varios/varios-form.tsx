@@ -74,7 +74,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
         const comunidad = communities.find(c => c.codigo === codigo);
 
         setValues(prev => {
-            const next = {
+            const next: Record<string, any> = {
                 ...prev,
                 codigo: codigo,
                 nombre_comunidad: comunidad?.nombre_cdad || "",
