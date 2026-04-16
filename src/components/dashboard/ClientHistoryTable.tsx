@@ -458,12 +458,6 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                         Todos
                     </Link>
                     <Link
-                        href="/dashboard/documentos"
-                        className="px-3 py-1 rounded-full text-sm font-medium transition text-center bg-neutral-200 text-neutral-700 hover:bg-neutral-300"
-                    >
-                        General
-                    </Link>
-                    <Link
                         href="/dashboard/documentos/suplidos/historial"
                         className={`px-3 py-1 rounded-full text-sm font-medium transition text-center ${type === 'suplidos' ? 'bg-[#bf4b50] text-white' : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'}`}
                     >
