@@ -25,7 +25,7 @@ const BOOL_FIELDS: { key: keyof Reunion; label: string }[] = [
     // Documentos
     { key: 'estado_cuentas', label: 'Est. Cuentas' },
     { key: 'pto_ordinario',  label: 'Pto. Ord.'    },
-    { key: 'pto_extra',     label: 'Pto. Extra'    },
+    { key: 'informe_incidencias', label: 'Inf. Incidencias' },
     { key: 'morosos',        label: 'Morosos'      },
     // Citación
     { key: 'citacion_email', label: 'Cit. @'       },
