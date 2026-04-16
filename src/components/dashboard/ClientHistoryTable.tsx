@@ -89,6 +89,12 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
     const [adminPass, setAdminPass] = useState("");
     const [isDeleting, setIsDeleting] = useState(false);
 
+    // Bulk Delete State
+    const [bulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
+    const [bulkAdminEmail, setBulkAdminEmail] = useState("");
+    const [bulkAdminPass, setBulkAdminPass] = useState("");
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
     // Send State
     const [sendModalOpen, setSendModalOpen] = useState(false);
     const [docToSend, setDocToSend] = useState<any>(null);
@@ -136,6 +142,37 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
         } finally {
             setIsDeleting(false);
         }
+    };
+
+    const confirmBulkDelete = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsBulkDeleting(true);
+        let deleted = 0;
+        let failed = 0;
+        for (const id of selectedIds) {
+            try {
+                const res = await fetch("/api/admin/universal-delete", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id,
+                        email: bulkAdminEmail,
+                        password: bulkAdminPass,
+                        type: "document"
+                    })
+                });
+                if (res.ok) deleted++;
+                else failed++;
+            } catch {
+                failed++;
+            }
+        }
+        setIsBulkDeleting(false);
+        setBulkDeleteModalOpen(false);
+        setSelectedIds(new Set());
+        if (failed === 0) toast.success(`${deleted} documento${deleted !== 1 ? "s" : ""} eliminado${deleted !== 1 ? "s" : ""} correctamente`);
+        else toast.error(`${deleted} eliminados, ${failed} fallaron`);
+        if (deleted > 0) window.location.reload();
     };
 
     const handleSendClick = (doc: any) => {
@@ -493,6 +530,13 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                             <Download className="w-4 h-4 text-blue-600" />
                             Descargar
                         </button>
+                        <button
+                            onClick={() => { setBulkAdminEmail(""); setBulkAdminPass(""); setBulkDeleteModalOpen(true); }}
+                            className="bg-white border border-red-200 text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                            Eliminar
+                        </button>
                     </div>
                 )}
             </div>
@@ -678,6 +722,71 @@ export default function ClientHistoryTable({ entries, type }: ClientHistoryTable
                                     className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium shadow-sm disabled:opacity-50 text-sm"
                                 >
                                     {isDeleting ? 'Eliminando...' : 'Eliminar Registro'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                </ModalPortal>
+            )}
+
+            {/* BULK DELETE MODAL */}
+            {bulkDeleteModalOpen && (
+                <ModalPortal>
+                <div
+                    className="fixed inset-0 bg-black/50 flex items-end sm:items-center sm:justify-center z-[9999] backdrop-blur-sm"
+                    onClick={() => setBulkDeleteModalOpen(false)}
+                >
+                    <div
+                        className="bg-white rounded-t-2xl sm:rounded-lg p-6 max-w-md w-full sm:mx-4 shadow-xl max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5 text-red-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-neutral-900">Eliminar documentos</h3>
+                                <p className="text-sm text-neutral-500">Se eliminarán <span className="font-semibold text-red-600">{selectedIds.size} documento{selectedIds.size !== 1 ? "s" : ""}</span> de forma permanente.</p>
+                            </div>
+                        </div>
+                        <form onSubmit={confirmBulkDelete} className="space-y-4" autoComplete="off">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Email Administrador</label>
+                                <input
+                                    type="email"
+                                    required
+                                    autoComplete="off"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none text-sm"
+                                    value={bulkAdminEmail}
+                                    onChange={e => setBulkAdminEmail(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Contraseña Administrador</label>
+                                <input
+                                    type="password"
+                                    required
+                                    autoComplete="new-password"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none text-sm"
+                                    value={bulkAdminPass}
+                                    onChange={e => setBulkAdminPass(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex gap-3 justify-end pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setBulkDeleteModalOpen(false)}
+                                    className="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition font-medium text-sm"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isBulkDeleting}
+                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium shadow-sm disabled:opacity-50 text-sm"
+                                >
+                                    {isBulkDeleting ? "Eliminando..." : `Eliminar ${selectedIds.size} documento${selectedIds.size !== 1 ? "s" : ""}`}
                                 </button>
                             </div>
                         </form>
