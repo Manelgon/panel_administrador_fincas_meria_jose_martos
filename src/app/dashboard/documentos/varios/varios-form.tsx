@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { Download, Loader2, FileText, Plus, AlertCircle, Trash2 } from "lucide-react";
 import SearchableSelect from "@/components/SearchableSelect";
-import SelectFilter from "@/components/SelectFilter";
 import { createBrowserClient } from "@supabase/ssr";
 import { useGlobalLoading } from "@/lib/globalLoading";
 
@@ -326,7 +325,18 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
         const iva = String(values[`iva${i}`] || "").trim();
         return Boolean(descripcion && und && importe && iva);
     });
-    const canGenerate = values.codigo && values.cliente && values.nombre && values.apellidos && values.nif && allConceptsComplete;
+    const tiposInmuebleSelected: string[] = Array.isArray(values.tipos_inmueble) ? values.tipos_inmueble : [];
+    const canGenerate = values.codigo && values.cliente && values.nombre && values.apellidos && values.nif && values.fecha_emision && tiposInmuebleSelected.length > 0 && allConceptsComplete;
+
+    const toggleTipoInmueble = (tipo: string) => {
+        setValues(prev => {
+            const current: string[] = Array.isArray(prev.tipos_inmueble) ? prev.tipos_inmueble : [];
+            const next = current.includes(tipo)
+                ? current.filter(t => t !== tipo)
+                : [...current, tipo];
+            return { ...prev, tipos_inmueble: next, tipo_inmueble: next.join(", ") };
+        });
+    };
     const addConceptRow = () => {
         setConceptRows((prev) => [...prev, prev.length ? Math.max(...prev) + 1 : 1]);
     };
@@ -358,34 +368,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                     <div className="space-y-4">
                         <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Información del Cliente</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                            <div className="sm:col-span-1 lg:col-span-2">
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Comunidad<RequiredAsterisk /></label>
-                                <SearchableSelect
-                                    value={values.codigo || ""}
-                                    onChange={(val) => handleCommunityChange(String(val))}
-                                    options={communities.map(c => ({
-                                        value: c.codigo,
-                                        label: `${c.codigo} - ${c.nombre_cdad}`
-                                    }))}
-                                    placeholder="Selecciona comunidad..."
-                                />
-                            </div>
-                            <div className="sm:col-span-1 lg:col-span-2">
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Tipo Inmueble<RequiredAsterisk /></label>
-                                <SelectFilter
-                                    disabled={isDisabled}
-                                    value={values.tipo_inmueble || ""}
-                                    onChange={v => handleChange("tipo_inmueble", v)}
-                                    size="md"
-                                    className="w-full"
-                                    placeholder="Seleccionar tipo..."
-                                    options={[
-                                        { value: 'Vivienda', label: 'Vivienda' },
-                                        { value: 'Trastero', label: 'Trastero' },
-                                        { value: 'Aparcamiento', label: 'Aparcamiento' },
-                                    ]}
-                                />
-                            </div>
+                            {/* Fila 1: Nombre · Apellidos */}
                             <div className="sm:col-span-1 lg:col-span-2">
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Nombre<RequiredAsterisk /></label>
                                 <input
@@ -408,7 +391,9 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     onChange={e => handleChange("apellidos", e.target.value)}
                                 />
                             </div>
-                            <div>
+
+                            {/* Fila 2: NIF · Tipo Inmueble */}
+                            <div className="sm:col-span-1 lg:col-span-2">
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">NIF<RequiredAsterisk /></label>
                                 <input
                                     disabled={isDisabled}
@@ -419,37 +404,37 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     onChange={e => handleChange("nif", e.target.value)}
                                 />
                             </div>
-                            <div className="sm:col-span-2">
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Domicilio</label>
-                                <input
-                                    disabled={isDisabled}
-                                    type="text"
-                                    placeholder="Ej: C/ Mayor 123"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
-                                    value={values.domicilio || ""}
-                                    onChange={e => handleChange("domicilio", e.target.value)}
-                                />
+                            <div className="sm:col-span-1 lg:col-span-2">
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Tipo Inmueble<RequiredAsterisk /></label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {['Vivienda', 'Trastero', 'Aparcamiento'].map(tipo => {
+                                        const active = tiposInmuebleSelected.includes(tipo);
+                                        return (
+                                            <button
+                                                key={tipo}
+                                                type="button"
+                                                disabled={isDisabled}
+                                                onClick={() => toggleTipoInmueble(tipo)}
+                                                className={`w-full px-4 py-2 rounded-lg border text-sm font-semibold transition disabled:opacity-50 ${active ? 'bg-[#bf4b50] border-[#bf4b50] text-white' : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'}`}
+                                            >
+                                                {tipo}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">C.P</label>
-                                <input
-                                    disabled={isDisabled}
-                                    type="text"
-                                    placeholder="Ej: 29001"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
-                                    value={values.cp || ""}
-                                    onChange={e => handleChange("cp", e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Ciudad</label>
-                                <input
-                                    disabled={isDisabled}
-                                    type="text"
-                                    placeholder="Ej: Málaga"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
-                                    value={values.ciudad || ""}
-                                    onChange={e => handleChange("ciudad", e.target.value)}
+
+                            {/* Fila 3: Comunidad · Provincia · Ciudad */}
+                            <div className="sm:col-span-1 lg:col-span-2">
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Comunidad<RequiredAsterisk /></label>
+                                <SearchableSelect
+                                    value={values.codigo || ""}
+                                    onChange={(val) => handleCommunityChange(String(val))}
+                                    options={communities.map(c => ({
+                                        value: c.codigo,
+                                        label: `${c.codigo} - ${c.nombre_cdad}`
+                                    }))}
+                                    placeholder="Selecciona comunidad..."
                                 />
                             </div>
                             <div>
@@ -464,7 +449,77 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Fecha Emisión</label>
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Ciudad</label>
+                                <input
+                                    disabled={isDisabled}
+                                    type="text"
+                                    placeholder="Ej: Málaga"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    value={values.ciudad || ""}
+                                    onChange={e => handleChange("ciudad", e.target.value)}
+                                />
+                            </div>
+
+                            {/* Fila 4: C.P. · Domicilio */}
+                            <div>
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">C.P</label>
+                                <input
+                                    disabled={isDisabled}
+                                    type="text"
+                                    placeholder="Ej: 29001"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    value={values.cp || ""}
+                                    onChange={e => handleChange("cp", e.target.value)}
+                                />
+                            </div>
+                            <div className="sm:col-span-1 lg:col-span-3">
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Domicilio</label>
+                                <input
+                                    disabled={isDisabled}
+                                    type="text"
+                                    placeholder="Ej: C/ Mayor 123"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    value={values.domicilio || ""}
+                                    onChange={e => handleChange("domicilio", e.target.value)}
+                                />
+                            </div>
+
+                            {/* Fila 5: Bloque · Planta · Puerta · Fecha Emisión */}
+                            <div>
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Bloque</label>
+                                <input
+                                    disabled={isDisabled}
+                                    type="text"
+                                    placeholder="Ej: B"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    value={values.bloque || ""}
+                                    onChange={e => handleChange("bloque", e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Planta</label>
+                                <input
+                                    disabled={isDisabled}
+                                    type="text"
+                                    placeholder="Ej: 3º"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    value={values.planta || ""}
+                                    onChange={e => handleChange("planta", e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Puerta</label>
+                                <input
+                                    disabled={isDisabled}
+                                    type="text"
+                                    placeholder="Ej: A"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    value={values.puerta || ""}
+                                    onChange={e => handleChange("puerta", e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Fecha Emisión<RequiredAsterisk /></label>
                                 <input
                                     disabled={isDisabled}
                                     type="date"

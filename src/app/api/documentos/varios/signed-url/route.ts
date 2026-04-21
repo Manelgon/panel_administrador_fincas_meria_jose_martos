@@ -28,15 +28,16 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "No encontrado" }, { status: 404 });
         }
 
+        const filename = sub.data.pdf_path.split("/").pop() || "documento.pdf";
         const signed = await supabase.storage
             .from("documentos_administrativos")
-            .createSignedUrl(sub.data.pdf_path, 60 * 10);
+            .createSignedUrl(sub.data.pdf_path, 60 * 10, { download: filename });
 
         if (signed.error) {
             return NextResponse.json({ error: signed.error.message }, { status: 500 });
         }
 
-        return NextResponse.json({ url: signed.data.signedUrl });
+        return NextResponse.json({ url: signed.data.signedUrl, pdfPath: sub.data.pdf_path });
     } catch (error: any) {
         console.error("Error getting signed URL:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
