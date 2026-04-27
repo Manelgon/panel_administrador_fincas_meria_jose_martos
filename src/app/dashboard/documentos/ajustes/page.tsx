@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { Save, Loader2, DollarSign, ArrowLeft } from "lucide-react";
 import { createBrowserClient } from "@supabase/ssr";
-import { useGlobalLoading } from "@/lib/globalLoading";
+import { useGlobalLoading } from '@/lib/globalLoading';
 
 type SettingsType = {
     precio_1: number;
@@ -17,8 +17,8 @@ type SettingsType = {
 }
 
 export default function AjustesSuplidosPage() {
-    const router = useRouter();
     const { withLoading } = useGlobalLoading();
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState<SettingsType>({
@@ -66,22 +66,37 @@ export default function AjustesSuplidosPage() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSaving(true);
+
         await withLoading(async () => {
-            const upsertData = Object.entries(settings).map(([key, value]) => ({
-                doc_key: 'suplidos',
-                setting_key: key,
-                setting_value: value
-            }));
-            const { error } = await supabase
-                .from("document_settings")
-                .upsert(upsertData, { onConflict: 'doc_key, setting_key' });
-            if (error) throw error;
-            toast.success("Precios actualizados correctamente");
-            router.push("/dashboard/documentos");
-            router.refresh();
-        }, 'Guardando ajustes...');
-        setSaving(false);
+            setSaving(true);
+
+            try {
+                // Prepare upsert data
+                const upsertData = Object.entries(settings).map(([key, value]) => ({
+                    doc_key: 'suplidos',
+                    setting_key: key,
+                    setting_value: value
+                }));
+
+                const { error } = await supabase
+                    .from("document_settings")
+                    .upsert(upsertData, { onConflict: 'doc_key, setting_key' });
+
+                if (error) throw error;
+
+                toast.success("Precios actualizados correctamente");
+
+                // Redirect back to documents dashboard after a short delay or immediately
+                router.push("/dashboard/documentos");
+                router.refresh();
+
+            } catch (error: any) {
+                console.error(error);
+                toast.error(error.message || "Error al guardar");
+            } finally {
+                setSaving(false);
+            }
+        }, 'Guardando precios...');
     };
 
     const handleChange = (key: keyof SettingsType, val: string) => {
@@ -99,7 +114,7 @@ export default function AjustesSuplidosPage() {
         <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div className="flex items-center gap-3">
-                    <DollarSign className="w-6 h-6 text-[#a03d42]" />
+                    <DollarSign className="w-6 h-6 text-yellow-500" />
                     <h1 className="text-xl font-bold text-neutral-900">Ajustes de Precios · Suplidos (Admin)</h1>
                 </div>
                 <button
@@ -131,7 +146,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_1}
                                 onChange={e => handleChange('precio_1', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
                             />
                         </label>
 
@@ -143,7 +158,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_2}
                                 onChange={e => handleChange('precio_2', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
                             />
                         </label>
 
@@ -155,7 +170,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_3}
                                 onChange={e => handleChange('precio_3', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
                             />
                         </label>
                     </div>
@@ -171,7 +186,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_4}
                                 onChange={e => handleChange('precio_4', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
                             />
                         </label>
 
@@ -183,7 +198,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_5}
                                 onChange={e => handleChange('precio_5', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
                             />
                         </label>
 
@@ -195,7 +210,7 @@ export default function AjustesSuplidosPage() {
                                 min="0"
                                 value={settings.precio_6}
                                 onChange={e => handleChange('precio_6', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#bf4b50] focus:outline-none"
+                                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none"
                             />
                         </label>
                     </div>

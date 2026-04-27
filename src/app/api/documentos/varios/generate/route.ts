@@ -3,14 +3,10 @@ import { NextResponse } from "next/server";
 import { supabaseRouteClient } from "@/lib/supabase/route";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getEmisor } from "@/lib/getEmisor";
 
 // Helper: Service Role Client to bypass RLS for assets
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 /**
  * Helper to download asset as Uint8Array (Buffer)
  */
@@ -42,7 +38,7 @@ async function downloadAssetPng(path: string): Promise<Uint8Array> {
 
 // --- CONSTANTS & HELPERS FOR INVOICE ---
 const A4 = { w: 595.28, h: 841.89 };
-const YELLOW = rgb(0.749, 0.294, 0.314);
+const YELLOW = rgb(0.98, 0.84, 0.40);
 const BORDER = rgb(0.82, 0.82, 0.82);
 const BLACK = rgb(0, 0, 0);
 
@@ -423,7 +419,7 @@ export async function buildFacturaVariosPdf(
     }
 
     // Global Footer
-    const footerText = EMISOR.nombre || "Serincosol | Administración de Fincas Málaga";
+    const footerText = "Serincosol | Administración de Fincas Málaga";
     const footerSize = 8;
     const allPages = pdfDoc.getPages();
     for (const p of allPages) {
@@ -553,28 +549,48 @@ export async function buildPagosAlDiaPdf(payload: any, assets: { logoBytes: Uint
     const tiposArr: string[] = Array.isArray(payload["tipos_inmueble"])
         ? payload["tipos_inmueble"].map((t: any) => safe(t)).filter(Boolean)
         : safe(payload["tipo_inmueble"]).split(",").map(t => t.trim()).filter(Boolean);
-    const joinTipos = (arr: string[]) => {
-        if (arr.length === 0) return "inmueble";
-        if (arr.length === 1) return arr[0];
-        return arr.slice(0, -1).join(", ") + " y " + arr[arr.length - 1];
+
+    const tipoMeta: Record<string, { genero: "f" | "m"; deArt: string; situado: string }> = {
+        Vivienda: { genero: "f", deArt: "de la", situado: "situada" },
+        Aparcamiento: { genero: "m", deArt: "del", situado: "situado" },
+        Trastero: { genero: "m", deArt: "del", situado: "situado" },
     };
-    const tiposTexto = joinTipos(tiposArr);
-    const tipoPrincipal = tiposArr[0] || "inmueble";
+
+    const tipoTextoInput: Record<string, string> = {
+        Vivienda: safe(payload["tipo_vivienda_texto"] ?? ""),
+        Aparcamiento: safe(payload["tipo_aparcamiento_texto"] ?? ""),
+        Trastero: safe(payload["tipo_trastero_texto"] ?? ""),
+    };
+
+    const buildTipoFrase = (arr: string[]) => {
+        if (arr.length === 0) return { frase: "del inmueble", concordancia: "situado" };
+        const partes = arr.map((t, idx) => {
+            const meta = tipoMeta[t];
+            const txt = tipoTextoInput[t];
+            const nombre = txt ? `${t} ${txt}` : t;
+            if (!meta) return idx === 0 ? `del ${nombre}` : `y ${nombre}`;
+            return idx === 0 ? `${meta.deArt} ${nombre}` : `${meta.deArt} ${nombre}`;
+        });
+        let frase: string;
+        if (partes.length === 1) {
+            frase = partes[0];
+        } else {
+            frase = partes.slice(0, -1).join(", ") + " y " + partes[partes.length - 1];
+        }
+        const ultimo = arr[arr.length - 1];
+        const concordancia = arr.length === 1
+            ? (tipoMeta[ultimo]?.situado || "situado")
+            : (arr.every(t => tipoMeta[t]?.genero === "f") ? "situadas" : "situados");
+        return { frase, concordancia };
+    };
+
+    const { frase: tiposFrase, concordancia: situadoTexto } = buildTipoFrase(tiposArr);
 
     const nif = safe(payload["nif"] ?? "");
     const domicilio = safe(payload["domicilio"] ?? "");
-    const bloque = safe(payload["bloque"] ?? "");
-    const planta = safe(payload["planta"] ?? "");
-    const puerta = safe(payload["puerta"] ?? "");
     const cp = safe(payload["cp"] ?? "");
     const ciudad = safe(payload["ciudad"] ?? payload["Ciudad"] ?? "");
     const fecha = formatDateEU(payload["fecha_emision"]);
-
-    const ubicacionExtra = [
-        bloque ? `bloque ${bloque}` : "",
-        planta ? `planta ${planta}` : "",
-        puerta ? `puerta ${puerta}` : "",
-    ].filter(Boolean).join(", ");
 
     const p1 =
         `${adminName}, Administrador de Fincas colegiado en el Ilustre Colegio Territorial de ` +
@@ -583,10 +599,10 @@ export async function buildPagosAlDiaPdf(payload: any, assets: { logoBytes: Uint
 
     const p2 =
         `Que, consultados los libros contables de la mencionada comunidad de propietarios, D./Dª ${cliente}, ` +
-        `con DNI/NIF ${nif}, figura como propietario/a del ${tiposTexto} situado en ${domicilio}` +
-        `${ubicacionExtra ? `, ${ubicacionExtra}` : ""}, código postal ${cp}, en la ciudad de ${ciudad}, ` +
+        `con DNI/NIF ${nif}, figura como propietario/a ${tiposFrase} ${situadoTexto} en ${domicilio}, ` +
+        `código postal ${cp}, en la ciudad de ${ciudad}, ` +
         `certifico, en base al art. 9.1 e) de la Ley 49/1960, de 21 de Julio, de Propiedad Horizontal, ` +
-        `que el ${tipoPrincipal} se encuentra, a día de hoy, al corriente de pago de todos los recibos ordinarios ` +
+        `que la propiedad/propiedades se encuentra, a día de hoy, al corriente de pago de todos los recibos ordinarios ` +
         `o extraordinarios de cuotas de comunidad, salvo devolución bancaria en plazo excepcional.`;
 
     // 4) Render texto con cursor y wrap, respetando footer safe
@@ -850,6 +866,84 @@ export async function POST(req: Request) {
 
         if (dbErr2) throw new Error("DB Error Certificado: " + dbErr2.message);
 
+        // 5.1 Auto-crear ticket de seguimiento del certificado de corriente de pago (solo si el usuario lo confirmó)
+        if (payload.createTicket === true) try {
+            const { data: comunidadRow } = await supabase
+                .from("comunidades")
+                .select("id, nombre_cdad")
+                .eq("codigo", payload.codigo)
+                .maybeSingle();
+
+            if (comunidadRow?.id) {
+                const nombreCompleto = [payload.nombre, payload.apellidos].filter(Boolean).join(" ").trim() || payload.nombre_apellidos || "Propietario";
+                const dirParts = payload.domicilio || "";
+                const ubicacion = [payload.cp, payload.ciudad, payload.provincia].filter(Boolean).join(" ");
+                const tipos = Array.isArray(payload.tipos_inmueble) ? payload.tipos_inmueble.join(", ") : (payload.tipo_inmueble || "");
+                const totalStr = importeTotal ? `${String(importeTotal).replace(".", ",")} €` : null;
+
+                const mensajeTicket = [
+                    `Seguimiento documento corriente de pago.`,
+                    `Documento ID: ${recCert.id}`,
+                    `Comunidad: ${comunidadRow.nombre_cdad}`,
+                    `Propietario: ${nombreCompleto}`,
+                    payload.nif && `NIF: ${payload.nif}`,
+                    tipos && `Tipo inmueble: ${tipos}`,
+                    dirParts && `Dirección: ${dirParts}`,
+                    ubicacion && `Localidad: ${ubicacion}`,
+                    totalStr && `Total factura: ${totalStr}`,
+                    payload.fecha_emision && `Fecha emisión: ${formatDateEU(payload.fecha_emision)}`,
+                ].filter(Boolean).join("\n");
+
+                const { data: newTicket, error: ticketErr } = await supabase
+                    .from("incidencias")
+                    .insert({
+                        comunidad_id: comunidadRow.id,
+                        nombre_cliente: nombreCompleto,
+                        telefono: payload.telefono || null,
+                        email: payload.email || null,
+                        motivo_ticket: "Seguimiento documento corriente de pago",
+                        mensaje: mensajeTicket,
+                        quien_lo_recibe: user.id,
+                        gestor_asignado: user.id,
+                        source: "Gestión Interna",
+                        aviso: 0,
+                        aviso_proveedor: 0,
+                    })
+                    .select("id")
+                    .single();
+
+                if (ticketErr) {
+                    console.error("Error creando ticket seguimiento certificado:", ticketErr);
+                } else if (newTicket?.id) {
+                    const { data: profile } = await supabase
+                        .from("profiles")
+                        .select("nombre")
+                        .eq("user_id", user.id)
+                        .single();
+
+                    await supabase.from("activity_logs").insert({
+                        user_id: user.id,
+                        user_name: profile?.nombre || user.email || "Usuario",
+                        action: "create",
+                        entity_type: "incidencia",
+                        entity_id: newTicket.id,
+                        entity_name: `Incidencia - ${nombreCompleto}`,
+                        details: JSON.stringify({
+                            comunidad: comunidadRow.nombre_cdad,
+                            motivo: "Seguimiento documento corriente de pago",
+                            documento_id: recCert.id,
+                            total: totalStr,
+                            origen: "auto_certificado_corriente_pago",
+                            entrada: "Gestión Interna",
+                        }),
+                    });
+                }
+            } else {
+                console.warn("No se encontró comunidad con código:", payload.codigo);
+            }
+        } catch (ticketException) {
+            console.error("Excepción creando ticket seguimiento:", ticketException);
+        }
 
         // 6. Return Signed URLs for both
         const signed2 = await supabaseAdmin.storage
@@ -866,6 +960,6 @@ export async function POST(req: Request) {
 
     } catch (e: any) {
         console.error("Error generating Varios PDF:", e);
-        return NextResponse.json({ error: e.message }, { status: 500 });
+        return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
     }
 }

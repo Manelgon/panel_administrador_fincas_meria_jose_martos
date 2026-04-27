@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { Download, Loader2, FileText, Plus, AlertCircle, Trash2 } from "lucide-react";
+import { Download, Loader2, FileText, Plus, AlertCircle, Trash2, X } from "lucide-react";
 import SearchableSelect from "@/components/SearchableSelect";
 import { createBrowserClient } from "@supabase/ssr";
-import { useGlobalLoading } from "@/lib/globalLoading";
+import { useGlobalLoading } from '@/lib/globalLoading';
 
 interface Comunidad {
     id: number;
@@ -19,10 +19,11 @@ interface Comunidad {
 }
 
 function RequiredAsterisk() {
-    return <span className="ml-1 text-[#bf4b50]">*</span>;
+    return <span className="ml-1 text-yellow-500">*</span>;
 }
 
 export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => void; onCancel?: () => void }) {
+    const { withLoading } = useGlobalLoading();
     const [values, setValues] = useState<Record<string, any>>({
         fecha_emision: "",
     });
@@ -34,7 +35,8 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [communities, setCommunities] = useState<Comunidad[]>([]);
     const [showSelloConfirm, setShowSelloConfirm] = useState(false);
-    const { showLoading, hideLoading } = useGlobalLoading();
+    const [showTicketConfirm, setShowTicketConfirm] = useState(false);
+    const [pendingCreateTicket, setPendingCreateTicket] = useState(false);
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -63,10 +65,10 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
     const handleChange = (field: string, val: string | number) => {
         setValues(prev => {
             const next = { ...prev, [field]: val };
-            if (field === "nombre" || field === "apellidos") {
+            if (field === "nombre" || field === "apellido1" || field === "apellido2") {
+                next.apellidos = [next.apellido1, next.apellido2].filter(Boolean).join(" ").trim();
                 next.nombre_apellidos = [next.nombre, next.apellidos].filter(Boolean).join(" ").trim();
             }
-            // Recalcular autumáticamente
             return calculate(next);
         });
     };
@@ -84,7 +86,6 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
             if (comunidad) {
                 Object.assign(next, {
                     cliente: comunidad.nombre_cdad,
-                    // nif: comunidad.cif,  <-- REMOVED as per user request
                     domicilio: comunidad.direccion,
                     cp: comunidad.cp,
                     ciudad: comunidad.ciudad,
@@ -92,8 +93,8 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                 });
             }
 
+            next.apellidos = [next.apellido1, next.apellido2].filter(Boolean).join(" ").trim();
             next.nombre_apellidos = [next.nombre, next.apellidos].filter(Boolean).join(" ").trim();
-
             return calculate(next);
         });
     };
@@ -130,7 +131,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
         return vals;
     };
 
-    const generate = async (skipSello = false) => {
+    const validateConcepts = () => {
         const conceptErrors: Record<string, string> = {};
 
         for (const i of conceptRows) {
@@ -143,58 +144,67 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
             if (filledCount === 4) {
                 continue;
             }
+
             conceptErrors[`concepto${i}`] = "Este concepto es obligatorio: completa unidad, descripción, importe e IVA o elimínalo.";
         }
 
         if (Object.keys(conceptErrors).length > 0) {
             setFormErrors(prev => ({ ...prev, ...conceptErrors }));
             toast.error("Revisa los conceptos de factura obligatorios");
-            return;
+            return false;
         }
+        return true;
+    };
 
-        setStatus("generating");
-        setSubmissionIds(null);
-        setPdfUrls(null);
-        showLoading("Generando documentos...");
+    const requestGenerate = () => {
+        if (!validateConcepts()) return;
+        setShowTicketConfirm(true);
+    };
 
-        try {
-            const body = skipSello
-                ? { ...values, skipSello: true, conceptCount: conceptRows.length }
-                : { ...values, conceptCount: conceptRows.length };
-            const res = await fetch("/api/documentos/varios/generate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body),
-            });
-            const data = await res.json();
+    const generate = async (skipSello = false, createTicket = false) => {
+        if (!validateConcepts()) return;
 
-            if (!res.ok) {
-                if (data.error === "MISSING_SELLO") {
-                    setStatus("idle");
-                    setShowSelloConfirm(true);
-                    return;
+        await withLoading(async () => {
+            setStatus("generating");
+            setSubmissionIds(null);
+            setPdfUrls(null);
+
+            try {
+                const body: Record<string, any> = { ...values, conceptCount: conceptRows.length, createTicket };
+                if (skipSello) body.skipSello = true;
+                const res = await fetch("/api/documentos/varios/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body),
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    if (data.error === "MISSING_SELLO") {
+                        setStatus("idle");
+                        setShowSelloConfirm(true);
+                        return;
+                    }
+                    throw new Error(data.error || "Error generando PDF");
                 }
-                throw new Error(data.error || "Error generando PDF");
+
+                setPdfUrls({
+                    factura: data.pdfUrlFactura,
+                    certificado: data.pdfUrlCertificado,
+                });
+                setSubmissionIds({
+                    factura: data.submissionIdFactura,
+                    certificado: data.submissionIdCertificado,
+                });
+
+                setStatus("ready");
+                toast.success("Documentos generados correctamente");
+            } catch (error: unknown) {
+                console.error(error);
+                setStatus("error");
+                toast.error(error instanceof Error ? error.message : "Error generando PDF");
             }
-
-            setPdfUrls({
-                factura: data.pdfUrlFactura,
-                certificado: data.pdfUrlCertificado,
-            });
-            setSubmissionIds({
-                factura: data.submissionIdFactura,
-                certificado: data.submissionIdCertificado,
-            });
-
-            setStatus("ready");
-            toast.success("Documentos generados correctamente");
-        } catch (error: unknown) {
-            console.error(error);
-            setStatus("error");
-            toast.error(error instanceof Error ? error.message : "Error generando PDF");
-        } finally {
-            hideLoading();
-        }
+        }, 'Generando documentos...');
     };
 
     const downloadFactura = () => {
@@ -214,30 +224,29 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
         }
         setFormErrors(prev => ({ ...prev, toEmail: '' }));
 
-        setStatus("sending");
-        showLoading("Enviando por email...");
+        await withLoading(async () => {
+            setStatus("sending");
 
-        try {
-            const res = await fetch("/api/documentos/varios/send", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    submissionIdFactura: submissionIds.factura,
-                    submissionIdCertificado: submissionIds.certificado,
-                    toEmail
-                }),
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data?.error || "Error enviando email");
+            try {
+                const res = await fetch("/api/documentos/varios/send", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        submissionIdFactura: submissionIds.factura,
+                        submissionIdCertificado: submissionIds.certificado,
+                        toEmail
+                    }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data?.error || "Error enviando email");
 
-            setStatus("ready");
-            toast.success("Email enviado correctamente ✅");
-        } catch (e: any) {
-            setStatus("ready");
-            toast.error(e?.message || "Error enviando");
-        } finally {
-            hideLoading();
-        }
+                setStatus("ready");
+                toast.success("Email enviado correctamente ✅");
+            } catch (e: any) {
+                setStatus("ready");
+                toast.error(e?.message || "Error enviando");
+            }
+        }, 'Enviando email...');
     };
 
     if (status === "ready" || status === "sending") {
@@ -326,15 +335,34 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
         return Boolean(descripcion && und && importe && iva);
     });
     const tiposInmuebleSelected: string[] = Array.isArray(values.tipos_inmueble) ? values.tipos_inmueble : [];
-    const canGenerate = values.codigo && values.cliente && values.nombre && values.apellidos && values.nif && values.fecha_emision && tiposInmuebleSelected.length > 0 && allConceptsComplete;
+    const tipoInmuebleFieldKey: Record<string, string> = {
+        Vivienda: "tipo_vivienda_texto",
+        Trastero: "tipo_trastero_texto",
+        Aparcamiento: "tipo_aparcamiento_texto",
+    };
+    const tipoInmueblePlaceholder: Record<string, string> = {
+        Vivienda: "Ej: 3º A",
+        Trastero: "Ej: T-12",
+        Aparcamiento: "Ej: Plaza 45",
+    };
+    const allTiposInmuebleTextosCompletos = tiposInmuebleSelected.every(tipo => {
+        const key = tipoInmuebleFieldKey[tipo];
+        return Boolean(String(values[key] || "").trim());
+    });
+    const canGenerate = values.codigo && values.cliente && values.nombre && values.apellido1 && values.nif && values.fecha_emision && tiposInmuebleSelected.length > 0 && allTiposInmuebleTextosCompletos && allConceptsComplete;
 
     const toggleTipoInmueble = (tipo: string) => {
         setValues(prev => {
             const current: string[] = Array.isArray(prev.tipos_inmueble) ? prev.tipos_inmueble : [];
-            const next = current.includes(tipo)
+            const isRemoving = current.includes(tipo);
+            const next = isRemoving
                 ? current.filter(t => t !== tipo)
                 : [...current, tipo];
-            return { ...prev, tipos_inmueble: next, tipo_inmueble: next.join(", ") };
+            const updated: Record<string, any> = { ...prev, tipos_inmueble: next, tipo_inmueble: next.join(", ") };
+            if (isRemoving) {
+                delete updated[tipoInmuebleFieldKey[tipo]];
+            }
+            return updated;
         });
     };
     const addConceptRow = () => {
@@ -366,65 +394,65 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                 <div className="space-y-4 max-w-4xl mx-auto">
                     {/* Cliente */}
                     <div className="space-y-4">
-                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Información del Cliente</h3>
+                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Información del Cliente</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                            {/* Fila 1: Nombre · Apellidos */}
-                            <div className="sm:col-span-1 lg:col-span-2">
+                            {/* Fila 1: Fecha Emisión · Nombre · Apellido 1 · Apellido 2 */}
+                            <div className="sm:col-span-1 lg:col-span-1">
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Fecha Emisión<RequiredAsterisk /></label>
+                                <input
+                                    disabled={isDisabled}
+                                    type="date"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    value={values.fecha_emision || ""}
+                                    onChange={e => handleChange("fecha_emision", e.target.value)}
+                                />
+                            </div>
+                            <div className="sm:col-span-1 lg:col-span-1">
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Nombre<RequiredAsterisk /></label>
                                 <input
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: Juan"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.nombre || ""}
                                     onChange={e => handleChange("nombre", e.target.value)}
                                 />
                             </div>
-                            <div className="sm:col-span-1 lg:col-span-2">
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Apellidos<RequiredAsterisk /></label>
+                            <div className="sm:col-span-1 lg:col-span-1">
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Apellido 1<RequiredAsterisk /></label>
                                 <input
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: Pérez"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
-                                    value={values.apellidos || ""}
-                                    onChange={e => handleChange("apellidos", e.target.value)}
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    value={values.apellido1 || ""}
+                                    onChange={e => handleChange("apellido1", e.target.value)}
+                                />
+                            </div>
+                            <div className="sm:col-span-1 lg:col-span-1">
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Apellido 2</label>
+                                <input
+                                    disabled={isDisabled}
+                                    type="text"
+                                    placeholder="Ej: García"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    value={values.apellido2 || ""}
+                                    onChange={e => handleChange("apellido2", e.target.value)}
                                 />
                             </div>
 
-                            {/* Fila 2: NIF · Tipo Inmueble */}
+                            {/* Fila 2: NIF · Comunidad */}
                             <div className="sm:col-span-1 lg:col-span-2">
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">NIF<RequiredAsterisk /></label>
                                 <input
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: 12345678Z"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.nif || ""}
                                     onChange={e => handleChange("nif", e.target.value)}
                                 />
                             </div>
-                            <div className="sm:col-span-1 lg:col-span-2">
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Tipo Inmueble<RequiredAsterisk /></label>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {['Vivienda', 'Trastero', 'Aparcamiento'].map(tipo => {
-                                        const active = tiposInmuebleSelected.includes(tipo);
-                                        return (
-                                            <button
-                                                key={tipo}
-                                                type="button"
-                                                disabled={isDisabled}
-                                                onClick={() => toggleTipoInmueble(tipo)}
-                                                className={`w-full px-4 py-2 rounded-lg border text-sm font-semibold transition disabled:opacity-50 ${active ? 'bg-[#bf4b50] border-[#bf4b50] text-white' : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'}`}
-                                            >
-                                                {tipo}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Fila 3: Comunidad · Provincia · Ciudad */}
                             <div className="sm:col-span-1 lg:col-span-2">
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Comunidad<RequiredAsterisk /></label>
                                 <SearchableSelect
@@ -437,13 +465,28 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     placeholder="Selecciona comunidad..."
                                 />
                             </div>
-                            <div>
+
+                            {/* Fila 3: Domicilio (completo) */}
+                            <div className="sm:col-span-2 lg:col-span-4">
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Domicilio</label>
+                                <input
+                                    disabled={isDisabled}
+                                    type="text"
+                                    placeholder="Ej: C/ Mayor 123"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    value={values.domicilio || ""}
+                                    onChange={e => handleChange("domicilio", e.target.value)}
+                                />
+                            </div>
+
+                            {/* Fila 4: Provincia · Ciudad · C.P. */}
+                            <div className="sm:col-span-2 lg:col-span-2">
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Provincia</label>
                                 <input
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: Málaga"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.provincia || ""}
                                     onChange={e => handleChange("provincia", e.target.value)}
                                 />
@@ -454,86 +497,67 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: Málaga"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.ciudad || ""}
                                     onChange={e => handleChange("ciudad", e.target.value)}
                                 />
                             </div>
-
-                            {/* Fila 4: C.P. · Domicilio */}
                             <div>
                                 <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">C.P</label>
                                 <input
                                     disabled={isDisabled}
                                     type="text"
                                     placeholder="Ej: 29001"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                     value={values.cp || ""}
                                     onChange={e => handleChange("cp", e.target.value)}
                                 />
                             </div>
-                            <div className="sm:col-span-1 lg:col-span-3">
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Domicilio</label>
-                                <input
-                                    disabled={isDisabled}
-                                    type="text"
-                                    placeholder="Ej: C/ Mayor 123"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
-                                    value={values.domicilio || ""}
-                                    onChange={e => handleChange("domicilio", e.target.value)}
-                                />
+
+                            {/* Fila 5: Tipo Inmueble (al final) */}
+                            <div className="sm:col-span-2 lg:col-span-4">
+                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Tipo Inmueble<RequiredAsterisk /></label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {['Vivienda', 'Trastero', 'Aparcamiento'].map(tipo => {
+                                        const active = tiposInmuebleSelected.includes(tipo);
+                                        return (
+                                            <button
+                                                key={tipo}
+                                                type="button"
+                                                disabled={isDisabled}
+                                                onClick={() => toggleTipoInmueble(tipo)}
+                                                className={`w-full px-4 py-2 rounded-lg border text-sm font-semibold transition disabled:opacity-50 ${active ? 'bg-yellow-400 border-yellow-500 text-neutral-950' : 'bg-white border-yellow-300 text-neutral-700 hover:bg-yellow-50'}`}
+                                            >
+                                                {tipo}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                <div className="grid grid-cols-3 gap-2 mt-2">
+                                    {['Vivienda', 'Trastero', 'Aparcamiento'].map(tipo => {
+                                        const active = tiposInmuebleSelected.includes(tipo);
+                                        const key = tipoInmuebleFieldKey[tipo];
+                                        return (
+                                            <input
+                                                key={tipo}
+                                                disabled={isDisabled || !active}
+                                                type="text"
+                                                placeholder={tipoInmueblePlaceholder[tipo]}
+                                                className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                                value={values[key] || ""}
+                                                onChange={e => handleChange(key, e.target.value)}
+                                            />
+                                        );
+                                    })}
+                                </div>
                             </div>
 
-                            {/* Fila 5: Bloque · Planta · Puerta · Fecha Emisión */}
-                            <div>
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Bloque</label>
-                                <input
-                                    disabled={isDisabled}
-                                    type="text"
-                                    placeholder="Ej: B"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
-                                    value={values.bloque || ""}
-                                    onChange={e => handleChange("bloque", e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Planta</label>
-                                <input
-                                    disabled={isDisabled}
-                                    type="text"
-                                    placeholder="Ej: 3º"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
-                                    value={values.planta || ""}
-                                    onChange={e => handleChange("planta", e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Puerta</label>
-                                <input
-                                    disabled={isDisabled}
-                                    type="text"
-                                    placeholder="Ej: A"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
-                                    value={values.puerta || ""}
-                                    onChange={e => handleChange("puerta", e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Fecha Emisión<RequiredAsterisk /></label>
-                                <input
-                                    disabled={isDisabled}
-                                    type="date"
-                                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
-                                    value={values.fecha_emision || ""}
-                                    onChange={e => handleChange("fecha_emision", e.target.value)}
-                                />
-                            </div>
                         </div>
                     </div>
 
                     {/* Factura Lines */}
                     <div className="space-y-4">
-                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Conceptos Factura</h3>
+                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pb-2 mb-3 border-b border-yellow-400">Conceptos Factura</h3>
                         {formErrors.conceptos && (
                             <p className="flex items-center gap-1 text-[11px] font-semibold text-red-500">
                                 <AlertCircle className="w-3 h-3 shrink-0" />
@@ -549,7 +573,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                         disabled={isDisabled}
                                         type="number"
                                         placeholder="0"
-                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                         value={values[`und${i}`] || ""}
                                         onChange={e => {
                                             setFormErrors(prev => ({ ...prev, [`concepto${i}`]: "", conceptos: "" }));
@@ -563,7 +587,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                         disabled={isDisabled}
                                         type="text"
                                         placeholder="Concepto..."
-                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                         value={values[`descripcion${i}`] || ""}
                                         onChange={e => {
                                             setFormErrors(prev => ({ ...prev, [`concepto${i}`]: "", conceptos: "" }));
@@ -578,7 +602,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                         type="number"
                                         step="0.01"
                                         placeholder="0.00"
-                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                         value={values[`importe${i}`] || ""}
                                         onChange={e => {
                                             setFormErrors(prev => ({ ...prev, [`concepto${i}`]: "", conceptos: "" }));
@@ -592,7 +616,7 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                         disabled={isDisabled}
                                         type="number"
                                         placeholder="21"
-                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#bf4b50]/40 focus:border-[#bf4b50] focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
+                                        className="w-full rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400 focus:bg-white disabled:bg-neutral-100 disabled:text-neutral-400 transition"
                                         value={values[`iva${i}`] ?? ""}
                                         onChange={e => {
                                             setFormErrors(prev => ({ ...prev, [`concepto${i}`]: "", conceptos: "" }));
@@ -678,9 +702,9 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                 </button>
                 <button
                     type="button"
-                    onClick={() => generate()}
+                    onClick={() => requestGenerate()}
                     disabled={status === "generating" || !canGenerate}
-                    className="w-full sm:w-auto h-12 px-8 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
+                    className="w-full sm:w-auto h-12 px-8 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
                 >
                     {status === "generating" ? (
                         <>
@@ -695,6 +719,53 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                     )}
                 </button>
             </div>
+
+            {/* Modal confirmación: crear ticket de seguimiento */}
+            {showTicketConfirm && (
+                <div className="fixed inset-0 bg-black/50 z-[10000] flex items-end sm:items-center sm:justify-center sm:p-4 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-md p-6 relative max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-200 border border-neutral-100">
+                        <button
+                            onClick={() => setShowTicketConfirm(false)}
+                            aria-label="Cerrar modal"
+                            className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <div className="mb-6 text-center">
+                            <div className="mx-auto w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center mb-4 ring-8 ring-yellow-50/50">
+                                <FileText className="w-8 h-8 text-yellow-500" />
+                            </div>
+                            <h3 className="text-xl font-black text-neutral-900 uppercase tracking-tight">
+                                Crear ticket de seguimiento
+                            </h3>
+                            <p className="text-sm text-neutral-500 mt-2 font-medium">
+                                ¿Desea crear automáticamente un <strong className="text-neutral-900">ticket de seguimiento</strong> asociado al certificado de corriente de pago?
+                            </p>
+                            <p className="text-xs text-neutral-400 mt-3 font-medium">
+                                El ticket incluirá los datos de la comunidad, propietario e importe del documento y quedará asignado a usted.
+                            </p>
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                            <button
+                                type="button"
+                                onClick={() => { setShowTicketConfirm(false); setPendingCreateTicket(false); generate(false, false); }}
+                                className="flex-1 h-12 px-6 border border-neutral-200 text-neutral-600 rounded-xl hover:bg-neutral-50 font-bold text-xs uppercase tracking-widest transition-all"
+                            >
+                                No, solo documento
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => { setShowTicketConfirm(false); setPendingCreateTicket(true); generate(false, true); }}
+                                className="flex-1 h-12 px-6 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-xl font-black text-xs uppercase tracking-[0.15em] transition-all shadow-lg shadow-yellow-100"
+                            >
+                                Sí, crear ticket
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Modal confirmación: sello no encontrado */}
             {showSelloConfirm && (
@@ -722,8 +793,8 @@ export default function VariosForm({ onSuccess, onCancel }: { onSuccess?: () => 
                                 Cancelar
                             </button>
                             <button
-                                onClick={() => { setShowSelloConfirm(false); generate(true); }}
-                                className="px-4 py-2 bg-[#bf4b50] hover:bg-[#a03d42] text-white rounded-lg text-sm font-bold transition"
+                                onClick={() => { setShowSelloConfirm(false); generate(true, pendingCreateTicket); }}
+                                className="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-neutral-950 rounded-lg text-sm font-bold transition"
                             >
                                 Crear sin sello
                             </button>
