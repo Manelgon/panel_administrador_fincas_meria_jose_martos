@@ -1,18 +1,26 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'react-hot-toast';
-import { Plus, Trash2, X, Edit2, Eye, MapPin, Hash, Building2, Clock, Loader2, Upload, Check, AlertCircle } from 'lucide-react';
-import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
+import { Plus, Trash2, X, Edit2, Upload, Check, AlertCircle } from 'lucide-react';
+import DeleteComunidadModal, { ComunidadSummary } from '@/components/DeleteComunidadModal';
 import DataTable, { Column } from '@/components/DataTable';
 import { logActivity } from '@/lib/logActivity';
-import { Comunidad, comunidadFormSchema, validateForm, DeleteCredentials } from '@/lib/schemas';
+import { Comunidad } from '@/lib/schemas';
 import { useGlobalLoading } from '@/lib/globalLoading';
 import ImportComunidadesModal from '@/components/ImportComunidadesModal';
 import SearchableSelect from '@/components/SearchableSelect';
+
+type ComunidadCounts = {
+    tickets: number;
+    morosidad: number;
+    reuniones: number;
+    fichajes: number;
+    empleados: number;
+};
 
 export default function ComunidadesPage() {
     const { withLoading } = useGlobalLoading();
@@ -20,11 +28,10 @@ export default function ComunidadesPage() {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deleteEmail, setDeleteEmail] = useState('');
-    const [deletePassword, setDeletePassword] = useState('');
-    const [deleteId, setDeleteId] = useState<number | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState<ComunidadSummary | null>(null);
+    const [deleteCounts, setDeleteCounts] = useState<ComunidadCounts | null>(null);
+    const [loadingCounts, setLoadingCounts] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
 
     // Detail Modal
@@ -64,7 +71,7 @@ export default function ComunidadesPage() {
 
     // Prevent body scroll when any modal is open
     useEffect(() => {
-        if (showForm || showDetailModal || showDeleteModal) {
+        if (showForm || showDetailModal || deleteTarget !== null) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
@@ -72,7 +79,7 @@ export default function ComunidadesPage() {
         return () => {
             document.body.style.overflow = 'unset';
         };
-    }, [showForm, showDetailModal, showDeleteModal]);
+    }, [showForm, showDetailModal, deleteTarget]);
 
     const fetchComunidades = async () => {
         try {
@@ -202,49 +209,89 @@ export default function ComunidadesPage() {
         }, label);
     };
 
-    const handleDeleteClick = (id: number) => {
-        setDeleteId(id);
-        setShowDeleteModal(true);
-        setDeletePassword('');
-    };
+    const openDeleteFlow = useCallback(async (row: Comunidad) => {
+        setDeleteTarget({
+            id: row.id,
+            codigo: row.codigo,
+            nombre_cdad: row.nombre_cdad,
+            activo: row.activo,
+        });
+        setDeleteCounts(null);
+        setLoadingCounts(true);
+        try {
+            const res = await fetch(`/api/admin/comunidad-dependencies?id=${row.id}`);
+            const json = await res.json();
+            if (!res.ok) throw new Error(json.error || 'Error al consultar dependencias');
+            setDeleteCounts(json.counts as ComunidadCounts);
+            setDeleteTarget({
+                id: json.comunidad.id,
+                codigo: json.comunidad.codigo,
+                nombre_cdad: json.comunidad.nombre_cdad,
+                activo: json.comunidad.activo,
+            });
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Error al consultar dependencias';
+            toast.error(msg);
+        } finally {
+            setLoadingCounts(false);
+        }
+    }, []);
 
-    const handleConfirmDelete = async ({ email, password }: DeleteCredentials) => {
-        if (deleteId === null || !email || !password) return;
+    const closeDeleteFlow = useCallback(() => {
+        if (isProcessing) return;
+        setDeleteTarget(null);
+        setDeleteCounts(null);
+    }, [isProcessing]);
 
-        await withLoading(async () => {
-            setIsDeleting(true);
-            try {
+    const handleDeactivate = useCallback(async () => {
+        if (!deleteTarget) return;
+        setIsProcessing(true);
+        try {
+            await toggleActive(deleteTarget.id, true);
+            setDeleteTarget(null);
+            setDeleteCounts(null);
+        } finally {
+            setIsProcessing(false);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [deleteTarget]);
+
+    const handleDeleteForever = useCallback(async ({ email, password }: { email: string; password: string }) => {
+        if (!deleteTarget) return;
+        setIsProcessing(true);
+        try {
+            await withLoading(async () => {
                 const res = await fetch('/api/admin/universal-delete', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: deleteId, email, password, type: 'comunidad' })
+                    body: JSON.stringify({ id: deleteTarget.id, email, password, type: 'comunidad' })
                 });
 
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || 'Error al eliminar');
 
-                toast.success('Comunidad eliminada correctamente');
-                setComunidades(comunidades.filter(c => c.id !== deleteId));
-                setShowDeleteModal(false);
-                setDeleteId(null);
+                toast.success(`Comunidad "${deleteTarget.nombre_cdad}" eliminada`);
+                setComunidades(prev => prev.filter(c => c.id !== deleteTarget.id));
                 window.dispatchEvent(new Event('communitiesChanged'));
 
-                const deleted = comunidades.find(c => c.id === deleteId);
                 await logActivity({
                     action: 'delete',
                     entityType: 'comunidad',
-                    entityId: deleteId,
-                    entityName: deleted?.nombre_cdad,
-                    details: { codigo: deleted?.codigo, deleted_by_admin: email }
+                    entityId: deleteTarget.id,
+                    entityName: deleteTarget.nombre_cdad,
+                    details: { codigo: deleteTarget.codigo, deleted_by_admin: email }
                 });
-            } catch (error: unknown) {
-                const msg = error instanceof Error ? error.message : 'Error al eliminar';
-                toast.error(msg);
-            } finally {
-                setIsDeleting(false);
-            }
-        }, 'Eliminando comunidad...');
-    };
+
+                setDeleteTarget(null);
+                setDeleteCounts(null);
+            }, 'Eliminando comunidad y su historial...');
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Error al eliminar';
+            toast.error(msg);
+        } finally {
+            setIsProcessing(false);
+        }
+    }, [deleteTarget, withLoading]);
 
     const toggleActive = async (id: number, currentStatus: boolean) => {
         await withLoading(async () => {
@@ -540,7 +587,7 @@ export default function ComunidadesPage() {
                     {
                         label: 'Eliminar',
                         icon: <Trash2 className="w-4 h-4" />,
-                        onClick: (r) => handleDeleteClick(r.id),
+                        onClick: (r) => openDeleteFlow(r),
                         variant: 'danger',
                         separator: true,
                     },
@@ -628,7 +675,7 @@ export default function ComunidadesPage() {
                         {/* Footer */}
                         <div className="px-6 py-4 bg-white border-t border-neutral-100 flex items-center justify-between shrink-0 flex-wrap">
                             <button
-                                onClick={() => { handleDeleteClick(selectedDetailComunidad.id); setShowDetailModal(false); }}
+                                onClick={() => { openDeleteFlow(selectedDetailComunidad); setShowDetailModal(false); }}
                                 className="px-4 py-2 text-sm font-bold text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all flex items-center gap-2"
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -653,16 +700,17 @@ export default function ComunidadesPage() {
                 </div>
             , document.body)}
 
-            {/* Delete Confirmation Modal */}
-            <DeleteConfirmationModal
-                isOpen={showDeleteModal}
-                onClose={() => {
-                    setShowDeleteModal(false);
-                    setDeleteId(null);
-                }}
-                onConfirm={handleConfirmDelete}
-                itemType="comunidad"
-                isDeleting={isDeleting}
+            {/* Delete Comunidad Modal (desactivar / eliminar definitivamente) */}
+            <DeleteComunidadModal
+                key={deleteTarget?.id ?? 'closed'}
+                isOpen={deleteTarget !== null}
+                comunidad={deleteTarget}
+                counts={deleteCounts}
+                loadingCounts={loadingCounts}
+                isProcessing={isProcessing}
+                onClose={closeDeleteFlow}
+                onDeactivate={handleDeactivate}
+                onDeleteForever={handleDeleteForever}
             />
         </div>
     );
