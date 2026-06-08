@@ -70,17 +70,15 @@ export async function middleware(request: NextRequest) {
     }
 
     if (isAuthRoute && user) {
-        // Skip redirect if we just forced a sign-out (cookie may not have cleared yet)
+        // Skip redirect if cookies are being cleared after a forced sign-out
         const justLoggedOut = request.nextUrl.searchParams.get('logged_out') === '1'
-        if (!justLoggedOut) {
+        const forceSignout = request.nextUrl.searchParams.get('force_signout') === '1'
+        if (!justLoggedOut && !forceSignout) {
             return NextResponse.redirect(new URL('/dashboard', request.url))
         }
     }
 
-    // 5. If user is authenticated and accessing a dashboard route,
-    //    verify they have an active profile in public.profiles.
-    //    This prevents users who exist in auth.users but NOT in profiles
-    //    from accessing the panel (e.g. created manually without the trigger).
+    // 5. Verify active profile for dashboard routes
     if (isDashboardRoute && user) {
         const { data: profile } = await supabase
             .from('profiles')
@@ -89,12 +87,18 @@ export async function middleware(request: NextRequest) {
             .maybeSingle()
 
         if (!profile || !profile.activo) {
-            // Sign out and redirect — use ?logged_out=1 to prevent the
-            // middleware from re-checking on the login page while the cookie clears
-            await supabase.auth.signOut()
+            // Do NOT call signOut() here — it doesn't clear cookies reliably in middleware.
+            // Redirect to login with force_signout=1 so the login page handles it.
             const loginUrl = new URL('/auth/login', request.url)
-            loginUrl.searchParams.set('logged_out', '1')
-            return NextResponse.redirect(loginUrl)
+            loginUrl.searchParams.set('force_signout', '1')
+            const redirectResponse = NextResponse.redirect(loginUrl)
+            // Manually clear Supabase session cookies
+            for (const cookie of request.cookies.getAll()) {
+                if (cookie.name.startsWith('sb-')) {
+                    redirectResponse.cookies.delete(cookie.name)
+                }
+            }
+            return redirectResponse
         }
     }
 

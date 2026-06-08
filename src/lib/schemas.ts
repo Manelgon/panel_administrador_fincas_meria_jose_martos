@@ -97,6 +97,9 @@ export interface Incidencia {
   aviso?: number; // 0=sin aviso, 1=whatsapp, 2=email, 3=email+whatsapp
   id_email_gestion?: string;
   source?: 'Llamada' | 'Presencial' | 'Email' | 'Whatsapp' | 'WhatsApp' | 'App 360' | 'Acuerdo Junta' | 'Gestión Interna';
+  proveedor_id?: number;
+  aviso_proveedor?: number; // 0=sin aviso, 1=whatsapp, 2=email, 3=email+whatsapp
+  proveedor?: { nombre: string };
 }
 
 // ============================================

@@ -103,9 +103,9 @@ export default function ProveedoresPage() {
 
         const errors: Record<string, string> = {};
         if (!formData.nombre?.trim()) errors.nombre = 'El nombre del proveedor es obligatorio';
-        const phoneRegex = /^\d{9}$/;
+        const phoneRegex = /^(\d{9,}|[0-9\-]+@g\.us)$/;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (formData.telefono && !phoneRegex.test(formData.telefono)) errors.telefono = 'El teléfono debe tener exactamente 9 dígitos';
+        if (formData.telefono && !phoneRegex.test(formData.telefono)) errors.telefono = 'El teléfono debe tener al menos 9 dígitos o ser un grupo WhatsApp';
         if (formData.email && !emailRegex.test(formData.email)) errors.email = 'El formato del email no es válido';
         if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
         setFormErrors({});

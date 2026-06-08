@@ -25,6 +25,7 @@ interface TaskTimer {
     duration_seconds: number | null;
     is_manual: boolean;
     tipo_tarea: string | null;
+    incidencia_id: number | null;
     created_at: string;
     comunidades?: { nombre_cdad: string; codigo: string };
     profiles?: { nombre: string };
@@ -171,6 +172,25 @@ export default function CronometrajePage() {
                     entityName: (activeTask?.comunidades as any)?.nombre_cdad || 'Comunidad',
                     details: { duration: formatDurationShort(data?.duration_seconds || 0), nota: activeTask?.nota || null },
                 });
+
+                // Si la tarea estaba vinculada a un ticket, escribir en el timeline
+                if (activeTask?.incidencia_id) {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (user) {
+                        const durSec = data?.duration_seconds || 0;
+                        const h = Math.floor(durSec / 3600);
+                        const m = Math.floor((durSec % 3600) / 60);
+                        const s = durSec % 60;
+                        const durStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                        await supabase.from('record_messages').insert([{
+                            entity_type: 'incidencia',
+                            entity_id: activeTask.incidencia_id,
+                            user_id: user.id,
+                            content: `✅ Tarea realizada · ${activeTask.tipo_tarea || 'Tarea'} · Tiempo total ${durStr}${activeTask.nota ? ` · ${activeTask.nota}` : ''}`,
+                        }]);
+                    }
+                }
+
                 toast.success('Tarea finalizada');
                 setActiveTask(null);
                 setElapsed(0);

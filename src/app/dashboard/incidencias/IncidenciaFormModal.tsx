@@ -3,7 +3,7 @@
 import { createPortal } from 'react-dom';
 import { X, AlertCircle, Loader2, Plus, Paperclip } from 'lucide-react';
 import SearchableSelect from '@/components/SearchableSelect';
-import SelectFilter from '@/components/SelectFilter';
+
 import { Profile, ComunidadOption } from '@/lib/schemas';
 
 interface FormData {
@@ -32,8 +32,11 @@ interface Props {
     enviarAviso: boolean | null;
     notifEmail: boolean;
     notifWhatsapp: boolean;
+    notifProveedorEmail: boolean;
+    notifProveedorWhatsapp: boolean;
     comunidades: ComunidadOption[];
     profiles: Profile[];
+    proveedores: { id: number; nombre: string; telefono: string | null; email: string | null }[];
     onChange: (field: string, value: string) => void;
     onFilesChange: (files: File[]) => void;
     onSubmit: (e: React.FormEvent) => void;
@@ -41,6 +44,8 @@ interface Props {
     setEnviarAviso: (v: boolean | null) => void;
     setNotifEmail: (v: boolean) => void;
     setNotifWhatsapp: (v: boolean) => void;
+    setNotifProveedorEmail: (v: boolean) => void;
+    setNotifProveedorWhatsapp: (v: boolean) => void;
     setIsManualDate: (v: boolean) => void;
     setFormErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }
@@ -57,8 +62,11 @@ export default function IncidenciaFormModal({
     enviarAviso,
     notifEmail,
     notifWhatsapp,
+    notifProveedorEmail,
+    notifProveedorWhatsapp,
     comunidades,
     profiles,
+    proveedores,
     onChange,
     onFilesChange,
     onSubmit,
@@ -66,6 +74,8 @@ export default function IncidenciaFormModal({
     setEnviarAviso,
     setNotifEmail,
     setNotifWhatsapp,
+    setNotifProveedorEmail,
+    setNotifProveedorWhatsapp,
     setIsManualDate,
     setFormErrors,
 }: Props) {
@@ -185,6 +195,7 @@ export default function IncidenciaFormModal({
                                             { value: 'Whatsapp', label: '💬 Whatsapp' },
                                             { value: 'App 360', label: '📱 App 360' },
                                             { value: 'Acuerdo Junta', label: '📋 Acuerdo Junta' },
+                                            { value: 'Tratar Junta', label: '🗣️ Tratar Junta' },
                                             { value: 'Gestión Interna', label: '🏢 Gestión Interna' },
                                         ]}
                                         placeholder="Seleccionar entrada..."
@@ -403,19 +414,90 @@ export default function IncidenciaFormModal({
                         {/* Section: Proveedor */}
                         <div>
                             <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest pb-2 mb-3 border-b border-[#bf4b50]">Proveedor</h3>
+                            <div className="flex flex-col gap-3">
+                                <div>
+                                    <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">
+                                        Seleccionar Proveedor
+                                    </label>
+                                    <SearchableSelect
+                                        value={formData.proveedor ? Number(formData.proveedor) : ''}
+                                        onChange={(val) => {
+                                            onChange('proveedor', val ? String(val) : '');
+                                            if (!val) { setNotifProveedorWhatsapp(false); setNotifProveedorEmail(false); }
+                                        }}
+                                        options={proveedores.map(p => ({
+                                            value: p.id,
+                                            label: p.nombre
+                                        }))}
+                                        placeholder="Buscar proveedor..."
+                                    />
+                                </div>
 
-                            <div>
-                                <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">
-                                    Enviar email a Proveedor
-                                </label>
-                                <SelectFilter
-                                    disabled
-                                    value={formData.proveedor}
-                                    onChange={v => onChange('proveedor', v)}
-                                    size="md"
-                                    className="w-full"
-                                    options={[{ value: '', label: 'Próximamente disponible...' }]}
-                                />
+                                {formData.proveedor && (() => {
+                                    const selectedProv = proveedores.find(p => p.id === parseInt(formData.proveedor));
+                                    return (
+                                        <>
+                                            <div className="bg-neutral-50/60 border border-neutral-100 rounded-lg p-3">
+                                                <label className="text-xs font-bold text-neutral-900 uppercase tracking-widest block mb-2">
+                                                    Notificar al proveedor
+                                                </label>
+                                                <div className="flex flex-col sm:flex-row gap-3">
+                                                    <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={notifProveedorEmail}
+                                                            onChange={e => setNotifProveedorEmail(e.target.checked)}
+                                                            disabled={!selectedProv?.email}
+                                                            className="w-4 h-4 rounded accent-[#bf4b50]"
+                                                        />
+                                                        <span className={`text-xs font-semibold ${selectedProv?.email ? 'text-neutral-700' : 'text-neutral-400'}`}>Notificar por Email</span>
+                                                    </label>
+                                                    <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={notifProveedorWhatsapp}
+                                                            onChange={e => setNotifProveedorWhatsapp(e.target.checked)}
+                                                            disabled={!selectedProv?.telefono}
+                                                            className="w-4 h-4 rounded accent-[#bf4b50]"
+                                                        />
+                                                        <span className={`text-xs font-semibold ${selectedProv?.telefono ? 'text-neutral-700' : 'text-neutral-400'}`}>Notificar por WhatsApp</span>
+                                                    </label>
+                                                </div>
+                                                <p className="text-[10px] text-neutral-400 mt-2">Deja ambos sin marcar si no deseas notificar al proveedor.</p>
+                                            </div>
+                                            {notifProveedorEmail && (
+                                                <div>
+                                                    <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">
+                                                        Email del proveedor
+                                                    </label>
+                                                    {selectedProv?.email ? (
+                                                        <div className="flex items-center gap-2 px-3 py-2 bg-neutral-100 border border-neutral-200 rounded-xl cursor-not-allowed">
+                                                            <span className="text-sm text-neutral-500 font-medium flex-1 select-none">{selectedProv.email}</span>
+                                                            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest shrink-0">Del proveedor</span>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-[10px] text-amber-500 font-medium">Este proveedor no tiene email registrado. Añádelo en la sección Proveedores.</p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {notifProveedorWhatsapp && (
+                                                <div>
+                                                    <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">
+                                                        Teléfono del proveedor
+                                                    </label>
+                                                    {selectedProv?.telefono ? (
+                                                        <div className="flex items-center gap-2 px-3 py-2 bg-neutral-100 border border-neutral-200 rounded-xl cursor-not-allowed">
+                                                            <span className="text-sm text-neutral-500 font-medium flex-1 select-none">{selectedProv.telefono}</span>
+                                                            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest shrink-0">Del proveedor</span>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-[10px] text-amber-500 font-medium">Este proveedor no tiene teléfono registrado. Añádelo en la sección Proveedores.</p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </div>
                     </form>

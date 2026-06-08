@@ -26,7 +26,7 @@ export function buildColumns(profiles: Profile[]): Column<Incidencia>[] {
             label: 'Entrada',
             render: (row) => {
                 if (!row.source) return <span className="text-neutral-400">-</span>;
-                const icons: Record<string, string> = { 'Llamada': '📞', 'Presencial': '🤝', 'Email': '📧', 'Whatsapp': '💬', 'App 360': '📱', 'Acuerdo Junta': '📋' };
+                const icons: Record<string, string> = { 'Llamada': '📞', 'Presencial': '🤝', 'Email': '📧', 'Whatsapp': '💬', 'App 360': '📱', 'Acuerdo Junta': '📋', 'Tratar Junta': '🗣️', 'Gestión Interna': '🏢' };
                 return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-700 text-[11px] font-medium capitalize">{icons[row.source] || ''} {row.source}</span>;
             },
         },
@@ -82,6 +82,30 @@ export function buildColumns(profiles: Profile[]): Column<Incidencia>[] {
                     3: { label: 'Email + WA', cls: 'bg-indigo-100 text-indigo-700' },
                 };
                 const entry = labels[v] ?? { label: '-', cls: 'text-neutral-400' };
+                return <div className="flex justify-center"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${entry.cls}`}>{entry.label}</span></div>;
+            },
+        },
+        {
+            key: 'proveedor_id',
+            label: 'Proveedor',
+            render: (row) => {
+                const nombre = (row as any).proveedor?.nombre;
+                return nombre || '-';
+            },
+        },
+        {
+            key: 'aviso_proveedor',
+            label: 'Aviso Prov.',
+            render: (row) => {
+                const v = Number(row.aviso_proveedor);
+                const labels: Record<number, { label: string; cls: string }> = {
+                    0: { label: 'Sin aviso', cls: 'bg-neutral-100 text-neutral-500' },
+                    1: { label: 'WhatsApp', cls: 'bg-green-100 text-green-700' },
+                    2: { label: 'Email', cls: 'bg-blue-100 text-blue-700' },
+                    3: { label: 'Ambos', cls: 'bg-indigo-100 text-indigo-700' },
+                };
+                const entry = labels[v] ?? { label: '-', cls: 'text-neutral-400' };
+                if (!row.proveedor_id) return <span className="text-neutral-400">-</span>;
                 return <div className="flex justify-center"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${entry.cls}`}>{entry.label}</span></div>;
             },
         },
