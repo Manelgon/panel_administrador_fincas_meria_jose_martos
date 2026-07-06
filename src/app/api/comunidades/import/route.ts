@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-// Use the service role key to bypass RLS for admin import operations
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { requireAdmin } from '@/lib/apiAuth';
 
 interface ImportRow {
     codigo: string;
@@ -14,6 +9,9 @@ interface ImportRow {
 }
 
 export async function POST(req: NextRequest) {
+    const auth = await requireAdmin(req);
+    if (!auth.user) return auth.response;
+
     try {
         const { rows }: { rows: ImportRow[] } = await req.json();
 

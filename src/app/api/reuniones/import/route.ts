@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { requireUser } from '@/lib/apiAuth';
 
 interface ImportRow {
     comunidad_id: number;
@@ -22,6 +23,9 @@ interface ImportRow {
 }
 
 export async function POST(req: NextRequest) {
+    const auth = await requireUser(req);
+    if (!auth.user) return auth.response;
+
     try {
         const { rows }: { rows: ImportRow[] } = await req.json();
 

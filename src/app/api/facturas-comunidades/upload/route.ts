@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { requireUser } from "@/lib/apiAuth";
 
 export async function POST(req: Request) {
+    const auth = await requireUser(req);
+    if (!auth.user) return auth.response;
+
     try {
         const formData = await req.formData();
         const file = formData.get("file") as File;

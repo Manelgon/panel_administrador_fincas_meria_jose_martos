@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PDFParse } from 'pdf-parse'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { requireUser } from '@/lib/apiAuth'
 
 const SOURCE_MAP: Record<string, string> = {
   'whatsapp': 'Whatsapp',
@@ -232,6 +233,9 @@ function parseNetFincasPdf(text: string): ParsedIncident[] {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireUser(req)
+  if (!auth.user) return auth.response
+
   try {
     const dryRun = req.nextUrl.searchParams.get('dryRun') === 'true'
 

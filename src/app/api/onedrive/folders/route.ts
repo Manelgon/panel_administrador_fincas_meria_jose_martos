@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { requireUser } from '@/lib/apiAuth';
 
 function extractCode(name: string): string | null {
     const match = name?.match(/^(\d+)/);
@@ -15,7 +11,10 @@ function stripCodePrefix(name: string): string {
     return name?.replace(/^\d+\s*[-–]?\s*/, '').trim() || '';
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+    const auth = await requireUser(request);
+    if (!auth.user) return auth.response;
+
     try {
         const [foldersResponse, { data: comunidades }] = await Promise.all([
             fetch(process.env.ONEDRIVE_FOLDERS_WEBHOOK!, { method: 'GET' }),

@@ -1,18 +1,18 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { requireUser, isAdminUser } from '@/lib/apiAuth';
 
 export async function GET(request: Request) {
+    const auth = await requireUser(request);
+    if (!auth.user) return auth.response;
+
     try {
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId');
+        const userId = searchParams.get('userId') || auth.user.id;
 
-        if (!userId) {
-            return NextResponse.json({ error: 'Falta userId' }, { status: 400 });
+        // Solo puedes ver tus propias solicitudes, salvo que seas admin
+        if (userId !== auth.user.id && !(await isAdminUser(auth.user.id))) {
+            return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
         }
 
         const { data, error } = await supabaseAdmin
@@ -30,11 +30,16 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+    const auth = await requireUser(request);
+    if (!auth.user) return auth.response;
+
     try {
         const body = await request.json();
-        const { userId, type, dateFrom, dateTo, daysCount, commentUser } = body;
+        const { type, dateFrom, dateTo, daysCount, commentUser } = body;
+        // Las solicitudes siempre se crean a nombre del usuario autenticado
+        const userId = auth.user.id;
 
-        if (!userId || !type || !dateFrom || !dateTo || !daysCount) {
+        if (!type || !dateFrom || !dateTo || !daysCount) {
             return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400 });
         }
 

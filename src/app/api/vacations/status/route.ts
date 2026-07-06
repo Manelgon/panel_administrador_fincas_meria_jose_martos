@@ -1,19 +1,19 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { requireUser, isAdminUser } from '@/lib/apiAuth';
 
 export async function GET(request: Request) {
+    const auth = await requireUser(request);
+    if (!auth.user) return auth.response;
+
     try {
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId');
+        const userId = searchParams.get('userId') || auth.user.id;
         const year = searchParams.get('year') || new Date().getFullYear().toString();
 
-        if (!userId) {
-            return NextResponse.json({ error: 'Falta userId' }, { status: 400 });
+        // Solo puedes ver tu propio saldo, salvo que seas admin
+        if (userId !== auth.user.id && !(await isAdminUser(auth.user.id))) {
+            return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
         }
 
         // 1) Fetch Balance

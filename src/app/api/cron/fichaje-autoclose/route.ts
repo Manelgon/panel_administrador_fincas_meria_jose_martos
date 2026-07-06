@@ -4,6 +4,13 @@ import { supabaseAdmin } from '@/lib/supabase/admin';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+    // Solo invocable con el secreto de cron (Vercel Cron lo envia como Bearer automaticamente)
+    const cronSecret = process.env.CRON_SECRET;
+    const authHeader = request.headers.get('Authorization');
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+        return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
+
     try {
         // Result is now an array of { id, user_id, start_at }
         const { data: closedSessions, error } = await supabaseAdmin.rpc('auto_close_stale_sessions');

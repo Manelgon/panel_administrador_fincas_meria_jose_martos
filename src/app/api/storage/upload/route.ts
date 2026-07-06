@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { PDFDocument } from "pdf-lib";
 import sharp from "sharp";
 import crypto from "crypto";
+import { requireUser } from "@/lib/apiAuth";
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = [
@@ -13,6 +14,9 @@ const ALLOWED_TYPES = [
 ];
 
 export async function POST(req: Request) {
+    const auth = await requireUser(req);
+    if (!auth.user) return auth.response;
+
     try {
         const formData = await req.formData();
         const file = formData.get("file") as File;

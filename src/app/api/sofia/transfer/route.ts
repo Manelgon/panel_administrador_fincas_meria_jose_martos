@@ -1,14 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-import { supabaseRouteClient } from '@/lib/supabase/route';
-
-// Primary Admin Client for cross-table operations
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { requireUser } from '@/lib/apiAuth';
 
 export async function POST(request: Request) {
+    const auth = await requireUser(request);
+    if (!auth.user) return auth.response;
+
     try {
         const { sofiaId, gestorId, comunidadId } = await request.json();
 

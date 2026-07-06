@@ -1,35 +1,12 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-// Helper to check admin role
-async function isAdmin(userId: string) {
-    const { data, error } = await supabaseAdmin
-        .from('profiles')
-        .select('rol')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-    if (error) {
-        console.error('isAdmin check error:', error);
-        return false;
-    }
-    return data?.rol === 'admin';
-}
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { requireAdmin } from '@/lib/apiAuth';
 
 export async function GET(request: Request) {
+    const auth = await requireAdmin(request);
+    if (!auth.user) return auth.response;
+
     try {
-        const { searchParams } = new URL(request.url);
-        const adminId = searchParams.get('adminId');
-
-        if (!adminId || !(await isAdmin(adminId))) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
-        }
-
         // 1) Fetch requests
         const { data: requests, error: reqError } = await supabaseAdmin
             .from('vacation_requests')
@@ -67,16 +44,15 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+    const auth = await requireAdmin(request);
+    if (!auth.user) return auth.response;
+
     try {
         const body = await request.json();
-        const { adminId, requestId, status, commentAdmin } = body;
+        const { requestId, status, commentAdmin } = body;
 
-        if (!adminId || !requestId || !status) {
+        if (!requestId || !status) {
             return NextResponse.json({ error: 'Faltan campos' }, { status: 400 });
-        }
-
-        if (!(await isAdmin(adminId))) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
         }
 
         // 1) Fetch current request and associated balance
@@ -142,7 +118,7 @@ export async function POST(request: Request) {
             .update({
                 status,
                 comment_admin: commentAdmin,
-                admin_id: adminId,
+                admin_id: auth.user.id,
                 updated_at: new Date().toISOString()
             })
             .eq('id', requestId)

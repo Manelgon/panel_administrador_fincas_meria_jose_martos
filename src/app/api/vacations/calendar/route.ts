@@ -1,12 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { requireUser } from '@/lib/apiAuth';
 
 export async function GET(request: Request) {
+    const auth = await requireUser(request);
+    if (!auth.user) return auth.response;
+
     try {
         const { searchParams } = new URL(request.url);
         const month = searchParams.get('month'); // YYYY-MM

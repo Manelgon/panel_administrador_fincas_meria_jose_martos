@@ -1,25 +1,12 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-async function isAdmin(userId: string) {
-    const { data } = await supabaseAdmin.from('profiles').select('rol').eq('user_id', userId).maybeSingle();
-    return data?.rol === 'admin';
-}
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { requireAdmin } from '@/lib/apiAuth';
 
 export async function GET(request: Request) {
+    const auth = await requireAdmin(request);
+    if (!auth.user) return auth.response;
+
     try {
-        const { searchParams } = new URL(request.url);
-        const adminId = searchParams.get('adminId');
-
-        if (!adminId || !(await isAdmin(adminId))) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
-        }
-
         const [policyRes, blockedRes] = await Promise.all([
             supabaseAdmin.from('vacation_policies').select('*').eq('is_active', true).maybeSingle(),
             supabaseAdmin.from('blocked_dates').select('*').order('date_from', { ascending: true })
@@ -35,13 +22,12 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+    const auth = await requireAdmin(request);
+    if (!auth.user) return auth.response;
+
     try {
         const body = await request.json();
-        const { adminId, action, data } = body;
-
-        if (!adminId || !(await isAdmin(adminId))) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
-        }
+        const { action, data } = body;
 
         if (action === 'update_policy') {
             const { error } = await supabaseAdmin
